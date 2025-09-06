@@ -897,14 +897,14 @@ end
 function tbGift:Skill150()
 	local szMsg = "Lựa chọn";
 	local tbOpt = {};
-	table.insert(tbOpt, { "Thiếu Lâm", self.tl1501, self });
-	table.insert(tbOpt, { "Thiên Vương", self.tv1501, self });
-	table.insert(tbOpt, { "Đường môn", self.dm1501, self });
-	table.insert(tbOpt, { "Ngũ Độc", self.nd1501, self });
-	table.insert(tbOpt, { "Minh giáo", self.mg1501, self });
-	table.insert(tbOpt, { "Nga My", self.nm1501, self });
-	table.insert(tbOpt, { "Thúy Yên", self.ty1501, self });
-	table.insert(tbOpt, { "Đoàn Thị", self.dt1501, self });
+	table.insert(tbOpt, { "Thiếu Lâm", self.TranPhaiThieuLam, self });
+	table.insert(tbOpt, { "Thiên Vương", self.TraiPhaiThienVuong, self });
+	table.insert(tbOpt, { "Đường môn", self.TranPhaiDuongMon, self });
+	table.insert(tbOpt, { "Ngũ Độc", self.TranPhaiNguDoc, self });
+	table.insert(tbOpt, { "Minh giáo", self.TranPhaiMinhGiao, self });
+	table.insert(tbOpt, { "Nga My", self.TranPhaiNgaMy, self });
+	table.insert(tbOpt, { "Thúy Yên", self.TranPhaiThuyYen, self });
+	table.insert(tbOpt, { "Đoàn Thị", self.TranPhaiDoanThi, self });
 	table.insert(tbOpt, { "Sau...", self.skill1501, self });
 	table.insert(tbOpt, { "<bclr=100,10,10><color=166,166,166>Ta chỉ ghé ngang qua" });
 	Dialog:Say(szMsg, tbOpt);
@@ -913,238 +913,238 @@ end
 function tbGift:skill1501()
 	local szMsg = "Lựa chọn";
 	local tbOpt = {};
-	table.insert(tbOpt, { "Cái Bang", self.cb1501, self });
-	table.insert(tbOpt, { "Thiên Nhẫn", self.tn1501, self });
-	table.insert(tbOpt, { "Võ Đang", self.vd1501, self });
-	table.insert(tbOpt, { "Côn Lôn", self.cl1501, self });
+	table.insert(tbOpt, { "Cái Bang", self.TranPhaiCaiBang, self });
+	table.insert(tbOpt, { "Thiên Nhẫn", self.TranPhaiThienNhan, self });
+	table.insert(tbOpt, { "Võ Đang", self.TranPhaiVoDang, self });
+	table.insert(tbOpt, { "Côn Lôn", self.TranPhaiConLon, self });
 	table.insert(tbOpt, { "<bclr=100,10,10><color=166,166,166>Ta chỉ ghé ngang qua" });
 	Dialog:Say(szMsg, tbOpt);
 end
 
-function tbGift:tl1501()
+function tbGift:TranPhaiThieuLam()
 	local szMsg = "Lựa chọn";
 	local tbOpt = {};
-	table.insert(tbOpt, { "Thiếu Lâm Đao", self.tld150, self });
-	table.insert(tbOpt, { "Thiếu Lâm Bổng", self.tlb150, self });
+	table.insert(tbOpt, { "Thiếu Lâm Đao", self.ThieuLamDao, self });
+	table.insert(tbOpt, { "Thiếu Lâm Bổng", self.ThieuLamBong, self });
 	table.insert(tbOpt, { "<bclr=100,10,10><color=166,166,166>Ta chỉ ghé ngang qua" });
 	Dialog:Say(szMsg, tbOpt);
 end
 
-function tbGift:tv1501()
+function tbGift:TraiPhaiThienVuong()
 	local szMsg = "Lựa chọn";
 	local tbOpt = {};
-	table.insert(tbOpt, { "Thiên Vương Thương", self.tvt150, self });
-	table.insert(tbOpt, { "Thiên Vương Chùy", self.tvc150, self });
+	table.insert(tbOpt, { "Thiên Vương Thương", self.ThienVuongThuong, self });
+	table.insert(tbOpt, { "Thiên Vương Chùy", self.ThienVuongChuy, self });
 	table.insert(tbOpt, { "<bclr=100,10,10><color=166,166,166>Ta chỉ ghé ngang qua" });
 	Dialog:Say(szMsg, tbOpt);
 end
 
-function tbGift:dm1501()
+function tbGift:TranPhaiDuongMon()
 	local szMsg = "Lựa chọn";
 	local tbOpt = {};
-	table.insert(tbOpt, { "Đường Môn Tụ Tiễn", self.dmtt150, self });
-	table.insert(tbOpt, { "Đường Môn Hãm Tĩnh", self.dmht150, self });
+	table.insert(tbOpt, { "Đường Môn Tụ Tiễn", self.DuongMonTuTien, self });
+	table.insert(tbOpt, { "Đường Môn Hãm Tĩnh", self.DuongMonHamTinh, self });
 	table.insert(tbOpt, { "<bclr=100,10,10><color=166,166,166>Ta chỉ ghé ngang qua" });
 	Dialog:Say(szMsg, tbOpt);
 end
 
-function tbGift:nd1501()
+function tbGift:TranPhaiNguDoc()
 	local szMsg = "Lựa chọn";
 	local tbOpt = {};
-	table.insert(tbOpt, { "Ngũ Độc Đao", self.ndd150, self });
-	table.insert(tbOpt, { "Ngũ Độc Chưởng", self.ndc150, self });
+	table.insert(tbOpt, { "Ngũ Độc Đao", self.NguDocDao, self });
+	table.insert(tbOpt, { "Ngũ Độc Chưởng", self.NguDocChuong, self });
 	table.insert(tbOpt, { "<bclr=100,10,10><color=166,166,166>Ta chỉ ghé ngang qua" });
 	Dialog:Say(szMsg, tbOpt);
 end
 
-function tbGift:mg1501()
+function tbGift:TranPhaiMinhGiao()
 	local szMsg = "Lựa chọn";
 	local tbOpt = {};
-	table.insert(tbOpt, { "Minh Giáo Kiếm", self.mgk150, self });
-	table.insert(tbOpt, { "Minh Giáo Chùy", self.mgc150, self });
+	table.insert(tbOpt, { "Minh Giáo Kiếm", self.MinhGiaoKiem, self });
+	table.insert(tbOpt, { "Minh Giáo Chùy", self.MinhGiaoChuy, self });
 	table.insert(tbOpt, { "<bclr=100,10,10><color=166,166,166>Ta chỉ ghé ngang qua" });
 	Dialog:Say(szMsg, tbOpt);
 end
 
-function tbGift:nm1501()
+function tbGift:TranPhaiNgaMy()
 	local szMsg = "Lựa chọn";
 	local tbOpt = {};
-	table.insert(tbOpt, { "Nga Mi Chưởng", self.nmc150, self });
-	table.insert(tbOpt, { "Nga Mi Phụ Trợ", self.nmpt150, self });
+	table.insert(tbOpt, { "Nga Mi Chưởng", self.NgaMyChuong, self });
+	table.insert(tbOpt, { "Nga Mi Phụ Trợ", self.NgaMyPhuTro, self });
 	table.insert(tbOpt, { "<bclr=100,10,10><color=166,166,166>Ta chỉ ghé ngang qua" });
 	Dialog:Say(szMsg, tbOpt);
 end
 
-function tbGift:ty1501()
+function tbGift:TranPhaiThuyYen()
 	local szMsg = "Lựa chọn";
 	local tbOpt = {};
-	table.insert(tbOpt, { "Thúy Yên Kiếm", self.tyk150, self });
-	table.insert(tbOpt, { "Thúy Yên Đao", self.tyd150, self });
+	table.insert(tbOpt, { "Thúy Yên Kiếm", self.ThuyYenKiem, self });
+	table.insert(tbOpt, { "Thúy Yên Đao", self.ThuyYenDao, self });
 	table.insert(tbOpt, { "<bclr=100,10,10><color=166,166,166>Ta chỉ ghé ngang qua" });
 	Dialog:Say(szMsg, tbOpt);
 end
 
-function tbGift:dt1501()
+function tbGift:TranPhaiDoanThi()
 	local szMsg = "Lựa chọn";
 	local tbOpt = {};
-	table.insert(tbOpt, { "Đoàn Thị Kiếm", self.dtk150, self });
-	table.insert(tbOpt, { "Đoàn Thị Chỉ", self.dtc150, self });
+	table.insert(tbOpt, { "Đoàn Thị Kiếm", self.DoanThiKiem, self });
+	table.insert(tbOpt, { "Đoàn Thị Chỉ", self.DoanThiChi, self });
 	table.insert(tbOpt, { "<bclr=100,10,10><color=166,166,166>Ta chỉ ghé ngang qua" });
 	Dialog:Say(szMsg, tbOpt);
 end
 
-function tbGift:cb1501()
+function tbGift:TranPhaiCaiBang()
 	local szMsg = "Lựa chọn";
 	local tbOpt = {};
-	table.insert(tbOpt, { "Cái Bang Chưởng", self.cbc150, self });
-	table.insert(tbOpt, { "Cái Bang Bổng", self.cbb150, self });
+	table.insert(tbOpt, { "Cái Bang Chưởng", self.CaiBangChuong, self });
+	table.insert(tbOpt, { "Cái Bang Bổng", self.CaiBangBong, self });
 	table.insert(tbOpt, { "<bclr=100,10,10><color=166,166,166>Ta chỉ ghé ngang qua" });
 	Dialog:Say(szMsg, tbOpt);
 end
 
-function tbGift:tn1501()
+function tbGift:TranPhaiThienNhan()
 	local szMsg = "Lựa chọn";
 	local tbOpt = {};
-	table.insert(tbOpt, { "Ma Nhẫn Đao", self.mnd150, self });
-	table.insert(tbOpt, { "Thiên Nhẫn Kích", self.tnk150, self });
+	table.insert(tbOpt, { "Ma Nhẫn Đao", self.MaNhan, self });
+	table.insert(tbOpt, { "Thiên Nhẫn Kích", self.ChienNhan, self });
 	table.insert(tbOpt, { "<bclr=100,10,10><color=166,166,166>Ta chỉ ghé ngang qua" });
 	Dialog:Say(szMsg, tbOpt);
 end
 
-function tbGift:vd1501()
+function tbGift:TranPhaiVoDang()
 	local szMsg = "Lựa chọn";
 	local tbOpt = {};
-	table.insert(tbOpt, { "Võ Đang Kiếm", self.vdk150, self });
-	table.insert(tbOpt, { "Võ Đang Khí", self.vdc150, self });
+	table.insert(tbOpt, { "Võ Đang Kiếm", self.VoDangKiem, self });
+	table.insert(tbOpt, { "Võ Đang Khí", self.VoDangKhi, self });
 	table.insert(tbOpt, { "<bclr=100,10,10><color=166,166,166>Ta chỉ ghé ngang qua" });
 	Dialog:Say(szMsg, tbOpt);
 end
 
-function tbGift:cl1501()
+function tbGift:TranPhaiConLon()
 	local szMsg = "Lựa chọn";
 	local tbOpt = {};
-	table.insert(tbOpt, { "Côn Lôn Đao", self.cld150, self });
-	table.insert(tbOpt, { "Côn Lôn Kiếm", self.clk150, self });
+	table.insert(tbOpt, { "Côn Lôn Đao", self.ConLonDao, self });
+	table.insert(tbOpt, { "Côn Lôn Kiếm", self.ConLonKiem, self });
 	table.insert(tbOpt, { "<bclr=100,10,10><color=166,166,166>Ta chỉ ghé ngang qua" });
 	Dialog:Say(szMsg, tbOpt);
 end
 
-function tbGift:tld150()
+function tbGift:ThieuLamDao()
 	me.AddFightSkill(1747, 20);
 	me.AddFightSkill(1981, 20);
 end
 
-function tbGift:tlb150()
+function tbGift:ThieuLamBong()
 	me.AddFightSkill(1750, 20);
 	me.AddFightSkill(1958, 20);
 end
 
-function tbGift:tvt150()
+function tbGift:ThienVuongThuong()
 	me.AddFightSkill(1722, 20);
 	me.AddFightSkill(1982, 20);
 end
 
-function tbGift:tvc150()
+function tbGift:ThienVuongChuy()
 	me.AddFightSkill(1725, 20);
 	me.AddFightSkill(1956, 20);
 end
 
-function tbGift:dmtt150()
+function tbGift:DuongMonTuTien()
 	me.AddFightSkill(1751, 20);
 	me.AddFightSkill(1959, 20);
 end
 
-function tbGift:dmht150()
+function tbGift:DuongMonHamTinh()
 	me.AddFightSkill(1753, 20);
 	me.AddFightSkill(1988, 20);
 end
 
-function tbGift:ndd150()
+function tbGift:NguDocDao()
 	me.AddFightSkill(1755, 20);
 	me.AddFightSkill(1984, 20);
 end
 
-function tbGift:ndc150()
+function tbGift:NguDocChuong()
 	me.AddFightSkill(1758, 20);
 	me.AddFightSkill(1986, 20);
 end
 
-function tbGift:mgk150()
+function tbGift:MinhGiaoKiem()
 	me.AddFightSkill(1737, 20);
 	me.AddFightSkill(1961, 20);
 end
 
-function tbGift:mgc150()
+function tbGift:MinhGiaoChuy()
 	me.AddFightSkill(1735, 20);
 	me.AddFightSkill(1996, 20);
 end
 
-function tbGift:nmc150()
+function tbGift:NgaMyChuong()
 	me.AddFightSkill(1712, 20);
 	me.AddFightSkill(1962, 20);
 end
 
-function tbGift:nmpt150()
+function tbGift:NgaMyPhuTro()
 	me.AddFightSkill(1716, 20);
 	me.AddFightSkill(1990, 20);
 end
 
-function tbGift:tyk150()
+function tbGift:ThuyYenKiem()
 	me.AddFightSkill(1740, 20);
 	me.AddFightSkill(1964, 20);
 end
 
-function tbGift:tyd150()
+function tbGift:ThuyYenDao()
 	me.AddFightSkill(1738, 20);
 	me.AddFightSkill(1966, 20);
 end
 
-function tbGift:dtk150()
+function tbGift:DoanThiKiem()
 	me.AddFightSkill(1728, 20);
 	me.AddFightSkill(1968, 20);
 end
 
-function tbGift:dtc150()
+function tbGift:DoanThiChi()
 	me.AddFightSkill(1730, 20);
 	me.AddFightSkill(1898, 20);
 end
 
-function tbGift:cbc150()
+function tbGift:CaiBangChuong()
 	me.AddFightSkill(1708, 20);
 	me.AddFightSkill(1970, 20);
 end
 
-function tbGift:cbb150()
+function tbGift:CaiBangBong()
 	me.AddFightSkill(1710, 20);
 	me.AddFightSkill(1992, 20);
 end
 
-function tbGift:mnd150()
+function tbGift:MaNhan()
 	me.AddFightSkill(1718, 20);
 	me.AddFightSkill(1972, 20);
 end
 
-function tbGift:tnk150()
+function tbGift:ChienNhan()
 	me.AddFightSkill(1720, 20);
 	me.AddFightSkill(1993, 20);
 end
 
-function tbGift:vdk150()
+function tbGift:VoDangKiem()
 	me.AddFightSkill(1732, 20);
 	me.AddFightSkill(1979, 20);
 end
 
-function tbGift:vdc150()
+function tbGift:VoDangKhi()
 	me.AddFightSkill(1734, 20);
 	me.AddFightSkill(1978, 20);
 end
 
-function tbGift:cld150()
+function tbGift:ConLonDao()
 	me.AddFightSkill(1742, 20);
 	me.AddFightSkill(1974, 20);
 end
 
-function tbGift:clk150()
+function tbGift:ConLonKiem()
 	me.AddFightSkill(1745, 20);
 	me.AddFightSkill(1976, 20);
 end
