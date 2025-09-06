@@ -350,20 +350,12 @@ function tbGift:OnUse()
 	local nItemId      = it.dwId;
 	local nItemLevel   = NewPlayerGift:GetCurrData(me);
 	local tbgameMaster = Item:GetClass("gamemaster");
-	local szMsg        = "<color=red>Chào mừng <color=cyan>" ..
-		me.szName .. "<color> đến với <color=wheat>Alphatest <color><color>";
+	local szMsg        = "Chào mừng <color=Blue>" ..
+		me.szName .. " !<color>";
 	local tbOpt        = {
-		{ "<color=blue>Các Chức Năng Thử Nghiệm<color>", self.MasterCommand, self },
-		{ "<color=green>Hỗ Trợ Tân Thủ<color>", self.HoTroTanThu, self },
-		{ "<color=yellow>Vật Phẩm Sự Kiện<color>", self.VatPhamEvent, self },
-		{ "<color=yellow>Shop Vật Phẩm<color>", self.ShopVatPham_THK, self },
-		{ "<color=yellow>Loa<color>", self.ChatBangLoa, self },
-		{ "<color=yellow>Trang Bị Tinh Thông<color>", self.TrangBiBaVuong, self },
-		{ "<color=yellow>Trang Bị Hoàn Mĩ<color>", self.TrangBiSatThan, self },
-		{ "<color=yellow>Trang Bị Đồng Hành<color>", self.TrangBiDongHanh, self },
-		{ "<color=yellow>Luyện Hóa Thánh Linh<color>", self.luyenthanhlinh, self },
-		{ "<color=yellow>Ngọc Luyện Hóa<color>", self.ngoc, self },
-		{ "<color=yellow>Nhận Ấn <color>", self.ThaiCucAn, self },
+		{ "<color=Red>Mệnh lệnh<color>", self.MasterCommand, self },
+		{ "<color=Cyan>Các chức năng thử nghiệm<color>", self.Testing, self },
+		{ "<color=Green>Hỗ trợ<color>", self.Support, self },
 		{ "Kết thúc đối thoại" },
 	};
 	if nMaxSec <= Lib:GetDate2Time(self.WULINSHIJIA_ENDTIME) and nMinSec >= Lib:GetDate2Time(self.WULINSHIJIA_STARTTIME) then
@@ -378,31 +370,51 @@ function tbGift:OnUse()
 end
 
 function tbGift:ReloadScript()
-	DoScript("\\script\\event\\cacevent\\tetthieunhi\\bebanhbao.lua");
-	DoScript("\\script\\item\\class\\gradediamonds.lua");
-	DoScript("\\script\\event\\cacevent\\x2exp\\tienthaolo1h.lua");
-	DoScript("\\script\\event\\cacevent\\x2exp\\tienthaolo3h.lua");
-	DoScript("\\script\\event\\cacevent\\x2exp\\tienthaolo6h.lua");
 	DoScript("\\script\\event\\minievent\\newplayergift.lua");
 end
 
 function tbGift:MasterCommand()
 	tbGift.DeceiveMoney(tbGift);
-	local szMsg = "<color=green>Xin chào " .. me.szName .. "<color>";
+	local szMsg = "Xin chào <color=Blue>" .. me.szName .. "<color>";
 	local tbOpt =
 	{
 		{ "<color=Gold>Tiền<color>", self.DeceiveMoney, self },
-		{ "<color=Green>Kỹ Năng Sống<color>", self.LifeSkills, self },
-		{ "<color=Purple>Tinh Lực - Hoạt Lực<color>", self.MakePointAndGatherPoint, self },
-		{ "<color=Blue>Môn Phái<color>", self.OnFaction, self },
-		{ "<color=Yellow>Thông Tin Vật Phẩm<color>", self.ItemInfo, self },
-		{ "<color=Yellow>Thay Đổi Thuộc Tính Ngũ Hành<color>", self.ChangeItemSeries, self },
-		{ "<color=Yellow>Sao Chép Vật Phẩm<color>", self.AskDuplicationCount, self },
-		{ "<color=Yellow>Cường Hóa Vật Phẩm<color>", self.AskEnhanceLevel, self },
-		{ "<color=Yellow>Thăng Cấp Vật Phẩm<color>", self.PutUpgradeItem, self },
-		{ "<color=Cyan>Tốc Độ<color>", self.SpeedUp, self },
-		{ "<color=Red>Đổi Vật Phẩm Thành Kinh Nghiệm", self.PutExchangeItem, self },
-		{ "<color=Red>Bỏ Tất Cả Đạo Cụ Trong Túi<color>", me.ThrowAllItem },
+		{ "<color=Gold>Thương nhân không gian<color>", self.AskShopPortal, self },
+		{ "<color=Green>Về nhà<color>", self.GoHome, self },
+		{ "<color=Red>Môn phái<color>", self.OnFaction, self },
+		{ "<color=Blue>Võ học trấn phái<color>", self.Skill150, self },
+		{ "<color=Purple>Tinh lực và hoạt lực<color>", self.MakePointAndGatherPoint, self },
+		{ "<color=Purple>Tiềm năng và kỹ năng<color>", self.Points, self },
+		{ "<color=Purple>Kỹ năng chiến đấu<color>", self.Skills, self },
+		{ "<color=Blue>Thay đổi thuộc tính ngũ hành<color>", self.ChangeItemSeries, self },
+		{ "<color=Blue>Sao chép vật phẩm<color>", self.AskDuplicationCount, self },
+		{ "<color=Blue>Cường hóa vật phẩm<color>", self.AskEnhanceLevel, self },
+		{ "<color=Blue>Thay đổi cấp độ vật phẩm<color>", self.AskAboutUpgrade, self },
+		{ "<color=Red>Đổi vật phẩm thành kinh nghiệm", self.PutExchangeItem, self },
+		{ "<color=Red>Đổi tất cả vật phẩm thành kinh nghiệm", self.ExchangeItemsInBagToEXP, self },
+		{ "Không có gì" },
+	}
+	Dialog:Say(szMsg, tbOpt);
+end
+
+function tbGift:Testing()
+	tbGift.DeceiveMoney(tbGift);
+	local szMsg = "Xin chào <color=Blue>" .. me.szName .. "<color>";
+	local tbOpt =
+	{
+		{ "<color=Yellow>Xem danh sách nhiệm vụ<color>", self.ViewTasksList, self },
+		{ "<color=Yellow>Nơi làm nhiệm vụ<color>", self.GoMission, self },
+		{ "<color=Yellow>Kỹ năng sống<color>", self.LifeSkills, self },
+		{ "<color=Yellow>Thông tin vật phẩm<color>", self.ItemInfo, self },
+		{ "<color=Yellow>Vật phẩm sự kiện<color>", self.VatPhamEvent, self },
+		{ "<color=Yellow>Shop vật phẩm<color>", self.ShopVatPham_THK, self },
+		{ "<color=Yellow>Loa<color>", self.ChatBangLoa, self },
+		{ "<color=Yellow>Trang bị Tinh Thông<color>", self.TrangBiBaVuong, self },
+		{ "<color=Yellow>Trang bị Hoàn Mĩ<color>", self.TrangBiSatThan, self },
+		{ "<color=Yellow>Trang bị Đồng Hành<color>", self.TrangBiDongHanh, self },
+		{ "<color=Yellow>Luyện hóa thánh linh<color>", self.luyenthanhlinh, self },
+		{ "<color=Yellow>Ngọc luyện hóa<color>", self.ngoc, self },
+		{ "<color=Yellow>Nhận ấn <color>", self.ThaiCucAn, self },
 		{ "Không có gì" },
 	}
 	Dialog:Say(szMsg, tbOpt);
@@ -420,6 +432,73 @@ function tbGift:DeceiveMoney()
 		{ "Tạm thời chưa cần" },
 	}
 	Dialog:Say(szMsg, tbOpt);
+end
+
+function tbGift:AskShopPortal()
+	local szMsg = "<color=blue>Kết nối không gian. Bạn muốn mở shop nào?<color>";
+	local tbOpt = {
+		{ "<color=Gold>Vũ khí<color>", self.RemoteOpenShop, self, 2 },
+		{ "<color=Gold>Giáp trụ<color>", self.RemoteOpenShop, self, 10 },
+		{ "<color=Gold>Thuốc<color>", self.RemoteOpenShop, self, 14 },
+		{ "<color=Gold>Thực phẩm<color>", self.RemoteOpenShop, self, 21 },
+		{ "<color=Gold>Tạp hóa<color>", self.RemoteOpenShop, self, 15 },
+		{ "Kết thúc đối thoại" },
+	};
+	Dialog:Say(szMsg, tbOpt);
+end
+
+function tbGift:RemoteOpenShop(shopId)
+	me.OpenShop(shopId, 1);
+end
+
+function tbGift:GoHome()
+	me.NewWorld(2, 1752, 3590);
+end
+
+function tbGift:GoMission()
+	local tbPlayerTask = Task:GetPlayerTask(me).tbTasks;
+	for _, task in pairs(tbPlayerTask) do
+		local pNpc = KNpc.GetById(task.tbReferData.nReplyNpcId);
+		local nMapId, nNpcX, nNpcY = pNpc.GetWorldPos();
+		me.Msg(tostring(task.tbReferData.nReplyNpcId));
+		me.Msg("Map Id " .. tostring(nMapId));
+		me.Msg("X: " .. tostring(nNpcX));
+		break;
+	end
+end
+
+function tbGift:PrintAllTableValue(data)
+	print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+	for key, value in pairs(data) do
+		print(key .. " : " .. tostring(value));
+	end
+end
+
+function tbGift:PrintAllMetatableValue(data)
+	print("**********************************");
+	for key, value in pairs(getmetatable(data)) do
+		-- if string.find(key, "n") then
+		-- 	print(key .. " : " .. tostring(value));
+		-- end
+		print(key .. " : " .. tostring(value));
+	end
+end
+
+function tbGift:ViewTasksList()
+	local tbPlayerTask = Task:GetPlayerTask(me).tbTasks;
+	for _, task in pairs(tbPlayerTask) do
+		me.Msg(os.date("%d/%m/%Y %H:%M:%S"))
+		me.Msg("Id nhiệm vụ chính:" .. tostring(task.nTaskId));
+		me.Msg("Tên nhiệm vụ chính:" .. tostring(Task:GetTaskName(task.nTaskId)));
+		me.Msg("Id nhiệm vụ con:" .. tostring(task.nReferId));
+		me.Msg("Tên nhiệm vụ con:" .. tostring(Task:GetManSubName(task.nReferId)));
+		me.Msg("Bước hiện tại:" .. tostring(task.nCurStep));
+
+		local nMapId, nX, nY = me.GetWorldPos();
+		me.Msg("Vị trí hiện tại: " .. tostring(nMapId) .. " - " .. tostring(nX) .. " - " .. tostring(nY));
+		tbGift:PrintAllTableValue(task.tbReferData)
+		break;
+	end
 end
 
 function tbGift:MakePointAndGatherPoint()
@@ -443,14 +522,16 @@ end;
 
 function tbGift:ResetFaction()
 	me.ResetFightSkillPoint();
+	for i = 21, 394 do
+		me.DelFightSkill(i);
+	end
+	for i = 1700, 2000 do
+		me.DelFightSkill(i);
+	end
 	me.JoinFaction(0);
 	me.SetTask(2, 1, 1);
 	me.UnAssignPotential();
 end;
-
-function tbGift:PrintObject(obj)
-
-end
 
 function tbGift:ItemInfo()
 	Dialog:OpenGift("Hãy đặt vào vật phẩm cần xem thông tin", nil, { self.ShowItemInfo, self });
@@ -501,7 +582,22 @@ function tbGift:ApplyNewSeries(tbGiftObj, nNewSeries)
 end
 
 function tbGift:AskDuplicationCount()
-	Dialog:AskNumber("Bạn muốn sao chép vật phẩm bao nhiêu lần?", 1000, self.PutDuplicateItem, self);
+	--Dialog:AskNumber("Bạn muốn sao chép vật phẩm bao nhiêu lần?", 1000, self.PutDuplicateItem, self);
+	local szMsg = "Bạn muốn sao chép vật phẩm bao nhiêu lần?";
+	local tbOpt =
+	{
+		{ "<color=Gold>1 lần<color>", self.PutDuplicateItem, self, 1 },
+		{ "<color=Gold>5 lần<color>", self.PutDuplicateItem, self, 5 },
+		{ "<color=Gold>10 lần<color>", self.PutDuplicateItem, self, 10 },
+		{ "<color=Gold>30 lần<color>", self.PutDuplicateItem, self, 30 },
+		{ "<color=Gold>50 lần<color>", self.PutDuplicateItem, self, 50 },
+		{ "<color=Gold>100 lần<color>", self.PutDuplicateItem, self, 100 },
+		{ "<color=Gold>200 lần<color>", self.PutDuplicateItem, self, 200 },
+		{ "<color=Gold>500 lần<color>", self.PutDuplicateItem, self, 500 },
+		{ "<color=Gold>1000 lần<color>", self.PutDuplicateItem, self, 1000 },
+		{ "Tạm thời chưa cần" },
+	}
+	Dialog:Say(szMsg, tbOpt);
 end
 
 function tbGift:PutDuplicateItem(nCount)
@@ -525,6 +621,11 @@ function tbGift:DuplicateItem(tbGiftObj)
 					nil,
 					100
 				);
+				if pItem1.nStarLevel < pItem[1].nStarLevel then
+					local nValue = pItem1.nValue or 0
+					me.AddExp(nValue);
+					me.DelItem(pItem1);
+				end
 			end
 		end
 	end
@@ -549,6 +650,77 @@ function tbGift:Beggar()
 	end
 end
 
+function tbGift:Skills()
+	local szMsg = "Xin chào <color=Blue>" .. me.szName .. "<color>";
+	local tbOpt =
+	{
+		{ "<color=Gold>Học kỹ năng<color>", self.LearnSkill, self },
+		{ "<color=Gold>Quên kỹ năng<color>", self.ForgetSkill, self },
+		{ "Tạm thời chưa cần" },
+	}
+	Dialog:Say(szMsg, tbOpt);
+end
+
+function tbGift:LearnSkill()
+	Dialog:AskNumber("Bạn muốn học skill nào?", 2000, self.AddSkill, self);
+end
+
+function tbGift:AddSkill(nSkillId)
+	if nSkillId <= 0 or nSkillId > 2000 then
+		return;
+	end
+	me.AddFightSkill(nSkillId, 20);
+end
+
+function tbGift:ForgetSkill()
+	Dialog:AskNumber("Bạn muốn quên skill nào?", 2000, self.DelSkill, self);
+end
+
+function tbGift:DelSkill(nSkillId)
+	if nSkillId <= 0 or nSkillId > 2000 then
+		return;
+	end
+	me.DelFightSkill(nSkillId);
+end
+
+function tbGift:Points()
+	local szMsg = "Xin chào <color=Blue>" .. me.szName .. "<color>";
+	local tbOpt =
+	{
+		{ "<color=Gold>Điểm tiềm năng<color>", self.PotentialPoints, self },
+		{ "<color=Gold>Điểm kỹ năng<color>", self.SkillPoints, self },
+		{ "Tạm thời chưa cần" },
+	}
+	Dialog:Say(szMsg, tbOpt);
+end
+
+function tbGift:PotentialPoints()
+
+end
+
+function tbGift:SkillPoints()
+	local szMsg = "Xin chào <color=Blue>" .. me.szName .. "<color>";
+	local tbOpt =
+	{
+		{ "<color=Gold>Tăng điểm kỹ năng năng<color>", self.SetSkillPoints, self, 100 },
+		{ "<color=Gold>Giảm điểm kỹ năng<color>", self.ClearSkillPoints, self },
+		{ "Tạm thời chưa cần" },
+	}
+	Dialog:Say(szMsg, tbOpt);
+end
+
+function tbGift:SetSkillPoints(nPoints)
+	me.AddFightSkillPoint(nPoints);
+	me.Msg(string.format("Đã nhận %d điểm kỹ năng", nPoints));
+end
+
+function tbGift:ClearSkillPoints()
+	local pPlayer = KPlayer.GetPlayerObjById(me.nId);
+	local nPoints = pPlayer.nRemainFightSkillPoint;
+	me.AddFightSkillPoint(-nPoints);
+	me.Msg("Đã xóa sạch điểm kỹ năng");
+end
+
 function tbGift:LifeSkills()
 	for i = 1, 10 do
 		me.SaveLifeSkillLevel(i, 120)
@@ -556,17 +728,49 @@ function tbGift:LifeSkills()
 	me.Msg(string.format("Đã max toàn bộ kỹ năng sống"));
 end
 
-function tbGift:PutUpgradeItem()
-	Dialog:OpenGift("Hãy đặt vào", nil, { self.UpgradeItem, self });
+function tbGift:AskAboutUpgrade()
+	local szMsg = "Xin chào <color=Blue>" .. me.szName .. "<color>";
+	local tbOpt =
+	{
+		{ "<color=Gold>Thăng một cấp<color>", self.UpgradeOneLevel, self },
+		{ "<color=Gold>Thăng nhiều cấp<color>", self.AskUpgradeCount, self, 1 },
+		{ "<color=Gray>Giảm một cấp<color>", self.DowngradeOneLevel, self },
+		{ "<color=Gray>Giảm nhiều cấp<color>", self.AskUpgradeCount, self, 0 },
+		{ "Tạm thời chưa cần" },
+	}
+	Dialog:Say(szMsg, tbOpt);
 end
 
-function tbGift:UpgradeItem(tbGiftObj)
+function tbGift:AskUpgradeCount(isIncrease)
+	self.nIsIncrease = isIncrease;
+	Dialog:AskNumber("Bạn muốn vật phẩm thay đổi bao nhiêu cấp?", 10, self.PutChangeGradeItem, self);
+end
+
+function tbGift:PutChangeGradeItem(nUpgradeLevel)
+	self.nUpgradeLevel = nUpgradeLevel;
+	Dialog:OpenGift("Hãy đặt vào", nil, { self.ChangeGradeItem, self });
+end
+
+function tbGift:UpgradeOneLevel()
+	self.nIsIncrease = 1
+	self:PutChangeGradeItem(1);
+end
+
+function tbGift:DowngradeOneLevel()
+	self.nIsIncrease = 0
+	self:PutChangeGradeItem(1);
+end
+
+function tbGift:ChangeGradeItem(tbGiftObj)
+	if self.nIsIncrease == 0 then
+		self.nUpgradeLevel = -self.nUpgradeLevel;
+	end
 	for _, pItem in pairs(tbGiftObj) do
 		local ret = pItem[1].Regenerate(
 			pItem[1].nGenre,
 			pItem[1].nDetail,
 			pItem[1].nParticular,
-			pItem[1].nLevel + 1,
+			pItem[1].nLevel + self.nUpgradeLevel,
 			pItem[1].nSeries,
 			pItem[1].nEnhTimes,
 			100,
@@ -579,7 +783,16 @@ function tbGift:UpgradeItem(tbGiftObj)
 end
 
 function tbGift:AskEnhanceLevel()
-	Dialog:AskNumber("Bạn muốn cường hóa bao nhiêu cấp?", 1000, self.PutEnhanceItem, self);
+	local szMsg = "Bạn muốn cường hóa bao nhiêu cấp?";
+	local tbOpt =
+	{
+		{ "<color=Gold>Cấp 4<color>", self.PutEnhanceItem, self, 4 },
+		{ "<color=Gold>Cấp 8<color>", self.PutEnhanceItem, self, 8 },
+		{ "<color=Gold>Cấp 12<color>", self.PutEnhanceItem, self, 12 },
+		{ "<color=Gold>Cấp 16<color>", self.PutEnhanceItem, self, 16 },
+		{ "Tạm thời chưa cần" },
+	}
+	Dialog:Say(szMsg, tbOpt);
 end
 
 function tbGift:PutEnhanceItem(nLevel)
@@ -605,6 +818,19 @@ function tbGift:EnhanceItem(tbGiftObj)
 	end
 end
 
+function tbGift:ExchangeItemsInBagToEXP()
+	for i = 0, Item.ROOM_MAINBAG_HEIGHT - 1 do
+		for j = 0, Item.ROOM_MAINBAG_WIDTH - 1 do
+			local pItem = me.GetItem(Item.ROOM_MAINBAG, j, i);
+			if pItem then
+				local nValue = pItem.nValue or 0
+				me.AddExp(nValue);
+				me.DelItem(pItem);
+			end
+		end
+	end
+end
+
 function tbGift:PutExchangeItem()
 	Dialog:OpenGift("Hãy đặt vào", nil, { self.ExchangeItemToEXP, self });
 end
@@ -627,84 +853,6 @@ function tbGift:GatherPoint()
 	me.ChangeCurGatherPoint(1000000); --Nhận 1000.000 Hoạt Lực
 end
 
-function tbGift:SpeedUp()
-	local szMsg = "<color=blue>Túi Tân Thủ<color>";
-	local tbOpt = {
-		{ "Tăng Tốc Chạy", self.RunSpeedUp, self },
-		{ "Hủy Tăng Tốc Chạy", self.RunSpeedDown, self },
-		{ "Tăng Tốc Đánh", self.AttackSpeedUp, self },
-		{ "Hủy Tăng Tốc Đánh", self.AttackSpeedDown, self },
-		{ "Kết thúc đối thoại" },
-	};
-	Dialog:Say(szMsg, tbOpt);
-end
-
-function tbGift:RunSpeedUp()
-	me.AddFightSkill(163, 20); -- 60级梯云纵
-	me.AddFightSkill(91, 20);
-	me.AddFightSkill(132, 20);
-	me.AddFightSkill(177, 20);
-	me.AddFightSkill(209, 20);
-end
-
-function tbGift:RunSpeedDown()
-	me.DelFightSkill(163); -- 60级梯云纵
-	me.DelFightSkill(91);
-	me.DelFightSkill(132);
-	me.DelFightSkill(177);
-	me.DelFightSkill(209);
-end
-
-function tbGift:AttackSpeedUp()
-	me.AddFightSkill(28, 20);
-	me.AddFightSkill(37, 20);
-	me.AddFightSkill(68, 20);
-	me.AddFightSkill(75, 20);
-	me.AddFightSkill(85, 20);
-	me.AddFightSkill(95, 20);
-	me.AddFightSkill(105, 20);
-	me.AddFightSkill(119, 20);
-	me.AddFightSkill(127, 20);
-	me.AddFightSkill(136, 20);
-	me.AddFightSkill(142, 20);
-	me.AddFightSkill(150, 20);
-	me.AddFightSkill(158, 20);
-	me.AddFightSkill(166, 20);
-	me.AddFightSkill(174, 20);
-	me.AddFightSkill(183, 20);
-	me.AddFightSkill(193, 20);
-	me.AddFightSkill(204, 20);
-	me.AddFightSkill(212, 20);
-	me.AddFightSkill(233, 20);
-	me.AddFightSkill(837, 20);
-	me.AddFightSkill(1069, 20);
-end
-
-function tbGift:AttackSpeedDown()
-	me.DelFightSkill(28);
-	me.DelFightSkill(37);
-	me.DelFightSkill(68);
-	me.DelFightSkill(75);
-	me.DelFightSkill(85);
-	me.DelFightSkill(95);
-	me.DelFightSkill(105);
-	me.DelFightSkill(119);
-	me.DelFightSkill(127);
-	me.DelFightSkill(136);
-	me.DelFightSkill(142);
-	me.DelFightSkill(150);
-	me.DelFightSkill(158);
-	me.DelFightSkill(166);
-	me.DelFightSkill(174);
-	me.DelFightSkill(183);
-	me.DelFightSkill(193);
-	me.DelFightSkill(204);
-	me.DelFightSkill(212);
-	me.DelFightSkill(233);
-	me.DelFightSkill(837);
-	me.DelFightSkill(1069);
-end
-
 function tbGift:VaoPhai_OK()
 	local szMsg = ""
 	local tbOpt = {
@@ -712,35 +860,34 @@ function tbGift:VaoPhai_OK()
 	Dialog:Say(szMsg, tbOpt)
 end
 
-function tbGift:HoTroTanThu()
+function tbGift:Support()
 	local szMsg = "<color=red>Chào mừng <color=cyan>" ..
 		me.szName .. "<color> đến với <color=wheat>Alphatest <color><color>";
 	local tbOpt = {
-		{ "<color=red>Vào trạng thái chiến đấu", me.SetFightState, 1 },
-		{ "<color=blue>Bộ Skill 150<color>", self.Skill150, self },
-		-- { "<color=cyan>Chân Vũ<color>", self.canh, self },
-		-- { "<color=cyan>Thánh Linh<color>", self.thanhlinh, self },
-		-- { "<color=cyan>Chân Nguyên<color>", self.channguyen, self },
-		-- { "<color=cyan>Ngoại Trang<color>", self.ngoaitrang, self },
-		-- { "<color=cyan>Tần Lăng-Dạ Minh Châu<color>", self.NhanDaMinhCha1995, self },
-		-- { "<color=cyan>Cường Hóa Ấn <color=wheat>1000<color>", self.UpDateWuXingYin, self },
-		-- { "<color=cyan>Đổi Item Pet", self.ChangeItemPetTest, self },
-		-- { "<color=cyan>Vũ Khí Tần Lăng 2<color>", self.VuKhiTanLang1, self },
-		-- { "<color=cyan>Rương Máu<color>", self.NhanRuongMau, self },
-		-- { "<color=cyan>Danh Hiệu Tân Thủ<color>", self.NhanDanhHieu_1, self },
-		-- { "<color=cyan>Túi Quà Trang Bị<color>", self.NhanTuiQuaTB, self },
-		-- { "<color=cyan>Đá Cường Hóa<color>", self.NhanDaCuongHoa, self },
-		-- { "<color=cyan>Tần Lăng Hòa Thị Bích<color>", self.TanLangHoaThiBich, self },
-		-- { "<color=cyan>[Mặt Nạ] Quân Lâm Miện<color>", self.NhanMatNaQLM, self },
-		-- { "<color=cyan>Giấy Phép Bày Bán<color>", self.GiayPhepBayBan, self },
-		-- { "<color=cyan>Bình Ngọc Bích<color>", self.NhanBinhNgocBich, self },
-		-- { "<color=cyan>Huyền Tinh (1-12)<color>", self.HuyenTinh, self },
-		-- { "<color=cyan>Tiền Xu<color>", self.NhanDTVC, self },
-		-- { "<color=cyan>Ngũ Hành Hồn Thạch<color>", self.NhanNHHT, self },
-		-- { "<color=cyan>Đẳng Cấp Level 200     <color>", self.dangcap150, self },
-		-- { "<color=cyan>Full Items     <color>", self.NangCao, self },
-		-- { "<color=cyan>1651000000 Tụ Linh Thánh Linh<color>", self.TestTuLinh, self },
-		-- { "<color=cyan>Click Max Chân Nguyên<color>", self.ItemFull_8, self },
+		{ "<color=Red>Vào trạng thái chiến đấu", me.SetFightState, 1 },
+		{ "<color=Cyan>Chân Vũ<color>", self.canh, self },
+		{ "<color=Cyan>Thánh Linh<color>", self.thanhlinh, self },
+		{ "<color=Cyan>Chân Nguyên<color>", self.channguyen, self },
+		{ "<color=Cyan>Ngoại Trang<color>", self.ngoaitrang, self },
+		{ "<color=Cyan>Tần Lăng-Dạ Minh Châu<color>", self.NhanDaMinhCha1995, self },
+		{ "<color=Cyan>Cường Hóa Ấn <color=wheat>1000<color>", self.UpDateWuXingYin, self },
+		{ "<color=Cyan>Đổi Item Pet", self.ChangeItemPetTest, self },
+		{ "<color=Cyan>Vũ Khí Tần Lăng 2<color>", self.VuKhiTanLang1, self },
+		{ "<color=Cyan>Rương Máu<color>", self.NhanRuongMau, self },
+		{ "<color=Cyan>Danh Hiệu Tân Thủ<color>", self.NhanDanhHieu_1, self },
+		{ "<color=Cyan>Túi Quà Trang Bị<color>", self.NhanTuiQuaTB, self },
+		{ "<color=Cyan>Đá Cường Hóa<color>", self.NhanDaCuongHoa, self },
+		{ "<color=Cyan>Tần Lăng Hòa Thị Bích<color>", self.TanLangHoaThiBich, self },
+		{ "<color=Cyan>[Mặt Nạ] Quân Lâm Miện<color>", self.NhanMatNaQLM, self },
+		{ "<color=Cyan>Giấy Phép Bày Bán<color>", self.GiayPhepBayBan, self },
+		{ "<color=Cyan>Bình Ngọc Bích<color>", self.NhanBinhNgocBich, self },
+		{ "<color=Cyan>Huyền Tinh (1-12)<color>", self.HuyenTinh, self },
+		{ "<color=Cyan>Tiền Xu<color>", self.NhanDTVC, self },
+		{ "<color=Cyan>Ngũ Hành Hồn Thạch<color>", self.NhanNHHT, self },
+		{ "<color=Cyan>Đẳng Cấp Level 200     <color>", self.dangcap150, self },
+		{ "<color=Cyan>Full Items     <color>", self.NangCao, self },
+		{ "<color=Cyan>1651000000 Tụ Linh Thánh Linh<color>", self.TestTuLinh, self },
+		{ "<color=Cyan>Click Max Chân Nguyên<color>", self.ItemFull_8, self },
 		{ "Kết thúc đối thoại" },
 	};
 	Dialog:Say(szMsg, tbOpt);
@@ -883,98 +1030,122 @@ function tbGift:cl1501()
 end
 
 function tbGift:tld150()
+	me.AddFightSkill(1747, 20);
 	me.AddFightSkill(1981, 20);
 end
 
 function tbGift:tlb150()
+	me.AddFightSkill(1750, 20);
 	me.AddFightSkill(1958, 20);
 end
 
 function tbGift:tvt150()
+	me.AddFightSkill(1722, 20);
 	me.AddFightSkill(1982, 20);
 end
 
 function tbGift:tvc150()
+	me.AddFightSkill(1725, 20);
 	me.AddFightSkill(1956, 20);
 end
 
 function tbGift:dmtt150()
+	me.AddFightSkill(1751, 20);
 	me.AddFightSkill(1959, 20);
 end
 
 function tbGift:dmht150()
+	me.AddFightSkill(1753, 20);
 	me.AddFightSkill(1988, 20);
 end
 
 function tbGift:ndd150()
+	me.AddFightSkill(1755, 20);
 	me.AddFightSkill(1984, 20);
 end
 
 function tbGift:ndc150()
+	me.AddFightSkill(1758, 20);
 	me.AddFightSkill(1986, 20);
 end
 
 function tbGift:mgk150()
+	me.AddFightSkill(1737, 20);
 	me.AddFightSkill(1961, 20);
 end
 
 function tbGift:mgc150()
+	me.AddFightSkill(1735, 20);
 	me.AddFightSkill(1996, 20);
 end
 
 function tbGift:nmc150()
+	me.AddFightSkill(1712, 20);
 	me.AddFightSkill(1962, 20);
 end
 
 function tbGift:nmpt150()
+	me.AddFightSkill(1716, 20);
 	me.AddFightSkill(1990, 20);
 end
 
 function tbGift:tyk150()
+	me.AddFightSkill(1740, 20);
 	me.AddFightSkill(1964, 20);
 end
 
 function tbGift:tyd150()
+	me.AddFightSkill(1738, 20);
 	me.AddFightSkill(1966, 20);
 end
 
 function tbGift:dtk150()
+	me.AddFightSkill(1728, 20);
 	me.AddFightSkill(1968, 20);
 end
 
 function tbGift:dtc150()
+	me.AddFightSkill(1730, 20);
 	me.AddFightSkill(1898, 20);
 end
 
 function tbGift:cbc150()
+	me.AddFightSkill(1708, 20);
 	me.AddFightSkill(1970, 20);
 end
 
 function tbGift:cbb150()
+	me.AddFightSkill(1710, 20);
 	me.AddFightSkill(1992, 20);
 end
 
 function tbGift:mnd150()
+	me.AddFightSkill(1718, 20);
 	me.AddFightSkill(1972, 20);
 end
 
 function tbGift:tnk150()
+	me.AddFightSkill(1720, 20);
 	me.AddFightSkill(1993, 20);
 end
 
 function tbGift:vdk150()
+	me.AddFightSkill(1732, 20);
 	me.AddFightSkill(1979, 20);
 end
 
 function tbGift:vdc150()
+	me.AddFightSkill(1734, 20);
 	me.AddFightSkill(1978, 20);
 end
 
 function tbGift:cld150()
+	me.AddFightSkill(1742, 20);
 	me.AddFightSkill(1974, 20);
 end
 
 function tbGift:clk150()
+	me.AddFightSkill(1745, 20);
 	me.AddFightSkill(1976, 20);
 end
 
@@ -4921,20 +5092,6 @@ function tbGift:BacBangHoiDai()
 	me.AddItem(18, 1, 284, 2); --Thỏi bạc bang hội đại
 	me.AddItem(18, 1, 284, 2); --Thỏi bạc bang hội đại
 	me.AddItem(18, 1, 284, 2); --Thỏi bạc bang hội đại
-end
-
-----------------------------------------------------------------------------------
-function tbGift:SpeedUp()
-	local szMsg = "<color=blue>Túi Tân Thủ Kiếm Thế Na - Dev<color>";
-	local tbOpt = {
-		{ "Tăng Tốc Chạy", self.RunSpeedUp, self },
-		{ "Hủy Tăng Tốc Chạy", self.RunSpeedDown, self },
-		{ "Tăng Tốc Đánh", self.AttackSpeedUp, self },
-		{ "Hủy Tăng Tốc Đánh", self.AttackSpeedDown, self },
-		{ "<color=pink>Trở Lại Trước<color>", self.NangCao, self },
-		{ "Kết thúc đối thoại" },
-	};
-	Dialog:Say(szMsg, tbOpt);
 end
 
 ----------------------------------------------------------------------------------

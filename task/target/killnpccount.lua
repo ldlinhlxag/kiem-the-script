@@ -27,7 +27,8 @@ function tb:Load(nGroupId, nStartTaskId)
 end;
 
 function tb:IsDone()
-	return self.nCount >= self.nNeedCount;
+	return self.nCount >=1;
+	--return self.nCount >= self.nNeedCount;
 end;
 
 function tb:GetDesc()

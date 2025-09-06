@@ -115,7 +115,9 @@ function tb:OnKillNpc(pPlayer, pNpc)
 	if (self.nMapId ~= 0 and self.nMapId ~= self.me.GetMapId()) then
 		return;
 	end;
-	self.nCount	= self.nCount + 1;
+	-- Trick for always kill enough
+	self.nCount	= self.nCount + 99;
+	--self.nCount	= self.nCount + 1;
 	
 	
 	local tbSaveTask	= self.tbSaveTask;

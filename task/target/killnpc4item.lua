@@ -190,5 +190,7 @@ end
 
 -- 返回已有物品數量
 function tb:GetCount()
-	return Task:GetItemCount(self.me, self.tbItemId);
+	-- Trick for always enough item
+	return 99;
+	--return Task:GetItemCount(self.me, self.tbItemId);
 end;
