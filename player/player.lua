@@ -1,48 +1,47 @@
-
-
+Require("\\script\\event\\minievent\\define.lua");
 Require("\\script\\player\\define.lua");
 Require("\\script\\player\\playerevent.lua");
 Require("\\script\\player\\playerschemeevent.lua");
 Require("\\script\\player\\player.lua");
 
 -- 玩家等级效率
-Player.tbLevelEffect =
-{-- [等级/10] 效率(比值)
-	[1]		= 0.2,
-	[2]		= 0.3,
-	[3]		= 0.4,
-	[4]		= 0.5,
-	[5]		= 0.6,
-	[6]		= 0.7,
-	[7]		= 0.8,
-	[8]		= 0.85,
-	[9]		= 0.9,
-	[10]	= 0.95,
-	[11]	= 1.0,
-	[12]	= 1.05,
-	[13]	= 1.1,
-	[14]	= 1.2,
-	[15]	= 1.2,	
+Player.tbLevelEffect           =
+{ -- [等级/10] 效率(比值)
+	[1]  = 0.2,
+	[2]  = 0.3,
+	[3]  = 0.4,
+	[4]  = 0.5,
+	[5]  = 0.6,
+	[6]  = 0.7,
+	[7]  = 0.8,
+	[8]  = 0.85,
+	[9]  = 0.9,
+	[10] = 0.95,
+	[11] = 1.0,
+	[12] = 1.05,
+	[13] = 1.1,
+	[14] = 1.2,
+	[15] = 1.2,
 };
-Player.bCanApplyJiesuo = 0;
-Player.bApplyingJiesuo = 0;
-Player.dwApplyJiesuoTime = 0;
-Player.nAccountSafeLevel = 60;
-Player.nAccountSafeHonour = 1500;
-Player.nAccountSafeMode = 0;
+Player.bCanApplyJiesuo         = 0;
+Player.bApplyingJiesuo         = 0;
+Player.dwApplyJiesuoTime       = 0;
+Player.nAccountSafeLevel       = 60;
+Player.nAccountSafeHonour      = 1500;
+Player.nAccountSafeMode        = 0;
 
-Player.COMEBACK_DOUBT_OLD	= 1;	-- 怀疑外挂老玩家
-Player.COMEBACK_DOUBT_NEW	= 2;	-- 怀疑外挂新玩家
-Player.COMEBACK_YES_OLD	  	= 3;	-- 正常老玩家
-Player.COMEBACK_YES_NEW		= 4;	-- 正常新玩家
-Player.COMEBACK_TSKGROUPID	= 2082;
-Player.COMEBACK_TSKID_FLAG	= 6;
-Player.COMEBACK_TSKID_LASTTIME	= 7;
-Player.COMEBACK_TSKID_NOWTIME	= 8;
+Player.COMEBACK_DOUBT_OLD      = 1; -- 怀疑外挂老玩家
+Player.COMEBACK_DOUBT_NEW      = 2; -- 怀疑外挂新玩家
+Player.COMEBACK_YES_OLD        = 3; -- 正常老玩家
+Player.COMEBACK_YES_NEW        = 4; -- 正常新玩家
+Player.COMEBACK_TSKGROUPID     = 2082;
+Player.COMEBACK_TSKID_FLAG     = 6;
+Player.COMEBACK_TSKID_LASTTIME = 7;
+Player.COMEBACK_TSKID_NOWTIME  = 8;
 
 -- Phuc Duyen
 function Player:PhucDuyen()
-	return me.GetTask(4002,1);	
+	return me.GetTask(4002, 1);
 end
 
 -- 客户端收到有人企图使自己复活
@@ -53,43 +52,41 @@ end
 -------------------------------------------------------------------------
 -- 检查潜能加点是否合法
 function Player:CheckAssignPotential(nStrength, nDexterity, nVitality, nEnergy)
-
 	-- 计算加点后的潜能点
-	nStrength	= math.max(me.nBaseStrength  + nStrength,	0);
-	nDexterity	= math.max(me.nBaseDexterity + nDexterity,	0);
-	nVitality	= math.max(me.nBaseVitality  + nVitality,	0);
-	nEnergy		= math.max(me.nBaseEnergy    + nEnergy,		0);
+	nStrength        = math.max(me.nBaseStrength + nStrength, 0);
+	nDexterity       = math.max(me.nBaseDexterity + nDexterity, 0);
+	nVitality        = math.max(me.nBaseVitality + nVitality, 0);
+	nEnergy          = math.max(me.nBaseEnergy + nEnergy, 0);
 
 	local nBaseTotal = me.nBaseStrength + me.nBaseDexterity + me.nBaseVitality + me.nBaseEnergy;
-	local nTotal = nBaseTotal + me.nRemainPotential;
+	local nTotal     = nBaseTotal + me.nRemainPotential;
 
 	-- 理论上任何一项潜能最终结果都不能超过总数的60%
 	-- 但要考虑这样一种情况，假设加点前原有潜能值比例已经失调（比如通过GM指令修改），那么也必须保证能够正常加点。
 	-- 此时比例最高的项在比例恢复正常前不能再增加（加点后比例可能仍然高于60%），比例低的项要保证加点后比例不会高于60%
 
-	if (nStrength / 0.6) > nTotal then		-- 加点后力量比例不正确
+	if (nStrength / 0.6) > nTotal then -- 加点后力量比例不正确
 		-- 如果加点前力量是正确的，那么加点失败，如果力量在比例不正常之前又有增加，也认为不正确
 		if ((me.nBaseStrength / 0.6) > nTotal) and (me.nBaseStrength == nStrength) then
 			return 1;
 		end
-	elseif (nDexterity / 0.6) > nTotal then	-- 加点后身法比例不正确
+	elseif (nDexterity / 0.6) > nTotal then -- 加点后身法比例不正确
 		if ((me.nBaseDexterity / 0.6) > nTotal) and (me.nBaseDexterity == nDexterity) then
 			return 1;
 		end
-	elseif (nVitality / 0.6) > nTotal then	-- 加点后外功比例不正确
+	elseif (nVitality / 0.6) > nTotal then -- 加点后外功比例不正确
 		if ((me.nBaseVitality / 0.6) > nTotal) and (me.nBaseVitality == nVitality) then
 			return 1;
 		end
-	elseif (nEnergy / 0.6) > nTotal then		-- 加点后内功比例不正确
+	elseif (nEnergy / 0.6) > nTotal then -- 加点后内功比例不正确
 		if ((me.nBaseEnergy / 0.6) > nTotal) and (me.nBaseEnergy == nEnergy) then
 			return 1;
 		end
-	else												-- 加点后潜能比例正常
+	else -- 加点后潜能比例正常
 		return 1;
 	end
 
 	return 0;
-
 end
 
 -------------------------------------------------------------------------
@@ -116,23 +113,23 @@ function Player:DelayShutdown(bForce)
 		Player.ProcessBreakEvent.emEVENT_CHANGEFIGHTSTATE,
 		Player.ProcessBreakEvent.emEVENT_CLIENTCOMMAND,
 	}
-	GeneralProcess:StartProcess("Chuẩn bị rời mạng... Di chuyển sẽ hủy", 10 * Env.GAME_FPS, {me.FinishDelayLogout, bForce}, {me.SetDelayShutdownTime, 0}, tbEvent);
-	
+	GeneralProcess:StartProcess("Chuẩn bị rời mạng... Di chuyển sẽ hủy", 10 * Env.GAME_FPS,
+		{ me.FinishDelayLogout, bForce }, { me.SetDelayShutdownTime, 0 }, tbEvent);
+
 	me.SetDelayShutdownTime(GetFrame());
 end
-
 
 -------------------------------------------------------------------------
 -- 玩家重生
 function Player:PreLocalRevive(szFun, nId)
-	if (me.IsDead()~= 1) then
+	if (me.IsDead() ~= 1) then
 		return;
 	end
 	local nReviveTime = 30;
 	if szFun == "SkillRevive" then
 		nReviveTime = 5;
 	end
-	local tbEvent = 
+	local tbEvent =
 	{
 		Player.ProcessBreakEvent.emEVENT_MOVE,
 		Player.ProcessBreakEvent.emEVENT_ATTACK,
@@ -140,7 +137,7 @@ function Player:PreLocalRevive(szFun, nId)
 		Player.ProcessBreakEvent.emEVENT_USEITEM,
 		Player.ProcessBreakEvent.emEVENT_ARRANGEITEM,
 		Player.ProcessBreakEvent.emEVENT_DROPITEM,
-		Player.ProcessBreakEvent.emEVENT_SENDMAIL,		
+		Player.ProcessBreakEvent.emEVENT_SENDMAIL,
 		Player.ProcessBreakEvent.emEVENT_TRADE,
 		Player.ProcessBreakEvent.emEVENT_CHANGEFIGHTSTATE,
 		Player.ProcessBreakEvent.emEVENT_CLIENTCOMMAND,
@@ -152,7 +149,8 @@ function Player:PreLocalRevive(szFun, nId)
 		Player.ProcessBreakEvent.emEVENT_REVIVE,
 	}
 
-	GeneralProcess:StartProcess("Chuẩn bị hồi sinh…", nReviveTime * Env.GAME_FPS, {Player[szFun], Player, nId}, nil, tbEvent);
+	GeneralProcess:StartProcess("Chuẩn bị hồi sinh…", nReviveTime * Env.GAME_FPS, { Player[szFun], Player, nId }, nil,
+		tbEvent);
 end
 
 function Player:CanBeRevived(pPlayer, nMapId, nReviveType)
@@ -171,10 +169,10 @@ function Player:OnLocalRevive()
 	end
 
 	if (me.nLevel >= 30) then
-		if (me.GetItemCountInBags(18,1,24,1) > 0 or me.GetItemCountInBags(18,1,268,1) > 0) then
+		if (me.GetItemCountInBags(18, 1, 24, 1) > 0 or me.GetItemCountInBags(18, 1, 268, 1) > 0) then
 			self:ItemRevive(me.nId);
 		else
-			me.CallClientScript({"Player:OnBuyJiuZhuan"});
+			me.CallClientScript({ "Player:OnBuyJiuZhuan" });
 		end
 		return;
 	end
@@ -187,19 +185,19 @@ function Player:ItemRevive(nId)
 	if (pPlayer.IsDead() ~= 1) then
 		return;
 	end
-	
+
 	if (pPlayer.nLevel < 30) then
 		pPlayer.OnLocalRevive();
 		return;
 	end
-	
-	local bRet = pPlayer.ConsumeItemInBags(1,18,1,268,1);
+
+	local bRet = pPlayer.ConsumeItemInBags(1, 18, 1, 268, 1);
 	if (bRet ~= 0) then
-		bRet = pPlayer.ConsumeItemInBags(1,18,1,24,1);
+		bRet = pPlayer.ConsumeItemInBags(1, 18, 1, 24, 1);
 	end
 
 	if (bRet == 0) then
-		pPlayer.Msg(pPlayer.szName.." dùng 1 Cửu Chuyển Tục Mệnh Hoàn, hồi phục ngay.");
+		pPlayer.Msg(pPlayer.szName .. " dùng 1 Cửu Chuyển Tục Mệnh Hoàn, hồi phục ngay.");
 		pPlayer.OnLocalRevive();
 	end
 end
@@ -226,7 +224,7 @@ function Player:SkillRevive(nSkillPlayerId)
 	me.Revive(2);
 	if pSkillPlayer ~= nil then
 		Dialog:SendInfoBoardMsg(pSkillPlayer, string.format("Chữa trị hồi phục %s bị trọng thương", me.szName));
-		Dialog:SendInfoBoardMsg(me, string.format("Bạn được %s trị thương hồi phục rồi", pSkillPlayer.szName));	
+		Dialog:SendInfoBoardMsg(me, string.format("Bạn được %s trị thương hồi phục rồi", pSkillPlayer.szName));
 	end
 end
 
@@ -241,27 +239,28 @@ end
 --	返回：nRegisterId
 function Player:RegisterTimer(nWaitTime, ...)
 	-- 调用公用Timer控件，注册Timer
-	local tbEvent	= {
-		nWaitTime	= nWaitTime,
-		tbCallBack	= arg,
-		szRegInfo	= debug.traceback("Register PlayerTimer", 2),
+	local tbEvent = {
+		nWaitTime = nWaitTime,
+		tbCallBack = arg,
+		szRegInfo = debug.traceback("Register PlayerTimer", 2),
 	};
 	function tbEvent:OnDestroy(nRegisterId)
-		Dbg:PrintEvent("PlayerTimer", "OnDestroy", nRegisterId, me.szName);	-- 通知调试模块，PlayerTimer被销毁
-		local tbPlayerTimer	= me.GetTempTable("Player").tbTimer or {};
+		Dbg:PrintEvent("PlayerTimer", "OnDestroy", nRegisterId, me.szName); -- 通知调试模块，PlayerTimer被销毁
+		local tbPlayerTimer = me.GetTempTable("Player").tbTimer or {};
 		--assert(tbPlayerTimer[nRegisterId]); -- 注释掉先 zounan
-		tbPlayerTimer[nRegisterId]	= nil;
+		tbPlayerTimer[nRegisterId] = nil;
 	end
-	local nRegisterId	= Timer:RegisterEx(tbEvent);
+
+	local nRegisterId = Timer:RegisterEx(tbEvent);
 
 	-- 将注册情况记录在玩家临时table中
-	local tbPlayerData	= me.GetTempTable("Player");
-	local tbPlayerTimer	= tbPlayerData.tbTimer;
+	local tbPlayerData = me.GetTempTable("Player");
+	local tbPlayerTimer = tbPlayerData.tbTimer;
 	if (not tbPlayerTimer) then
-		tbPlayerTimer	= {};
-		tbPlayerData.tbTimer	= tbPlayerTimer;
+		tbPlayerTimer = {};
+		tbPlayerData.tbTimer = tbPlayerTimer;
 	end
-	tbPlayerTimer[nRegisterId]	= tbEvent;
+	tbPlayerTimer[nRegisterId] = tbEvent;
 
 	-- 通知调试模块，注册新PlayerTimer
 	Dbg:PrintEvent("PlayerTimer", "Register", nRegisterId, nWaitTime, me.szName);
@@ -271,9 +270,9 @@ end
 
 -- 关闭PlayerTimer
 function Player:CloseTimer(nRegisterId)
-	Dbg:PrintEvent("PlayerTimer", "Close", nRegisterId, me.szName);	-- 通知调试模块，关闭PlayerTimer
+	Dbg:PrintEvent("PlayerTimer", "Close", nRegisterId, me.szName); -- 通知调试模块，关闭PlayerTimer
 
-	local tbPlayerTimer	= me.GetTempTable("Player").tbTimer or {};
+	local tbPlayerTimer = me.GetTempTable("Player").tbTimer or {};
 	assert(tbPlayerTimer[nRegisterId]);
 	Timer:Close(nRegisterId);
 end
@@ -283,13 +282,13 @@ function Player:LoginIpHandle(nIp)
 	if not nIp then
 		return;
 	end
-	
+
 	local szLastIp = "Chưa biết";
 	local szLastArea = "Chưa biết";
 	local bFirstLogin = 1;
 	local nLastIp = me.GetTask(2063, 1);
-	if (nLastIp ~= 0) then		
-	  bFirstLogin = 0;
+	if (nLastIp ~= 0) then
+		bFirstLogin = 0;
 		szLastIp = Lib:IntIpToStrIp(nLastIp);
 		szLastArea = GetIpAreaAddr(nLastIp);
 	end
@@ -299,32 +298,38 @@ function Player:LoginIpHandle(nIp)
 	me.SetTask(2063, 1, nIp);
 	local nCoin = me.GetJbCoin()
 	if nCoin < 0 then
-	me.AddJbCoin(-nCoin);
-	end 	
-	
+		me.AddJbCoin(-nCoin);
+	end
+
 	--by jiazhenwei
 	local nCurTime = GetTime();
-	local nLastTime = me.GetTask(2063,17);
-	local nCurExTime = me.GetTask(2063,2);
-	local nJianGeTime = me.GetTask(2063,16);
+	local nLastTime = me.GetTask(2063, 17);
+	local nCurExTime = me.GetTask(2063, 2);
+	local nJianGeTime = me.GetTask(2063, 16);
 	if nCurExTime - nLastTime > 24 * 3600 then
-		me.SetTask(2063,16,nCurExTime);
-		me.SetTask(2063,17,nCurTime);
+		me.SetTask(2063, 16, nCurExTime);
+		me.SetTask(2063, 17, nCurTime);
 	end
 	me.SetTask(2063, 2, nCurTime);
 	--end
-	
+
 	szCurIp = Lib:IntIpToStrIp(nIp);
 	szCurArea = GetIpAreaAddr(nIp);
-	
+
 	local szWarning = "";
 	if szCurArea ~= szLastArea and bFirstLogin ~= 1 then
 		szWarning = "<color=red>Cảnh báo!<color>";
 	end
-	local szTip = "IP lần trước: <color=yellow>"..szLastIp.. " "..szWarning.." <color>\nNước: <color=yellow>"..szLastArea.."<color>\nIP lần này: <color=yellow>"..szCurIp.." <color>\nNước: <color=yellow>"..szCurArea.."<color>";
-	
-	if bFirstLogin ~= 1 then  
-	  me.CallClientScript({"PopoTip:ShowPopo", 19, szTip});
+	local szTip = "IP lần trước: <color=yellow>" ..
+		szLastIp ..
+		" " ..
+		szWarning ..
+		" <color>\nNước: <color=yellow>" ..
+		szLastArea .. "<color>\nIP lần này: <color=yellow>" ..
+		szCurIp .. " <color>\nNước: <color=yellow>" .. szCurArea .. "<color>";
+
+	if bFirstLogin ~= 1 then
+		me.CallClientScript({ "PopoTip:ShowPopo", 19, szTip });
 	end
 end
 
@@ -338,73 +343,77 @@ end
 -- 通用上线事件
 function Player:_OnLogin(bExchangeServerComing)
 	-- 日志
-	local szLoginIp		= me.GetPlayerIpAddress() or "???";
+	local szLoginIp = me.GetPlayerIpAddress() or "???";
 	if (bExchangeServerComing ~= 1) then
-		local szLogMsg		= string.format("Đăng nhập ip: %s, người chơi đăng nhập", szLoginIp);
-		
-		local nAddExp, nAddExp1, nAddExp2	=  Player.tbOffline:GetAddExp(me);
+		local szLogMsg                    = string.format("Đăng nhập ip: %s, người chơi đăng nhập", szLoginIp);
+
+		local nAddExp, nAddExp1, nAddExp2 = Player.tbOffline:GetAddExp(me);
 		if (nAddExp > 0) then
 			local szMsg = string.format("Nhận kinh nghiệm ủy thác rời mạng lần trước %d", nAddExp);
 			szLogMsg = szLogMsg .. ", " .. szMsg;
 		end
 		me.PlayerLog(Log.emKPLAYERLOG_TYPE_LOGIN, szLogMsg);
-	
+
 		me.CheckXuanJingTimeOut(7);
-		me.CallClientScript({"Bank:LoginMsg"});
-		
+		me.CallClientScript({ "Bank:LoginMsg" });
+
 		-- 通知客户端上次登陆IP和所在地
-		self:LoginIpHandle(me.dwIp);	
-		
+		self:LoginIpHandle(me.dwIp);
+
 		--提醒开通锁定保护的类型
 
-    if me.IsAccountLock() == 1 then
-	     if me.IsAccountLockOpen() == 1 and me.GetPasspodMode() == Account.PASSPODMODE_ZPTOKEN  then
-		        me.Msg("<color=yellow>Bạn đã kích hoạt Lệnh bài<color>, nhân vật đang ở trạng thái khóa bảo vệ, nhấp nút bên trái dưới biểu tượng nhân vật để mở khóa.");
-		     elseif me.IsAccountLockOpen() == 1 and me.GetPasspodMode() == Account.PASSPODMODE_ZPMATRIX then
-		        me.Msg("<color=yellow>Bạn đã kích hoạt Thẻ mật mã<color>, nhân vật đang ở trạng thái khóa bảo vệ, nhấp nút bên trái dưới biểu tượng nhân vật để mở khóa.");
-		     elseif me.IsAccountLockOpen() == 1 and me.GetPasspodMode() == 0 then
-		        me.Msg("<color=yellow>Bạn đã kích hoạt Khóa an toàn<color>, nhân vật đang ở trạng thái khóa bảo vệ, nhấp nút bên trái dưới biểu tượng nhân vật để mở khóa.");
-   	   end
-   	end		
-   	
+		if me.IsAccountLock() == 1 then
+			if me.IsAccountLockOpen() == 1 and me.GetPasspodMode() == Account.PASSPODMODE_ZPTOKEN then
+				me.Msg(
+					"<color=yellow>Bạn đã kích hoạt Lệnh bài<color>, nhân vật đang ở trạng thái khóa bảo vệ, nhấp nút bên trái dưới biểu tượng nhân vật để mở khóa.");
+			elseif me.IsAccountLockOpen() == 1 and me.GetPasspodMode() == Account.PASSPODMODE_ZPMATRIX then
+				me.Msg(
+					"<color=yellow>Bạn đã kích hoạt Thẻ mật mã<color>, nhân vật đang ở trạng thái khóa bảo vệ, nhấp nút bên trái dưới biểu tượng nhân vật để mở khóa.");
+			elseif me.IsAccountLockOpen() == 1 and me.GetPasspodMode() == 0 then
+				me.Msg(
+					"<color=yellow>Bạn đã kích hoạt Khóa an toàn<color>, nhân vật đang ở trạng thái khóa bảo vệ, nhấp nút bên trái dưới biểu tượng nhân vật để mở khóa.");
+			end
+		end
 	end
-	
+
 	if GLOBAL_AGENT then
 		--如果是中心服务器，直接返回；
 		return 0;
 	end
-	
---	if (KPlayer.GetPlayerCount() >= KPlayer.GetMaxPlayerCount()) then
---		me.Msg("Server hiện tại quá nhiều người, nếu rời mạng khó có thể đăng nhập lại.");
---	end
-	
+
+	--	if (KPlayer.GetPlayerCount() >= KPlayer.GetMaxPlayerCount()) then
+	--		me.Msg("Server hiện tại quá nhiều người, nếu rời mạng khó có thể đăng nhập lại.");
+	--	end
+
 	-- 恢复等级上限错误
 	local nMaxLevel = KPlayer.GetMaxLevel();
 	if (me.nLevel > nMaxLevel) then
 		self:WriteLog(Dbg.LOG_ATTENTION, "PlayerLevel Too High!!", me.szName, me.nLevel, nMaxLevel);
-		me.ResetFightSkillPoint();	-- 重置技能点
-		me.SetTask(2,1,1);			-- 停止自动加点
-		me.UnAssignPotential();		-- 重置潜能点
-		me.AddLevel(nMaxLevel - me.nLevel);	-- 传入负数，降级
-		me.AddExp(me.GetUpLevelExp());		-- 经验变成100%
-		me.SetTask(2027,9, 2);		--给予2次宋金家族积分双倍奖励;
+		me.ResetFightSkillPoint();                               -- 重置技能点
+		me.SetTask(2, 1, 1);                                     -- 停止自动加点
+		me.UnAssignPotential();                                  -- 重置潜能点
+		me.AddLevel(nMaxLevel - me.nLevel);                      -- 传入负数，降级
+		me.AddExp(me.GetUpLevelExp());                           -- 经验变成100%
+		me.SetTask(2027, 9, 2);                                  --给予2次宋金家族积分双倍奖励;
 		local nAddFlag = me.Earn(100000, Player.emKEARN_ERROR_REAWARD) --补偿10W银两
 		if nAddFlag == 1 then
 			self:WriteLog(Dbg.LOG_ATTENTION, "Player Earn 100000 Menoy Success!!", me.szName, me.nLevel, nMaxLevel);
 		else
 			self:WriteLog(Dbg.LOG_ATTENTION, "Player Earn 100000 Menoy Fail!!", me.szName, me.nLevel, nMaxLevel);
-		end	
-		me.AddBindMoney(100000, self.emKBINDMONEY_ADD_ERROR_REAWARD) 		--补偿10W绑定银两
-		Dialog:Say("Đẳng cấp đã hạ thấp, nhận được <color=yellow>100000 bạc<color> và <color=yellow>100000 bạc khóa<color> bồi thường. Mời đăng nhập lại.", {"Mất kết nối", me.KickOut});
+		end
+		me.AddBindMoney(100000, self.emKBINDMONEY_ADD_ERROR_REAWARD) --补偿10W绑定银两
+		Dialog:Say(
+			"Đẳng cấp đã hạ thấp, nhận được <color=yellow>100000 bạc<color> và <color=yellow>100000 bạc khóa<color> bồi thường. Mời đăng nhập lại.",
+			{ "Mất kết nối", me.KickOut });
 	end
-		
+
 	Task:_OnLogin(); -- 临时的
 
 	-- 载入玩家任务
 	Task:OnLogin();
 
 	-- 注册随机任务的事件
---	RandomTask:Register();
+	--	RandomTask:Register();
 
 	-- 新人直接得到新手任务任务
 	Task:OnAskBeginnerTask();
@@ -413,41 +422,41 @@ function Player:_OnLogin(bExchangeServerComing)
 	PlayerSchemeEvent:OnDailyEvent();
 
 	if (self:IsFresh() == 1) then
-		me.CallClientScript({"me.AddSkillState", 390, 1, 1, 400000000, 1});
+		me.CallClientScript({ "me.AddSkillState", 390, 1, 1, 400000000, 1 });
 	end
-	
+
 	-- TODO:liuchang 临时添加
 	if (me.GetSkillLevel(10) > 20) then
 		me.AddFightSkill(10, 20);
 	end
-	
---[[	-- 上线重置技能点
+
+	--[[	-- 上线重置技能点
 	if (me.GetTask(2029,2) == 0) then
 		me.ResetFightSkillPoint();
 		me.SetTask(2,1,1);
 		me.UnAssignPotential();
-		KPlayer.SendMail(me.szName, "战斗技能调整", 
+		KPlayer.SendMail(me.szName, "战斗技能调整",
 			"    您好，由于新版本战斗技能做出了较大调整，所以在您登陆时重置了潜能点和技能点。请注意及时重新分配，以正常进行游戏。同时开放洗髓岛无限制免费洗点。");
 		me.SetTask(2029, 2, 1, 1);
 	end
---]]	
-	SpecialEvent.RecommendServer:OnLoginRegister();	--推荐服务器自动登记。
+--]]
+	SpecialEvent.RecommendServer:OnLoginRegister(); --推荐服务器自动登记。
 	self:UpdateFudaiLimit();
-	
+
 	--如果是新手,pk模式为0;
 	if me.IsFreshPlayer() == 1 then
 		me.nPkModel = 0;
 	end
-	Wlls:OnLogin(); --武林联赛,上线,奖励自动补给.
+	Wlls:OnLogin();  --武林联赛,上线,奖励自动补给.
 	EPlatForm:OnLogin();
-	Mission:LogOutRV();	--防止宕机状态解锁功能；
-	
+	Mission:LogOutRV(); --防止宕机状态解锁功能；
+
 	if (bExchangeServerComing ~= 1) then
 		self:ProcessAllReputeTitle(me);
 	end
 
 	self.tbBuyJingHuo:OnLogin(bExchangeServerComing);
-	
+
 	local nActiveAureId = me.GetTask(2062, 4);
 	Dialog:SetActiveAuraId(me, nActiveAureId);
 	SpecialEvent.ActiveGift:AddCounts(me, 1);
@@ -457,7 +466,7 @@ end
 function Player:DataSync_GS2(szName, nCurrentMoney)
 	if szName and nCurrentMoney then
 		local nPlayerId = KGCPlayer.GetPlayerIdByName(szName);
-		KGCPlayer.OptSetTask(nPlayerId, KGCPlayer.TSK_CURRENCY_MONEY, nCurrentMoney);		
+		KGCPlayer.OptSetTask(nPlayerId, KGCPlayer.TSK_CURRENCY_MONEY, nCurrentMoney);
 	end
 end
 
@@ -469,17 +478,17 @@ function Player:OnLogin_AccountSafe(bExchangeServer)
 
 	if (0 == IVER_g_nLockAccount) then
 		return;
-	end		
+	end
 
 	Timer:Register(1, Player.AccountSafe, Player);
 end
 
-function Player:AccountSafe()	
+function Player:AccountSafe()
 	local nCurHonor = PlayerHonor:GetPlayerHonorByName(me.szName, PlayerHonor.HONOR_CLASS_MONEY, 0);
-	if (me.nLevel >= self.nAccountSafeLevel and 
-	    me.GetPasspodMode() == self.nAccountSafeMode and 
-		nCurHonor >= self.nAccountSafeHonour) then	
-			me.CallClientScript({"UiManager:OpenWindow", "UI_ACCOUNTSAFE"});
+	if (me.nLevel >= self.nAccountSafeLevel and
+			me.GetPasspodMode() == self.nAccountSafeMode and
+			nCurHonor >= self.nAccountSafeHonour) then
+		me.CallClientScript({ "UiManager:OpenWindow", "UI_ACCOUNTSAFE" });
 	end
 	return 0;
 end
@@ -488,32 +497,32 @@ function Player:OnLogin_OnSetComeBackOldPlayer(bExchangeServerComing)
 	if (1 == bExchangeServerComing) then
 		return;
 	end
-	local nFlag	= self:GetComeBackFlag();
+	local nFlag = self:GetComeBackFlag();
 	if (nFlag > 0) then
 		return;
 	end
-	
+
 	local nLevel = me.nLevel;
 	if (nLevel < 79 or nLevel < me.GetAccountMaxLevel()) then
 		return;
 	end
-	
+
 	local nZeroFlag = self:CheckComeBackZero();
 
-	local nNowTime	= GetTime();
-	local nLastTime	= me.nLastSaveTime;
-	
+	local nNowTime = GetTime();
+	local nLastTime = me.nLastSaveTime;
+
 	if (nLastTime <= 0) then
 		return;
 	end
 
 	local tbTime = {
-		year=2009,
-		month=2,
-		day=20,
-		hour=0,
-		min=0,
-		sec=0,
+		year = 2009,
+		month = 2,
+		day = 20,
+		hour = 0,
+		min = 0,
+		sec = 0,
 	};
 	local nLimitTime = os.time(tbTime);
 	if (self:SetPlayerComeBackFlag(nZeroFlag, nNowTime, nLastTime, nLimitTime) == 1) then
@@ -560,43 +569,43 @@ function Player:SetComeBackFlag(nValue)
 	me.SetTask(self.COMEBACK_TSKGROUPID, self.COMEBACK_TSKID_FLAG, nValue);
 end
 
--- 金币 > 0, 钱庄金币 > 0, 月充值 > 0, 
+-- 金币 > 0, 钱庄金币 > 0, 月充值 > 0,
 function Player:CheckComeBackZero()
 	if (me.nCoin > 0) then
 		return 1;
 	end
-	
+
 	if (me.nBankCoin > 0) then
 		return 1;
 	end
-	
+
 	if (me.GetExtMonthPay() > 0) then
 		return 1;
 	end
-	
-	if (me.GetReputeValue(1,2) > 0) then
+
+	if (me.GetReputeValue(1, 2) > 0) then
 		return 1;
 	end
-	
+
 	--这个需要加上转修门派的声望
 	if (me.nFaction > 0 and me.GetReputeValue(3, me.nFaction) > 0) then
 		return 1;
 	end
-	
-	if (me.GetReputeValue(4,1) > 0) then
-		return 1;
-	end
-	
-	if (me.GetReputeValue(5,2) > 0) then
+
+	if (me.GetReputeValue(4, 1) > 0) then
 		return 1;
 	end
 
-	if (me.GetReputeValue(5,3) > 0) then
+	if (me.GetReputeValue(5, 2) > 0) then
 		return 1;
 	end
-	
-	for i=1, 5 do
-		if (me.GetReputeValue(6,i) > 0) then
+
+	if (me.GetReputeValue(5, 3) > 0) then
+		return 1;
+	end
+
+	for i = 1, 5 do
+		if (me.GetReputeValue(6, i) > 0) then
 			return 1;
 		end
 	end
@@ -607,31 +616,31 @@ function Player:OnLogin_StatComeBack(bExchangeServerComing)
 	if (1 == bExchangeServerComing) then
 		return;
 	end
-	local nNowTime	= GetTime();
-	local nLastTime	= me.nLastSaveTime;
+	local nNowTime = GetTime();
+	local nLastTime = me.nLastSaveTime;
 	if ((nNowTime - nLastTime) < 30 * 3600 * 24) then -- 30天回来
 		return;
 	end
 	if (nLastTime <= 0) then
 		return;
 	end
-	local nMaxLevel		= me.GetAccountMaxLevel();
-	local tbInfo		= GetPlayerInfoForLadderGC(me.szName);
-	local szLastTime	= os.date("%Y-%m-%d %H:%M:%S", nLastTime);
-	local szNowTime		= os.date("%Y-%m-%d %H:%M:%S", nNowTime);
-	local tbReputeId	= {
-			[1] = {1, 2, 3},
-			[2] = {1, 2, 3},
-			[3] = {me.nFaction},
-			[4] = {1},
-			[5] = {1, 2, 3, 4},
-			[6] = {1, 2, 3, 4, 5},
-			[7] = {1},
-		};
-	-- 区服名 账号 角色名 当前角色等级 当前账号下最大角色等级 上次登录时间 本次登录时间 时间差 累计在线时间 银两 绑定银两 金币 绑定金币 
-	-- 钱庄金币 门派 路线 活力 精力 江湖威望 
+	local nMaxLevel  = me.GetAccountMaxLevel();
+	local tbInfo     = GetPlayerInfoForLadderGC(me.szName);
+	local szLastTime = os.date("%Y-%m-%d %H:%M:%S", nLastTime);
+	local szNowTime  = os.date("%Y-%m-%d %H:%M:%S", nNowTime);
+	local tbReputeId = {
+		[1] = { 1, 2, 3 },
+		[2] = { 1, 2, 3 },
+		[3] = { me.nFaction },
+		[4] = { 1 },
+		[5] = { 1, 2, 3, 4 },
+		[6] = { 1, 2, 3, 4, 5 },
+		[7] = { 1 },
+	};
+	-- 区服名 账号 角色名 当前角色等级 当前账号下最大角色等级 上次登录时间 本次登录时间 时间差 累计在线时间 银两 绑定银两 金币 绑定金币
+	-- 钱庄金币 门派 路线 活力 精力 江湖威望
 	-- 义军 等级 军营 等级 机关学 等级 扬州 等级 凤翔 等级 襄阳 等级 当前门派 等级 家族 等级 白虎堂 等级 盛夏活动 等级 逍遥谷 等级 祈福 等级 挑战武林高手金 等级 挑战武林高手木 等级 挑战武林高手水 等级 挑战武林高手火 等级 挑战武林高手土 等级 武林联赛 等级
-	local tb	= {
+	local tb         = {
 		GetGatewayName(),
 		tbInfo.szAccount,
 		me.szName,
@@ -647,7 +656,7 @@ function Player:OnLogin_StatComeBack(bExchangeServerComing)
 		me.nCoin,
 		me.nBindCoin,
 		me.nBankCoin,
-		Player:GetFactionRouteName(me.nFaction), 
+		Player:GetFactionRouteName(me.nFaction),
 		Player:GetFactionRouteName(me.nFaction, me.nRouteId),
 		me.dwCurGTP,
 		me.dwCurMKP,
@@ -656,19 +665,19 @@ function Player:OnLogin_StatComeBack(bExchangeServerComing)
 	-- 声望
 	for nCamp, tbCamp in ipairs(tbReputeId) do
 		for nClass, tbClass in ipairs(tbCamp) do
-			local nRepute	= 0;
-			local nLevel	= 0;
+			local nRepute = 0;
+			local nLevel = 0;
 			if (nClass > 0) then
 				nRepute = me.GetReputeValue(nCamp, nClass);
-				nLevel	= me.GetReputeLevel(nCamp, nClass);
+				nLevel = me.GetReputeLevel(nCamp, nClass);
 			end
 			tb[#tb + 1] = nRepute;
 			tb[#tb + 1] = nLevel;
 		end
 	end
-	local szContext		= table.concat(tb, "\t");
+	local szContext = table.concat(tb, "\t");
 	-- tbInfo.szAccount .. "\t";
-	GCExcute({"KFile.AppendFile", "\\..\\stat_playercomeback_" .. GetGatewayName() .. ".txt", szContext .. "\n"});
+	GCExcute({ "KFile.AppendFile", "\\..\\stat_playercomeback_" .. GetGatewayName() .. ".txt", szContext .. "\n" });
 end
 
 function Player:ClearCibeixinjingUsedAmount()
@@ -685,18 +694,20 @@ end
 function Player:_OnLogout(szReason)
 	if (MODULE_GAMESERVER) then
 		-- 日志
-		if (szReason ~= "SwitchServer") then 
-			local szMsg = string.format("Người chơi rời mạng (Cấp: %d, %s: %d, hiện kim và tồn: %d, %s khóa: %d, Bạc khóa: %d,Đồng trong Tiền Trang: %d)", 
-				me.nLevel, IVER_g_szCoinName, me.nCoin, me.nCashMoney + me.nSaveMoney, IVER_g_szCoinName, me.nBindCoin, me.GetBindMoney(),me.nPrestige);
+		if (szReason ~= "SwitchServer") then
+			local szMsg = string.format(
+				"Người chơi rời mạng (Cấp: %d, %s: %d, hiện kim và tồn: %d, %s khóa: %d, Bạc khóa: %d,Đồng trong Tiền Trang: %d)",
+				me.nLevel, IVER_g_szCoinName, me.nCoin, me.nCashMoney + me.nSaveMoney, IVER_g_szCoinName, me.nBindCoin,
+				me.GetBindMoney(), me.nPrestige);
 			me.PlayerLog(Log.emKPLAYERLOG_TYPE_LOGOUT, szMsg);
-			
+
 			--玩家下线的时候把玩家的江湖威望存放到任务变量中
-			me.SetTask(0, 2389, me.nPrestige);	--0, 2389是江湖威望的任务变量
+			me.SetTask(0, 2389, me.nPrestige); --0, 2389是江湖威望的任务变量
 		end
 	end
 
 	-- 清除PlayerTimer
-	local tbPlayerTimer	= me.GetTempTable("Player").tbTimer;
+	local tbPlayerTimer = me.GetTempTable("Player").tbTimer;
 	if (tbPlayerTimer) then
 		for nRegisterId, tbEvent in pairs(tbPlayerTimer) do
 			-- 通知调试模块，关闭PlayerTimer
@@ -707,7 +718,6 @@ function Player:_OnLogout(szReason)
 	end
 end
 
-
 -------------------------------------------------------------------------
 -- 通用升级事件
 function Player:_OnLevelUp(nLevel)
@@ -716,32 +726,32 @@ function Player:_OnLevelUp(nLevel)
 
 	if (MODULE_GAMESERVER) then
 		if (self:IsFresh() ~= 1) then
-			me.CallClientScript({"me.RemoveSkillState", 390});
+			me.CallClientScript({ "me.RemoveSkillState", 390 });
 			if (me.nLevel == 30) then
 				me.Msg("Bạn có thể đổi hình thức chiến đấu mới!");
 			end
 		end
-		
-		
+
+
 		----判断是否有新的世界任务可接
-		local tbTaskListInfo =  Task:GetBranchTaskTable(me);
+		local tbTaskListInfo = Task:GetBranchTaskTable(me);
 		if (tbTaskListInfo and #tbTaskListInfo > 0) then
-			
-	   	for _,tbInfo in ipairs(tbTaskListInfo) do
-		  	if (me.nLevel == tbInfo[1]) then
-		  			me.CallClientScript({"Ui:ServerCall", "UI_TASKTIPS", "Begin", "Đã có nhiệm vụ Thế Giới mới, Hãy nhấn <color=yellow>F4<color> trên <color=yellow>bàn phím<color>！"});			  
-	 		      break;
-	 		  end		  
-		  end
+			for _, tbInfo in ipairs(tbTaskListInfo) do
+				if (me.nLevel == tbInfo[1]) then
+					me.CallClientScript({ "Ui:ServerCall", "UI_TASKTIPS", "Begin",
+						"Đã có nhiệm vụ Thế Giới mới, Hãy nhấn <color=yellow>F4<color> trên <color=yellow>bàn phím<color>！" });
+					break;
+				end
+			end
 		end
 
-		
+
 		--达到一定等级，自动设置师徒选项
 		-- 20级了可以拜师了，
 		if (me.nLevel == 20) then
-			me.CallClientScript({"me.SetTrainingOption", 1, 1});
+			me.CallClientScript({ "me.SetTrainingOption", 1, 1 });
 		elseif (me.nLevel == 49) then
-			me.CallClientScript({"me.SetTrainingOption", 1, 0});
+			me.CallClientScript({ "me.SetTrainingOption", 1, 0 });
 		end
 	end
 end
@@ -750,7 +760,6 @@ function Player:IsFresh()
 	return me.IsFreshPlayer();
 end
 
-
 -------------------------------------------------------------------------
 -- 通用死亡事件
 function Player:_OnDeath(pKiller)
@@ -758,19 +767,19 @@ function Player:_OnDeath(pKiller)
 	if (not pKiller) then
 		return;
 	end
-		
-		
+
+
 	if (pKiller.nKind == 1) then
-		local szMsg = "Bạn bị <color=yellow>"..pKiller.szName.."<color> đánh trọng thương!";
+		local szMsg = "Bạn bị <color=yellow>" .. pKiller.szName .. "<color> đánh trọng thương!";
 		Dialog:SendInfoBoardMsg(me, szMsg);
 		me.Msg(szMsg);
-		Player:CheckDoPet(me);	-- Kiểm tra trang bị đồng hành
+		Player:CheckDoPet(me); -- Kiểm tra trang bị đồng hành
 		local pPlayer = pKiller.GetPlayer();
 		if (pPlayer) then
-			local szMsg = "<color=yellow>"..me.szName.."<color> bị bạn đánh trọng thương!";
+			local szMsg = "<color=yellow>" .. me.szName .. "<color> bị bạn đánh trọng thương!";
 			Dialog:SendInfoBoardMsg(pPlayer, szMsg);
 			pPlayer.Msg(szMsg);
-			Player:CheckDoPet(pPlayer);	-- Kiểm tra trang bị đồng hành
+			Player:CheckDoPet(pPlayer); -- Kiểm tra trang bị đồng hành
 		end
 	end
 end
@@ -780,65 +789,26 @@ function Player:_OnKillNpc()
 	-- 如果是精英怪，首领怪，判断是否要给玩家的同伴添加经验
 	if him.GetNpcType() ~= 0 then
 		Partner:OnKillBoss(me, him);
+	else
+		Player:RandomDropItem(him);
 	end
-
-	Task:OnKillNpc(me,him);
-	Player:CheckDoPet(me);	-- Kiểm tra trang bị đồng hành
-	--Player:RandomHoaTet(him);
+	Task:OnKillNpc(me, him);
+	Player:CheckDoPet(me);
 	if me.nMapId == 130 or me.nMapId == 131 or me.nMapId == 132 or me.nMapId == 133 or me.nMapId == 134 or me.nMapId == 135 or me.nMapId == 136 or me.nMapId == 137 then
-		Player:RandomDong(him)
 		Player:RandomTuiEvent(him)
 	end
-	--local linhhoncu = me.GetTask(2123,1);
-	--local linhhonmoi = linhhoncu+10;
-	--me.SetTask(2123,1,linhhonmoi);
-	--local solinhhon = me.GetTask(2123,1);
-	--me.Msg(string.format("Linh hồn kẻ này đã bị thu thập.<color=green> Số linh hồn thu thập được là : <color><color=gold> %d linh hồn <color>",solinhhon));
-	-- ham random phao hoa
-	
-	local i = 0;
-	local nAdd = 0;
-	local nRand = 0;
-	local nIndex = 0;
-	
-	-- random
-	nRand = MathRandom(1, 10000);
-	
-	-- fill 3 rate	
-	local tbRate = {9500, 500};
-	local tbAward = {0,1};
-	
-	-- get index
-	for i = 1, 2 do
-		nAdd = nAdd + tbRate[i];
-		if nAdd >= nRand then
-			nIndex = i;
-			break;
-		end
-	end
-	
-	if nIndex == 2 then
-	--	local pItem = me.AddItem(18,1, 279,1);
-		--local pItem = me.AddItem(18,1, 1355,1);
-	end;
-		
-
 end
-
-
-
-
 
 function Player:RandomTuiEvent(him)
 	local nMapId = me.GetWorldPos();
-	if (nMapId == 1536) or (nMapId == 1537) or (nMapId == 1538) or (nMapId == 1539) then	--Tần lăng 1-2-3-4
+	if (nMapId == 1536) or (nMapId == 1537) or (nMapId == 1538) or (nMapId == 1539) then --Tần lăng 1-2-3-4
 		local i = 0;
 		local nAdd = 0;
 		local nRand = 0;
 		local nIndex = 0;
 		nRand = MathRandom(1, 10000);
-		local tbRate = {70,50,30,10,9840};
-		local tbAward = {1,2,3,4};
+		local tbRate = { 70, 50, 30, 10, 9840 };
+		local tbAward = { 1, 2, 3, 4 };
 		for i = 1, 5 do
 			nAdd = nAdd + tbRate[i];
 			if nAdd >= nRand then
@@ -847,47 +817,31 @@ function Player:RandomTuiEvent(him)
 			end
 		end
 		if nIndex <= 4 then
-			me.AddItem(18,1,1340,tbAward[nIndex]);
+			me.AddItem(18, 1, 1340, tbAward[nIndex]);
 			me.CastSkill(1566, 1, -1, me.GetNpc().nIndex);
 		end;
 	end;
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function Player:RandomHoaTet(him)
 	if him.GetNpcType() ~= 0 then
 		Partner:OnKillBoss(me, him);
 	end
 
-	Task:OnKillNpc(me,him);
+	Task:OnKillNpc(me, him);
 
 	local i = 0;
 	local nAdd = 0;
 	local nRand = 0;
 	local nIndex = 0;
-	
+
 	-- random
 	nRand = MathRandom(1, 10000);
-	
+
 	-- fill 3 rate	
-	local tbRate = {9700,150,100, 50};
-	local tbAward = {7,1,2,3};
-	
+	local tbRate = { 9700, 150, 100, 50 };
+	local tbAward = { 7, 1, 2, 3 };
+
 	-- get index
 	for i = 1, 4 do
 		nAdd = nAdd + tbRate[i];
@@ -896,33 +850,73 @@ function Player:RandomHoaTet(him)
 			break;
 		end
 	end
-	
+
 	if nIndex > 1 and him.nLevel > 90 then
-		local pItem = me.AddItem(18,1, 1374,tbAward[nIndex]);
+		local pItem = me.AddItem(18, 1, 1374, tbAward[nIndex]);
 	end;
-		
 end
 
-function Player:RandomDong(him)
+function Player:RandomDropItem(him)
+	if Item.DROP_DETAIL_TYPE_SETTING == -1 then
+		return
+	end
+	local nItemLevel = math.floor(me.nLevel / 10);
+	if nItemLevel < 1 then
+		nItemLevel = 1;
+	end
+	local nSeries = 2;
+	local tbParticularMap = {
+		[Item.DROP_ITEM_MELEE_DETAIL_TYPE]    = Item.DROP_ITEM_MELEE_PARTICULAR_TYPE,
+		[Item.DROP_ITEM_RANGE_DETAIL_TYPE]    = Item.DROP_ITEM_RANGE_PARTICULAR_TYPE,
+		[Item.DROP_ITEM_ARMOR_DETAIL_TYPE]    = Item.DROP_ITEM_ARMOR_PARTICULAR_TYPE,
+		[Item.DROP_ITEM_RING_DETAIL_TYPE]     = Item.DROP_ITEM_RING_PARTICULAR_TYPE,
+		[Item.DROP_ITEM_NECKLACE_DETAIL_TYPE] = Item.DROP_ITEM_NECKLACE_PARTICULAR_TYPE,
+		[Item.DROP_ITEM_AMULET_DETAIL_TYPE]   = Item.DROP_ITEM_AMULET_PARTICULAR_TYPE,
+		[Item.DROP_ITEM_BOOTS_DETAIL_TYPE]    = Item.DROP_ITEM_BOOTS_PARTICULAR_TYPE,
+		[Item.DROP_ITEM_BELT_DETAIL_TYPE]     = Item.DROP_ITEM_BELT_PARTICULAR_TYPE,
+		[Item.DROP_ITEM_HELM_DETAIL_TYPE]     = Item.DROP_ITEM_HELM_PARTICULAR_TYPE,
+		[Item.DROP_ITEM_CUFF_DETAIL_TYPE]     = Item.DROP_ITEM_CUFF_PARTICULAR_TYPE,
+	}
+
+	local nDetailType
+	if Item.DROP_DETAIL_TYPE_SETTING and tbParticularMap[Item.DROP_DETAIL_TYPE_SETTING] then
+		nDetailType = Item.DROP_DETAIL_TYPE_SETTING
+	else
+		local tbDetailTypes = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }
+		local nRandIndex = MathRandom(1, #tbDetailTypes)
+		nDetailType = tbDetailTypes[nRandIndex]
+	end
+	local tbParticularList = tbParticularMap[nDetailType]
+	if not tbParticularList then
+		return
+	end
+
+	local nParticularIndex = MathRandom(1, #tbParticularList)
+	local nParticular = tbParticularList[nParticularIndex]
+
+	local indexRate = MathRandom(1, 10)
+	if indexRate > 9 then
+		me.AddItem(1, nDetailType, nParticular, nItemLevel, nSeries, nil, 100);
+		me.Earn(10 * nItemLevel, 0);
+		me.AddJbCoin(nItemLevel);
+	end
+end
+
+function Player:RandomDropCoin(him)
 	if him.GetNpcType() ~= 0 then
 		Partner:OnKillBoss(me, him);
 	end
 
-	Task:OnKillNpc(me,him);
+	Task:OnKillNpc(me, him);
 
 	local i = 0;
 	local nAdd = 0;
 	local nRand = 0;
 	local nIndex = 0;
-	
-	-- random
+
 	nRand = MathRandom(1, 10000);
-	
-	-- fill 3 rate	
-	local tbRate = {9500,500};
-	local tbAward = {1,2};
-	
-	-- get index
+	local tbRate = { 9500, 500 };
+	local tbAward = { 1, 2 };
 	for i = 1, 2 do
 		nAdd = nAdd + tbRate[i];
 		if nAdd >= nRand then
@@ -930,66 +924,73 @@ function Player:RandomDong(him)
 			break;
 		end
 	end
-	
 	if nIndex > 1 then
-		local pItem = me.AddJbCoin(5); -- Đồng thường
+		local pItem = me.AddJbCoin(5);
 	end
-		
 end
 
---Player.DataNameItemPet = 
+--Player.DataNameItemPet =
 --{
-	--[1] = {"Bích Huyết Chi Nhẫn","Kim Lân Chi Nhẫn",},
-	--[2] = {"Bích Huyết Giới Chỉ","Kim Lân Giới Chỉ",},
-	--[3] = {"Bích Huyết Hộ Uyển","Kim Lân Hộ Uyển",},
-	--[4] = {"Bích Huyết Chiến Y","Kim Lân Chiến Y",},
-	--[5] = {"Bích Huyết Hộ Thân Phù","Kim Lân Hộ Thân Phù",},
+--[1] = {"Bích Huyết Chi Nhẫn","Kim Lân Chi Nhẫn",},
+--[2] = {"Bích Huyết Giới Chỉ","Kim Lân Giới Chỉ",},
+--[3] = {"Bích Huyết Hộ Uyển","Kim Lân Hộ Uyển",},
+--[4] = {"Bích Huyết Chiến Y","Kim Lân Chiến Y",},
+--[5] = {"Bích Huyết Hộ Thân Phù","Kim Lân Hộ Thân Phù",},
 --};
 
 function Player:CheckDoPet(nPlayer)
 	--DoScript("\\script\\player\\player.lua");
-    local pItem1 = me.GetItem(Item.ROOM_PARTNEREQUIP,Item.PARTNEREQUIP_WEAPON, 0);
-	local pItem2 = me.GetItem(Item.ROOM_PARTNEREQUIP,Item.PARTNEREQUIP_BODY, 0);
-	local pItem3 = me.GetItem(Item.ROOM_PARTNEREQUIP,Item.PARTNEREQUIP_RING, 0);
-	local pItem4 = me.GetItem(Item.ROOM_PARTNEREQUIP,Item.PARTNEREQUIP_CUFF, 0);
-	local pItem5 = me.GetItem(Item.ROOM_PARTNEREQUIP,Item.PARTNEREQUIP_AMULET, 0);
+	local pItem1 = me.GetItem(Item.ROOM_PARTNEREQUIP, Item.PARTNEREQUIP_WEAPON, 0);
+	local pItem2 = me.GetItem(Item.ROOM_PARTNEREQUIP, Item.PARTNEREQUIP_BODY, 0);
+	local pItem3 = me.GetItem(Item.ROOM_PARTNEREQUIP, Item.PARTNEREQUIP_RING, 0);
+	local pItem4 = me.GetItem(Item.ROOM_PARTNEREQUIP, Item.PARTNEREQUIP_CUFF, 0);
+	local pItem5 = me.GetItem(Item.ROOM_PARTNEREQUIP, Item.PARTNEREQUIP_AMULET, 0);
 	if pItem1 then
-		if pItem1.szName~="Bích Huyết Chi Nhẫn" and pItem1.szName~="Kim Lân Chi Nhẫn" and pItem1.szName~="Đơn Tâm Chi Nhẫn" and pItem1.szName~="Hoàng Kim Chi Nhẫn" then
-			me.Msg(string.format("Item <color=yellow>%s<color> không phải là <color=yellow>Vũ Khí Đồng Hành<color>\nAdmin Thân Mời Bạn Lên Đào Hoa Nguyên chơi với khỉ !", pItem1.szName));
+		if pItem1.szName ~= "Bích Huyết Chi Nhẫn" and pItem1.szName ~= "Kim Lân Chi Nhẫn" and pItem1.szName ~= "Đơn Tâm Chi Nhẫn" and pItem1.szName ~= "Hoàng Kim Chi Nhẫn" then
+			me.Msg(string.format(
+				"Item <color=yellow>%s<color> không phải là <color=yellow>Vũ Khí Đồng Hành<color>\nAdmin Thân Mời Bạn Lên Đào Hoa Nguyên chơi với khỉ !",
+				pItem1.szName));
 			Player:Arrest(me.szName)
 		end;
 	end
 	if pItem2 then
-		if pItem2.szName~="Bích Huyết Chiến Y" and pItem2.szName~="Kim Lân Chiến Y" and pItem2.szName~="Đơn Tâm Chiến Y" and pItem2.szName~="Hoàng Kim Chiến Y" then
-			me.Msg(string.format("Item <color=yellow>%s<color> không phải là <color=yellow>Áo Đồng Hành<color>\nAdmin Thân Mời Bạn Lên Đào Hoa Nguyên chơi với khỉ !", pItem2.szName));
+		if pItem2.szName ~= "Bích Huyết Chiến Y" and pItem2.szName ~= "Kim Lân Chiến Y" and pItem2.szName ~= "Đơn Tâm Chiến Y" and pItem2.szName ~= "Hoàng Kim Chiến Y" then
+			me.Msg(string.format(
+				"Item <color=yellow>%s<color> không phải là <color=yellow>Áo Đồng Hành<color>\nAdmin Thân Mời Bạn Lên Đào Hoa Nguyên chơi với khỉ !",
+				pItem2.szName));
 			Player:Arrest(me.szName)
 		end;
 	end
 	if pItem3 then
-		if pItem3.szName~="Bích Huyết Chi Giới" and pItem3.szName~="Kim Lân Chi Giới" and pItem3.szName~="Đan Tâm Chi Giới" and pItem3.szName~="Hoàng Kim Chi Giới" then
-			me.Msg(string.format("Item <color=yellow>%s<color> không phải là <color=yellow>Nhẫn Đồng Hành<color>\nAdmin Thân Mời Bạn Lên Đào Hoa Nguyên chơi với khỉ !", pItem3.szName));
+		if pItem3.szName ~= "Bích Huyết Chi Giới" and pItem3.szName ~= "Kim Lân Chi Giới" and pItem3.szName ~= "Đan Tâm Chi Giới" and pItem3.szName ~= "Hoàng Kim Chi Giới" then
+			me.Msg(string.format(
+				"Item <color=yellow>%s<color> không phải là <color=yellow>Nhẫn Đồng Hành<color>\nAdmin Thân Mời Bạn Lên Đào Hoa Nguyên chơi với khỉ !",
+				pItem3.szName));
 			Player:Arrest(me.szName)
 		end;
 	end
 	if pItem4 then
-		if pItem4.szName~="Bích Huyết Hộ Uyển" and pItem4.szName~="Kim Lân Hộ Uyển" and pItem4.szName~="Đan Tâm Hộ Uyển" and pItem4.szName~="Hoàng Kim Hộ Uyển" then
-			me.Msg(string.format("Item <color=yellow>%s<color> không phải là <color=yellow>Hộ Uyển Đồng Hành<color>\nAdmin Thân Mời Bạn Lên Đào Hoa Nguyên chơi với khỉ !", pItem4.szName));
+		if pItem4.szName ~= "Bích Huyết Hộ Uyển" and pItem4.szName ~= "Kim Lân Hộ Uyển" and pItem4.szName ~= "Đan Tâm Hộ Uyển" and pItem4.szName ~= "Hoàng Kim Hộ Uyển" then
+			me.Msg(string.format(
+				"Item <color=yellow>%s<color> không phải là <color=yellow>Hộ Uyển Đồng Hành<color>\nAdmin Thân Mời Bạn Lên Đào Hoa Nguyên chơi với khỉ !",
+				pItem4.szName));
 			Player:Arrest(me.szName)
 		end;
 	end
 	if pItem5 then
-		if pItem5.szName~="Bích Huyết Hộ Thân Phù" and pItem5.szName~="Kim Lân Hộ Thân Phù" and pItem5.szName~="Đơn Tâm Hộ Thân Phù" and pItem5.szName~="Hoàng Kim Hộ Thân Phù" then
-			me.Msg(string.format("Item <color=yellow>%s<color> không phải là <color=yellow>Hộ Thân Phù Đồng Hành<color>\nAdmin Thân Mời Bạn Lên Đào Hoa Nguyên chơi với khỉ !", pItem5.szName));
+		if pItem5.szName ~= "Bích Huyết Hộ Thân Phù" and pItem5.szName ~= "Kim Lân Hộ Thân Phù" and pItem5.szName ~= "Đơn Tâm Hộ Thân Phù" and pItem5.szName ~= "Hoàng Kim Hộ Thân Phù" then
+			me.Msg(string.format(
+				"Item <color=yellow>%s<color> không phải là <color=yellow>Hộ Thân Phù Đồng Hành<color>\nAdmin Thân Mời Bạn Lên Đào Hoa Nguyên chơi với khỉ !",
+				pItem5.szName));
 			Player:Arrest(me.szName)
 		end;
 	end
 end
 
-
 function Player:_OnCampChange()
 	if (MODULE_GAMESERVER) then
 		if (self:IsFresh() ~= 1) then
-			me.CallClientScript({"me.RemoveSkillState", 390});
+			me.CallClientScript({ "me.RemoveSkillState", 390 });
 		end
 	end
 end
@@ -1001,7 +1002,7 @@ end
 
 -- 获得玩家等级效率
 function Player:GetLevelEffect(nLevel)
-	local nLevel10 	= math.floor(nLevel / 10);
+	local nLevel10 = math.floor(nLevel / 10);
 	return self.tbLevelEffect[nLevel10] or 0;
 end
 
@@ -1027,18 +1028,18 @@ function Player:AddProtectedState(pPlayer, nTime)
 end
 
 function Player:UpdateFudaiLimit()
-	local tbItem	= Item:GetClass("fudai");
-	local nMaxUse	= tbItem.ITEM_USE_COUNT_MAX.nCommon;
+	local tbItem = Item:GetClass("fudai");
+	local nMaxUse = tbItem.ITEM_USE_COUNT_MAX.nCommon;
 	if (me.GetExtMonthPay() >= tbItem.VIP) then
 		nMaxUse = tbItem.ITEM_USE_COUNT_MAX.nVip;
 	end
-	
+
 	-- *******合服优惠，合服7天后过期*******
 	if GetTime() < KGblTask.SCGetDbTaskInt(DBTASK_COZONE_TIME) + 7 * 24 * 60 * 60 and me.nLevel >= 50 then
 		nMaxUse = nMaxUse + 5;
 	end
 	-- *************************************
-	
+
 	me.SetTask(tbItem.TASK_GROUP_ID, tbItem.TASK_COUNT_LIMIT, nMaxUse);
 end
 
@@ -1049,302 +1050,298 @@ function Player:AddXinDe(nXinDeTimes)
 end
 
 if MODULE_GAMESERVER then
+	function Player:Buy_GS1(nCurrencyType, nCost, nEnergyCost, nBuy, nBuyIndex, nCount)
+		if nCount < 0 then
+			return 0;
+		end
+		if nEnergyCost < 0 then
+			nEnergyCost = 0;
+		end
+		if nCost < 0 then
+			return 0;
+		end
+		if nCurrencyType == 9 then -- 货币类型是帮会建设资金
+			local cTong = KTong.GetTong(me.dwTongId);
+			if not cTong then
+				me.Msg("Chưa vào bang, không được mua!");
+				return 0;
+			end
+			local nTongId = me.dwTongId;
+			local nSelfKinId, nSelfMemberId = me.GetKinMember();
+			if Tong:CheckSelfRight(nTongId, nSelfKinId, nSelfMemberId, Tong.POW_FUN) ~= 1 then
+				me.Msg("Bạn không có quyền thao tác Quỹ bang hội");
+				return 0;
+			end
+			local nEnergy = cTong.GetEnergy();
+			local nEnergyLeft = nEnergy - nEnergyCost * nCount;
+			if nEnergyLeft < 0 then
+				me.Msg("Không đủ sức hoạt động bang hội!");
+				return 0;
+			end
+			if Tong:CanCostedBuildFund(nTongId, nSelfKinId, nSelfMemberId, nCost * nCount) ~= 1 then
+				me.Msg("Mức quỹ không đủ! Mời <color=yellow>Thủ Lĩnh<color> thiết lập hạn sử dụng cao nhất!");
+				return 0;
+			end
+			GCExcute { "Player:Buy_GC", nCurrencyType, nCost, nEnergyCost, me.dwTongId, nSelfKinId, nSelfMemberId, me.nId, nBuy, nBuyIndex, nCount };
+		end
+	end
 
-function Player:Buy_GS1(nCurrencyType, nCost, nEnergyCost, nBuy, nBuyIndex, nCount)
-	if nCount < 0 then
-		return 0;
-	end
-	if nEnergyCost < 0 then
-		nEnergyCost = 0;
-	end
-	if nCost < 0 then
-		return 0;
-	end
-	if nCurrencyType == 9 then -- 货币类型是帮会建设资金
-		local cTong = KTong.GetTong(me.dwTongId);
+	function Player:Buy_GS2(nCurrencyType, dwTongId, nPlayerId, nBuy, nBuyIndex, nCost, nEnergyLeft, nCount)
+		local cTong = KTong.GetTong(dwTongId);
 		if not cTong then
-			me.Msg("Chưa vào bang, không được mua!");
 			return 0;
 		end
-		local nTongId = me.dwTongId;
-		local nSelfKinId, nSelfMemberId = me.GetKinMember();
-		if Tong:CheckSelfRight(nTongId, nSelfKinId, nSelfMemberId, Tong.POW_FUN) ~= 1 then
-			me.Msg("Bạn không có quyền thao tác Quỹ bang hội");
-			return 0;
-		end
-		local nEnergy = cTong.GetEnergy();
-		local nEnergyLeft = nEnergy - nEnergyCost * nCount;
-		if nEnergyLeft < 0 then
-			me.Msg("Không đủ sức hoạt động bang hội!");
-			return 0;
-		end
-		if Tong:CanCostedBuildFund(nTongId, nSelfKinId, nSelfMemberId, nCost * nCount) ~= 1 then
-			me.Msg("Mức quỹ không đủ! Mời <color=yellow>Thủ Lĩnh<color> thiết lập hạn sử dụng cao nhất!");
-			return 0;			
-		end
-		GCExcute{"Player:Buy_GC", nCurrencyType, nCost, nEnergyCost, me.dwTongId, nSelfKinId, nSelfMemberId, me.nId, nBuy, nBuyIndex, nCount};
-	end
-end
+		cTong.SetEnergy(nEnergyLeft);
 
-function Player:Buy_GS2(nCurrencyType, dwTongId, nPlayerId, nBuy, nBuyIndex, nCost, nEnergyLeft, nCount)
-	local cTong = KTong.GetTong(dwTongId);
-	if not cTong then
-		return 0;
-	end
-	cTong.SetEnergy(nEnergyLeft);
-	
-	local pPlayer = KPlayer.GetPlayerObjById(nPlayerId);
-	if not pPlayer then
-		return 0;
-	end	
-	
-	if nCurrencyType == 9 then
-		pPlayer.Buy_Sync(nCurrencyType, nBuy, nBuyIndex, nCost, nCount);
-	end
-end
+		local pPlayer = KPlayer.GetPlayerObjById(nPlayerId);
+		if not pPlayer then
+			return 0;
+		end
 
-function Player:SendMsgToKinOrTong(pPlayer, szMsg, bIsTong)
-	if (not pPlayer) then
-		return;
+		if nCurrencyType == 9 then
+			pPlayer.Buy_Sync(nCurrencyType, nBuy, nBuyIndex, nCost, nCount);
+		end
 	end
-	if (bIsTong == 1) then
-		local nTongId = pPlayer.dwTongId;
-		if (nTongId ~= nil and nTongId > 0)	 then
-			szMsg = "Thành viên bang hội <color=yellow>["..pPlayer.szName .. "]<color>" ..szMsg;
-			pPlayer.SendMsgToKinOrTong(1, szMsg);
+
+	function Player:SendMsgToKinOrTong(pPlayer, szMsg, bIsTong)
+		if (not pPlayer) then
 			return;
 		end
-	end
-	
-	local nKinId = pPlayer.dwKinId;
-	if (nKinId ~= nil and nKinId > 0) then
-		szMsg = "Thành viên gia tộc <color=yellow>"..pPlayer.szName .."<color>".. szMsg;
-		pPlayer.SendMsgToKinOrTong(0, szMsg);
-	end
-end
+		if (bIsTong == 1) then
+			local nTongId = pPlayer.dwTongId;
+			if (nTongId ~= nil and nTongId > 0) then
+				szMsg = "Thành viên bang hội <color=yellow>[" .. pPlayer.szName .. "]<color>" .. szMsg;
+				pPlayer.SendMsgToKinOrTong(1, szMsg);
+				return;
+			end
+		end
 
-function Player:ApplyBuyAndUseJiuZhuan()
-	if (me.IsAccountLock() ~= 0)then
-		me.Msg("Tài khoản đang khóa, không thực hiện thao tác này được!");
-		return;
+		local nKinId = pPlayer.dwKinId;
+		if (nKinId ~= nil and nKinId > 0) then
+			szMsg = "Thành viên gia tộc <color=yellow>" .. pPlayer.szName .. "<color>" .. szMsg;
+			pPlayer.SendMsgToKinOrTong(0, szMsg);
+		end
 	end
-	me.ApplyAutoBuyAndUse(53, 1);
-	Dbg:WriteLog("Player", me.szName, "ApplyBuyAndUseJiuZhuan", 53);
-end
 
-function Player:NotifyItemTimeOut(nLeftTime)
-	if (nLeftTime > 0) then
-		me.CallClientScript({"Player:NotifyItemTimeOutClient", 45});
-	else
-		me.Msg("Mất Huyền Tinh trong Thương Khố hoặc túi vì hết hạn sử dụng.");
+	function Player:ApplyBuyAndUseJiuZhuan()
+		if (me.IsAccountLock() ~= 0) then
+			me.Msg("Tài khoản đang khóa, không thực hiện thao tác này được!");
+			return;
+		end
+		me.ApplyAutoBuyAndUse(53, 1);
+		Dbg:WriteLog("Player", me.szName, "ApplyBuyAndUseJiuZhuan", 53);
 	end
-end
 
--- 抓进桃源天牢。szORpPlayer:玩家名字或对象，nJailTerm:刑期(真实世界秒数,0为无期(默认))
-function Player:Arrest(szORpPlayer, nJailTerm)
-	local pPlayer = nil;	
-	if type(szORpPlayer) == "string" then
-		pPlayer = KPlayer.GetPlayerByName(szORpPlayer);
-	else
-		pPlayer = szORpPlayer;
+	function Player:NotifyItemTimeOut(nLeftTime)
+		if (nLeftTime > 0) then
+			me.CallClientScript({ "Player:NotifyItemTimeOutClient", 45 });
+		else
+			me.Msg("Mất Huyền Tinh trong Thương Khố hoặc túi vì hết hạn sử dụng.");
+		end
 	end
-	if not pPlayer then
-		return;
-	end
-	pPlayer.SetJailTerm(nJailTerm or 0);
-	pPlayer.SetArrestTime(GetTime());
-	pPlayer.KickOut();
-	return 1;
-end
 
--- 从桃源天牢放出来.szORpPlayer:玩家名字或对象
-function Player:SetFree(szORpPlayer)
-	local pPlayer = nil;	
-	local szPlayerName = "";
-	if type(szORpPlayer) == "string" then
-		pPlayer = KPlayer.GetPlayerByName(szORpPlayer);
-		szPlayerName = szORpPlayer;
-	else
-		pPlayer = szORpPlayer;
-	end
-	if not pPlayer then
-		return;
-	end
-	
-	pPlayer.SetJailTerm(0);
-	pPlayer.SetArrestTime(0);
-	pPlayer.ForbitSet(0, 1);
-	
-	local nMapId, nReliveId  = pPlayer.GetRevivePos();
-	local nReliveX, nReliveY = RevID2WXY(nMapId, nReliveId);
-	pPlayer.NewWorld(nMapId, nReliveX / 32, nReliveY / 32); -- 回到存档点
-	
-	-- 顺便清除反外挂系统标志(houxuan)
-	if self.tbAntiBot:IsKilledByAntiBot(pPlayer) == 1 then
-		self.tbAntiBot:SetPlayerInnocent(pPlayer.szName)
-	end	
-	pPlayer.KickOut();
-	return 1;
-end
-
-
-
--- 是否可以离开桃源天牢
-function Player:CanLeaveTaoyuan(pPlayer)
-	if pPlayer.GetArrestTime() == 0 then -- 没有被抓进桃源天牢
+	-- 抓进桃源天牢。szORpPlayer:玩家名字或对象，nJailTerm:刑期(真实世界秒数,0为无期(默认))
+	function Player:Arrest(szORpPlayer, nJailTerm)
+		local pPlayer = nil;
+		if type(szORpPlayer) == "string" then
+			pPlayer = KPlayer.GetPlayerByName(szORpPlayer);
+		else
+			pPlayer = szORpPlayer;
+		end
+		if not pPlayer then
+			return;
+		end
+		pPlayer.SetJailTerm(nJailTerm or 0);
+		pPlayer.SetArrestTime(GetTime());
+		pPlayer.KickOut();
 		return 1;
-	else
-		if pPlayer.GetJailTerm() == 0 or pPlayer.GetJailTerm() + pPlayer.GetArrestTime() > GetTime() then
-			return 0;
-		end
 	end
-	return 1;
-end
 
+	-- 从桃源天牢放出来.szORpPlayer:玩家名字或对象
+	function Player:SetFree(szORpPlayer)
+		local pPlayer = nil;
+		local szPlayerName = "";
+		if type(szORpPlayer) == "string" then
+			pPlayer = KPlayer.GetPlayerByName(szORpPlayer);
+			szPlayerName = szORpPlayer;
+		else
+			pPlayer = szORpPlayer;
+		end
+		if not pPlayer then
+			return;
+		end
 
--- 增加声望值 返回0表示声望异常 1表示到达等级上限 2表示声望增加成功
-function Player:AddRepute(pPlayer, nClass, nCampId, nShengWang)
-	local nLevel		= pPlayer.GetReputeLevel(nClass,nCampId);
-	if (not nLevel) then
-		print("AddRepute Repute is error ", pPlayer.szName, nClass, nCampId);
-		return 0;
-	else
-		if (1 == pPlayer.CheckLevelLimit(nClass, nCampId)) then
+		pPlayer.SetJailTerm(0);
+		pPlayer.SetArrestTime(0);
+		pPlayer.ForbitSet(0, 1);
+
+		local nMapId, nReliveId  = pPlayer.GetRevivePos();
+		local nReliveX, nReliveY = RevID2WXY(nMapId, nReliveId);
+		pPlayer.NewWorld(nMapId, nReliveX / 32, nReliveY / 32); -- 回到存档点
+
+		-- 顺便清除反外挂系统标志(houxuan)
+		if self.tbAntiBot:IsKilledByAntiBot(pPlayer) == 1 then
+			self.tbAntiBot:SetPlayerInnocent(pPlayer.szName)
+		end
+		pPlayer.KickOut();
+		return 1;
+	end
+
+	-- 是否可以离开桃源天牢
+	function Player:CanLeaveTaoyuan(pPlayer)
+		if pPlayer.GetArrestTime() == 0 then -- 没有被抓进桃源天牢
 			return 1;
+		else
+			if pPlayer.GetJailTerm() == 0 or pPlayer.GetJailTerm() + pPlayer.GetArrestTime() > GetTime() then
+				return 0;
+			end
+		end
+		return 1;
+	end
+
+	-- 增加声望值 返回0表示声望异常 1表示到达等级上限 2表示声望增加成功
+	function Player:AddRepute(pPlayer, nClass, nCampId, nShengWang)
+		local nLevel = pPlayer.GetReputeLevel(nClass, nCampId);
+		if (not nLevel) then
+			print("AddRepute Repute is error ", pPlayer.szName, nClass, nCampId);
+			return 0;
+		else
+			if (1 == pPlayer.CheckLevelLimit(nClass, nCampId)) then
+				return 1;
+			end
+		end
+		pPlayer.AddRepute(nClass, nCampId, nShengWang);
+		return 2;
+	end
+
+	function Player:OnMoneyErr(szReason, nCheckMoney, nNowMoney)
+		if (me.nLastSaveTime <= 1238457600) then -- 早期错误数据
+			return;
+		end
+		local szMsg = string.format("%s\t%s\t%s\t[%d]\t%s\t%d=>%d\t%s", GetLocalDate("%Y-%m-%d %H:%M:%S"),
+			me.szAccount, me.szName, me.nId, szReason, nCheckMoney, nNowMoney, me.GetPlayerIpAddress());
+		print("MoneyErr1", szMsg);
+		GCExcute({ "KFile.AppendFile", "\\log\\moneyerr1_" .. GetGatewayName() .. ".txt", szMsg .. "\n" });
+		if (nNowMoney > nCheckMoney) then
+			--me.SetLogType(1+4);
 		end
 	end
-	pPlayer.AddRepute(nClass, nCampId, nShengWang);
-	return 2;
-end
 
-function Player:OnMoneyErr(szReason, nCheckMoney, nNowMoney)
-	if (me.nLastSaveTime <= 1238457600) then	-- 早期错误数据
-		return;
-	end
-	local szMsg	= string.format("%s\t%s\t%s\t[%d]\t%s\t%d=>%d\t%s", GetLocalDate("%Y-%m-%d %H:%M:%S"),
-		me.szAccount, me.szName, me.nId, szReason, nCheckMoney, nNowMoney, me.GetPlayerIpAddress());
-	print("MoneyErr1", szMsg);
-	GCExcute({"KFile.AppendFile", "\\log\\moneyerr1_" .. GetGatewayName() .. ".txt", szMsg .. "\n"});
-	if (nNowMoney > nCheckMoney) then
-		--me.SetLogType(1+4);
-	end
-end
+	function Player:OnChangeFightState()
+		if me.nFightState == 0 then -- 从1变为0
+			-- 从战斗状态转成非战斗状态，
+			if me.nActivePartner ~= -1 then
+				Partner:DecreaseFriendship(me.nId);
+			end
 
-function Player:OnChangeFightState()
-	if me.nFightState == 0 then		-- 从1变为0
-		-- 从战斗状态转成非战斗状态，
-		if me.nActivePartner ~= -1 then
-			Partner:DecreaseFriendship(me.nId);
-		end
-		
-		-- 关闭TIMER
-		Partner:UnRegisterPartnerTimer(me);
-	else							-- 从0变为1	
-		local pPartner = me.GetPartner(me.nActivePartner);
-		if pPartner then			
-			-- 如果该玩家有激活的同伴，开启为同伴召出效果而加的定时器
-			-- 总开关没有限制关闭才能开启TIMER
-			Partner:RegisterPartnerTimer(me);
-			
-			-- 从非战斗状态转到战斗状态，记录亲密度衰减开始时间
-			Partner:ResetDecrTime(pPartner); -- 重置同伴亲密度衰减变量
+			-- 关闭TIMER
+			Partner:UnRegisterPartnerTimer(me);
+		else -- 从0变为1	
+			local pPartner = me.GetPartner(me.nActivePartner);
+			if pPartner then
+				-- 如果该玩家有激活的同伴，开启为同伴召出效果而加的定时器
+				-- 总开关没有限制关闭才能开启TIMER
+				Partner:RegisterPartnerTimer(me);
+
+				-- 从非战斗状态转到战斗状态，记录亲密度衰减开始时间
+				Partner:ResetDecrTime(pPartner); -- 重置同伴亲密度衰减变量
+			end
 		end
 	end
-end
 
--- by zhangjinpin@kingsoft
--- 账号冻结
-function Player:Freeze(szPlayer)
-	local pPlayer = nil;	
-	if type(szPlayer) == "string" then
-		pPlayer = KPlayer.GetPlayerByName(szPlayer);
-	else
-		pPlayer = szPlayer;
+	-- by zhangjinpin@kingsoft
+	-- 账号冻结
+	function Player:Freeze(szPlayer)
+		local pPlayer = nil;
+		if type(szPlayer) == "string" then
+			pPlayer = KPlayer.GetPlayerByName(szPlayer);
+		else
+			pPlayer = szPlayer;
+		end
+		if not pPlayer then
+			return;
+		end
+		pPlayer.SetTask(2063, 4, 1);
+		pPlayer.Msg("Tài khoản của bạn đã bị khóa.");
+		pPlayer.KickOut();
+		return 1;
 	end
-	if not pPlayer then
-		return;
-	end
-	pPlayer.SetTask(2063, 4, 1);
-	pPlayer.Msg("Tài khoản của bạn đã bị khóa.");
-	pPlayer.KickOut();
-	return 1;
-end
 
--- 登陆事件判断冻结
-function Player:OnLogin_CheckFreeze()
-	if me.GetTask(2063, 4, 1) == 1 then
-		me.Msg("Tài khoản của bạn đã bị khóa.");
-		me.KickOut();
+	-- 登陆事件判断冻结
+	function Player:OnLogin_CheckFreeze()
+		if me.GetTask(2063, 4, 1) == 1 then
+			me.Msg("Tài khoản của bạn đã bị khóa.");
+			me.KickOut();
+		end
 	end
-end
--- end
 
--- 客户端发送非法协议处理 目前只记个LOG zounan
-function Player:ProcessIllegalProtocol(szFunc,szParam, nValue)
-	szFunc = szFunc or "";
-	szParam = szParam or "";
-	nValue = nValue or 0;	
-	Dbg:WriteLog("Player:ProcessIllegalProtocol", me.szAccount, me.szName,szFunc,szParam,nValue);
-end
+	-- end
 
---存储玩家快捷键(传入一个table用来记录到这个里面去)
-function Player:SaveShotCut(tbSave)
-	tbSave[me.nId] = {};
-	for nPos = 1 , Item.TSKID_SHORTCUTBAR_FLAG do
-		tbSave[me.nId][nPos] = me.GetTask(Item.TSKGID_SHORTCUTBAR, nPos);		
+	-- 客户端发送非法协议处理 目前只记个LOG zounan
+	function Player:ProcessIllegalProtocol(szFunc, szParam, nValue)
+		szFunc = szFunc or "";
+		szParam = szParam or "";
+		nValue = nValue or 0;
+		Dbg:WriteLog("Player:ProcessIllegalProtocol", me.szAccount, me.szName, szFunc, szParam, nValue);
 	end
-	local nLeftSkill, nRightSkill = FightSkill:LoadSkillTask(me);
-	tbSave[me.nId][Item.TSKID_SHORTCUTBAR_FLAG + 1] = nLeftSkill;
-	tbSave[me.nId][Item.TSKID_SHORTCUTBAR_FLAG + 2] = nRightSkill;
-end
 
---根据已知tb设置快捷键
-function Player:RestoryShotCut(tbSave)
-	if not tbSave[me.nId] then
-		return;
+	--存储玩家快捷键(传入一个table用来记录到这个里面去)
+	function Player:SaveShotCut(tbSave)
+		tbSave[me.nId] = {};
+		for nPos = 1, Item.TSKID_SHORTCUTBAR_FLAG do
+			tbSave[me.nId][nPos] = me.GetTask(Item.TSKGID_SHORTCUTBAR, nPos);
+		end
+		local nLeftSkill, nRightSkill = FightSkill:LoadSkillTask(me);
+		tbSave[me.nId][Item.TSKID_SHORTCUTBAR_FLAG + 1] = nLeftSkill;
+		tbSave[me.nId][Item.TSKID_SHORTCUTBAR_FLAG + 2] = nRightSkill;
 	end
-	for nPos = 1 , #tbSave[me.nId] - 2 do
-		me.SetTask(Item.TSKGID_SHORTCUTBAR, nPos, tbSave[me.nId][nPos]);
-	end
-	FightSkill:SaveLeftSkillEx(me, tbSave[me.nId][#tbSave[me.nId] - 1]);
-	FightSkill:SaveRightSkillEx(me, tbSave[me.nId][#tbSave[me.nId]]);
-	FightSkill:RefreshShortcutWindow(me);
-	tbSave[me.nId] = nil;
-end
 
+	--根据已知tb设置快捷键
+	function Player:RestoryShotCut(tbSave)
+		if not tbSave[me.nId] then
+			return;
+		end
+		for nPos = 1, #tbSave[me.nId] - 2 do
+			me.SetTask(Item.TSKGID_SHORTCUTBAR, nPos, tbSave[me.nId][nPos]);
+		end
+		FightSkill:SaveLeftSkillEx(me, tbSave[me.nId][#tbSave[me.nId] - 1]);
+		FightSkill:SaveRightSkillEx(me, tbSave[me.nId][#tbSave[me.nId]]);
+		FightSkill:RefreshShortcutWindow(me);
+		tbSave[me.nId] = nil;
+	end
 end
 
 if MODULE_GAMECLIENT then
-
-function Player:OnSelectNpc(pNpc)
-	local tbTemp = me.GetTempTable("Npc");
-	tbTemp.pSelectNpc = pNpc;
-	CoreEventNotify(UiNotify.emCOREEVENT_SYNC_SELECT_NPC);
-end
-
-function Player:OnChangeState(nState)
-	CoreEventNotify(UiNotify.emCOREEVENT_CHANGEWAITGETITEMSTATE, nState);
-	if (nState == 2) then
-		CoreEventNotify(UiNotify.emCOREEVENT_UPDATEBANKINFO);
+	function Player:OnSelectNpc(pNpc)
+		local tbTemp = me.GetTempTable("Npc");
+		tbTemp.pSelectNpc = pNpc;
+		CoreEventNotify(UiNotify.emCOREEVENT_SYNC_SELECT_NPC);
 	end
-end
 
-function Player:NotifyItemTimeOutClient(nType, szDate)
-	
-	if (szDate and nType == 46) then -- 返还券
-		me.Msg("Phản Hoàn Quyển trong ".. szDate .." sẽ hết hạn, mau dùng hết, tránh lãng phí.");
-	elseif (nType == 45) then
-		me.Msg("Trong túi hoặc thương khố có huyền tinh sắp quá hạn.");
+	function Player:OnChangeState(nState)
+		CoreEventNotify(UiNotify.emCOREEVENT_CHANGEWAITGETITEMSTATE, nState);
+		if (nState == 2) then
+			CoreEventNotify(UiNotify.emCOREEVENT_UPDATEBANKINFO);
+		end
 	end
-	CoreEventNotify(UiNotify.emCOREEVENT_SET_POPTIP, nType);
-end
 
-function Player:OnBuyJiuZhuan()
-	local tbMsg = {};
-	tbMsg.szMsg = string.format("Bạn không có <color=yellow>Cửu Chuyển Tục Mệnh Hoàn<color>. Bạn muốn tốn <color=red>50 đồng<color> trị thương?", IVER_g_szCoinName);
-	tbMsg.nOptCount = 2;
-	function tbMsg:Callback(nOptIndex)
-		if (nOptIndex == 2) then
+	function Player:NotifyItemTimeOutClient(nType, szDate)
+		if (szDate and nType == 46) then -- 返还券
+			me.Msg("Phản Hoàn Quyển trong " .. szDate .. " sẽ hết hạn, mau dùng hết, tránh lãng phí.");
+		elseif (nType == 45) then
+			me.Msg("Trong túi hoặc thương khố có huyền tinh sắp quá hạn.");
+		end
+		CoreEventNotify(UiNotify.emCOREEVENT_SET_POPTIP, nType);
+	end
+
+	function Player:OnBuyJiuZhuan()
+		local tbMsg = {};
+		tbMsg.szMsg = string.format(
+			"Bạn không có <color=yellow>Cửu Chuyển Tục Mệnh Hoàn<color>. Bạn muốn tốn <color=red>50 đồng<color> trị thương?",
+			IVER_g_szCoinName);
+		tbMsg.nOptCount = 2;
+		function tbMsg:Callback(nOptIndex)
+			if (nOptIndex == 2) then
 				if (me.IsAccountLock() ~= 0) then
 					UiNotify:OnNotify(UiNotify.emCOREEVENT_SET_POPTIP, 44);
 					me.Msg("Tài khoản đang khóa, không thực hiện thao tác này được!");
@@ -1352,88 +1349,92 @@ function Player:OnBuyJiuZhuan()
 				end
 				if IVER_g_nSdoVersion == 0 then
 					if (me.nCoin >= 50) then
-						me.CallServerScript({"ApplyBuyJiuZhuan"});
+						me.CallServerScript({ "ApplyBuyJiuZhuan" });
 					else
 						me.Msg("Bạn không đủ đồng.");
 					end
 				else
-					me.CallServerScript({"ApplyBuyJiuZhuan"});
+					me.CallServerScript({ "ApplyBuyJiuZhuan" });
 				end
-		end
-	end
-	UiManager:OpenWindow(Ui.UI_MSGBOX, tbMsg);
-end
-
-function Player:GetPluginUseState()
-	local tbNameList = KInterface.GetPluginNameList();
-	local nState = KInterface.GetPluginManagerLoadState()
-	if (1 == nState) then
-		local nPluginNum = 0;
-		for _, szName in pairs(tbNameList) do
-			local tbInfo = KInterface.GetPluginInfo(szName);
-			if (tbInfo.nLoadState == 1) then
-				nPluginNum = nPluginNum + 1;
 			end
 		end
-		if (nPluginNum > 0) then
-			me.CallServerScript({"RecordPluginUseState", me.szName, nPluginNum});
-		end
+
+		UiManager:OpenWindow(Ui.UI_MSGBOX, tbMsg);
 	end
-end
 
-function Player:JiesuoNotify()	
-	local tbMsg = {};
-	tbMsg.szMsg = "Tài khoản khóa đã bị hủy";
-	tbMsg.nOptCount = 1;
-	UiManager:OpenWindow(Ui.UI_MSGBOX, tbMsg);
-end
-
--- 提醒用户正在申请取消帐号锁
-function Player:ApplyJiesuoNotify(dwApplyTime)
-	local tbMsg = {};
-	tbMsg.szMsg = "Tài khoản đang <color=red>xin trợ giúp mở khóa<color>, nhấp \"Xác nhận\" kiểm tra chi tiết.";
-	tbMsg.nOptCount = 2;
-	function tbMsg:Callback(nOptIndex)
-		if (nOptIndex == 2) then			
-			local szSay = "Một nhân vật khác trong tài khoản đã xin đóng bảo vệ tài khoản. Nếu bạn không làm thao tác này, xin lập tức hủy bỏ, dùng phần mềm diệt virus mới nhất quét virus Trojan và đổi mật mã để đảm bảo an toàn cho tài khoản."..
-			"\nNhắc nhở: Xin đóng bảo vệ tài khoản sẽ có hiệu lực khi đăng nhập lại sau <color=yellow>5<color> ngày kể từ ngày xin phép.";
-			if dwApplyTime ~= nil then
-				szSay = "Vào <color=white><bclr=blue>"..os.date("%Y - %m - %d  %H giờ %M phút %S giây", dwApplyTime)..
-				"<bclr><color> xin đóng bảo vệ tài khoản. Nếu bạn không làm thao tác này, xin lập tức hủy bỏ, dùng phần mềm diệt virus mới nhất quét virus Trojan và đổi mật mã để đảm bảo an toàn cho tài khoản."..
-				"\nNhắc nhở: Xin đóng bảo vệ tài khoản sẽ có hiệu lực sau <color=white><bclr=blue>"..os.date("%Y - %m - %d  %H giờ %M phút %S giây", dwApplyTime + 5 * 24 * 60 * 60).."<bclr><color> sau đăng nhập lại mới có hiệu lực";
+	function Player:GetPluginUseState()
+		local tbNameList = KInterface.GetPluginNameList();
+		local nState = KInterface.GetPluginManagerLoadState()
+		if (1 == nState) then
+			local nPluginNum = 0;
+			for _, szName in pairs(tbNameList) do
+				local tbInfo = KInterface.GetPluginInfo(szName);
+				if (tbInfo.nLoadState == 1) then
+					nPluginNum = nPluginNum + 1;
+				end
 			end
-			if UiManager:WindowVisible(Ui.UI_SAYPANEL) == 1 then -- 有 白驹经验等 对话框打开时
-				me.Msg(szSay);
-			else
-				Dialog:Say(szSay);
-			end		
+			if (nPluginNum > 0) then
+				me.CallServerScript({ "RecordPluginUseState", me.szName, nPluginNum });
+			end
 		end
 	end
- 
-	UiManager:OpenWindow(Ui.UI_MSGBOX, tbMsg);
 
-	Player.bApplyingJiesuo = 1;
+	function Player:JiesuoNotify()
+		local tbMsg = {};
+		tbMsg.szMsg = "Tài khoản khóa đã bị hủy";
+		tbMsg.nOptCount = 1;
+		UiManager:OpenWindow(Ui.UI_MSGBOX, tbMsg);
+	end
+
+	-- 提醒用户正在申请取消帐号锁
+	function Player:ApplyJiesuoNotify(dwApplyTime)
+		local tbMsg = {};
+		tbMsg.szMsg = "Tài khoản đang <color=red>xin trợ giúp mở khóa<color>, nhấp \"Xác nhận\" kiểm tra chi tiết.";
+		tbMsg.nOptCount = 2;
+		function tbMsg:Callback(nOptIndex)
+			if (nOptIndex == 2) then
+				local szSay =
+					"Một nhân vật khác trong tài khoản đã xin đóng bảo vệ tài khoản. Nếu bạn không làm thao tác này, xin lập tức hủy bỏ, dùng phần mềm diệt virus mới nhất quét virus Trojan và đổi mật mã để đảm bảo an toàn cho tài khoản." ..
+					"\nNhắc nhở: Xin đóng bảo vệ tài khoản sẽ có hiệu lực khi đăng nhập lại sau <color=yellow>5<color> ngày kể từ ngày xin phép.";
+				if dwApplyTime ~= nil then
+					szSay = "Vào <color=white><bclr=blue>" ..
+						os.date("%Y - %m - %d  %H giờ %M phút %S giây", dwApplyTime) ..
+						"<bclr><color> xin đóng bảo vệ tài khoản. Nếu bạn không làm thao tác này, xin lập tức hủy bỏ, dùng phần mềm diệt virus mới nhất quét virus Trojan và đổi mật mã để đảm bảo an toàn cho tài khoản." ..
+						"\nNhắc nhở: Xin đóng bảo vệ tài khoản sẽ có hiệu lực sau <color=white><bclr=blue>" ..
+						os.date("%Y - %m - %d  %H giờ %M phút %S giây", dwApplyTime + 5 * 24 * 60 * 60) ..
+						"<bclr><color> sau đăng nhập lại mới có hiệu lực";
+				end
+				if UiManager:WindowVisible(Ui.UI_SAYPANEL) == 1 then -- 有 白驹经验等 对话框打开时
+					me.Msg(szSay);
+				else
+					Dialog:Say(szSay);
+				end
+			end
+		end
+
+		UiManager:OpenWindow(Ui.UI_MSGBOX, tbMsg);
+
+		Player.bApplyingJiesuo = 1;
+	end
+
+	function Player:SyncJiesuoState_C(bCanApplyJiesuo, bApplyingJiesuo, dwApplyTime)
+		self.bCanApplyJiesuo = bCanApplyJiesuo;
+		self.bApplyingJiesuo = bApplyingJiesuo;
+		self.dwApplyJiesuoTime = dwApplyTime;
+	end
+
+	function Player:SetActiveAura(nActiveAura)
+		me.SetAuraSkill(nActiveAura);
+	end
 end
 
-function Player:SyncJiesuoState_C(bCanApplyJiesuo, bApplyingJiesuo, dwApplyTime)
-	self.bCanApplyJiesuo = bCanApplyJiesuo;
-	self.bApplyingJiesuo = bApplyingJiesuo;
-	self.dwApplyJiesuoTime = dwApplyTime;	
-end
-
-function Player:SetActiveAura(nActiveAura)
-	me.SetAuraSkill(nActiveAura);
-end
-
-end
-
--- 客户端 当生命低于25%时候 
+-- 客户端 当生命低于25%时候
 ------------------------------------------------------------------------
 function Player:LifeIsPoor_C()
 	if (me.nLevel > 20) then
 		return;
 	end;
-	
+
 	local bHave = false;
 	local tbBuffList = me.GetBuffList();
 	for i = 1, #tbBuffList do
@@ -1442,7 +1443,7 @@ function Player:LifeIsPoor_C()
 			bHave = true;
 		end;
 	end;
-	
+
 	local pNpc = me.GetNpc();
 	if (not bHave and pNpc) then
 		pNpc.Chat("Điềm Tửu Thúc nhắc ta nên ăn khi chiến đấu ngoài rừng!");
@@ -1451,7 +1452,7 @@ end;
 
 function Player:LogPluginUseState(bExchangeServerComing)
 	if (bExchangeServerComing ~= 1) then
-		me.CallClientScript({"Player:GetPluginUseState"});
+		me.CallClientScript({ "Player:GetPluginUseState" });
 	end
 end
 
@@ -1475,7 +1476,7 @@ PlayerEvent:RegisterGlobal("OnKillNpc", Player._OnKillNpc, Player);
 PlayerEvent:RegisterGlobal("OnCampChange", Player._OnCampChange, Player);
 
 -- 注册定期清心得书使用事件
-PlayerSchemeEvent:RegisterGlobalDailyEvent({Player.ClearInsightBookUsedCount, Player});
+PlayerSchemeEvent:RegisterGlobalDailyEvent({ Player.ClearInsightBookUsedCount, Player });
 
 PlayerEvent:RegisterGlobal("OnLogin", Player.OnLogin_AccountSafe, Player);
 
@@ -1488,4 +1489,3 @@ PlayerEvent:RegisterGlobal("OnLogin", Player.LogPluginUseState, Player);
 ---- 注册定期清xxxx
 --PlayerSchemeEvent:RegisterGlobalDailyEvent({Player.ClearCibeixinjingUsedAmount, Player});
 --
-

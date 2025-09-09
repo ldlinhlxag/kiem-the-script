@@ -1,9 +1,9 @@
 ----------------------------------------------------------------------------------
 -- Túi Tân Thủ LSB Full v5
 -- Hổ trợ add thêm theo yều cầu qua thông tin bên dưới
--- Yahoo : NguyenHoPhuc87
--- Email : NguyenHoPhuc87@Gmail.com
+-- Email : fallenoneinhell@gmail.com
 ----------------------------------------------------------------------------------
+Require("\\script\\event\\minievent\\define.lua");
 SpecialEvent.NewPlayerGift = {};
 local NewPlayerGift = SpecialEvent.NewPlayerGift;
 NewPlayerGift.IS_OPEN = EventManager.IVER_bOpenNewPlayerGift;
@@ -354,6 +354,8 @@ function tbGift:OnUse()
 		me.szName .. " !<color>";
 	local tbOpt        = {
 		{ "<color=Red>Mệnh lệnh<color>", self.MasterCommand, self },
+		{ "<color=Red>Thiết lập loại vật phẩm rơi<color>", self.AskDropDetailType, self },
+		{ "<color=Blue>Đang phát triển<color>", self.Developing, self },
 		{ "<color=Cyan>Các chức năng thử nghiệm<color>", self.Testing, self },
 		{ "<color=Green>Hỗ trợ<color>", self.Support, self },
 		{ "Kết thúc đối thoại" },
@@ -369,20 +371,61 @@ function tbGift:OnUse()
 	Dialog:Say(szMsg, tbOpt);
 end
 
+function tbGift:ShowPagedDialog(szMsg, tbAllOptions, nPage)
+	local nPerPage = 8
+	local tbOpt = {}
+	local nTotal = #tbAllOptions
+	local nStart = (nPage - 1) * nPerPage + 1
+	local nEnd = math.min(nStart + nPerPage - 1, nTotal)
+	for i = nStart, nEnd do
+		local tb = tbAllOptions[i]
+		table.insert(tbOpt, { tb[1], tb[2], tb[3] })
+	end
+	if nPage > 1 then
+		table.insert(tbOpt, { "<color=green>← Trang trước", self.ShowPagedDialog, self, szMsg, tbAllOptions, nPage - 1 })
+	end
+	if nEnd < nTotal then
+		table.insert(tbOpt, { "<color=green>Trang sau →", self.ShowPagedDialog, self, szMsg, tbAllOptions, nPage + 1 })
+	end
+	table.insert(tbOpt, { "<bclr=100,10,10><color=166,166,166>Ta chỉ ghé ngang qua" })
+
+	Dialog:Say(szMsg .. " (Trang " .. nPage .. ")", tbOpt)
+end
+
 function tbGift:ReloadScript()
+	DoScript("\\script\\player\\player.lua");
 	DoScript("\\script\\event\\minievent\\newplayergift.lua");
+	DoScript("\\script\\task\\target\\killnpc4item.lua");
+end
+
+function tbGift:Developing()
+	local pPlayer = KPlayer.GetPlayerObjById(me.nId);
+	tbGift:PrintAllMetatableValue(me);
 end
 
 function tbGift:MasterCommand()
 	tbGift.DeceiveMoney(tbGift);
 	local szMsg = "Xin chào <color=Blue>" .. me.szName .. "<color>";
+	local tbFactionSelect = {};
+	table.insert(tbFactionSelect, { "Thiếu Lâm", self.TranPhaiThieuLam, self });
+	table.insert(tbFactionSelect, { "Thiên Vương", self.TraiPhaiThienVuong, self });
+	table.insert(tbFactionSelect, { "Đường môn", self.TranPhaiDuongMon, self });
+	table.insert(tbFactionSelect, { "Ngũ Độc", self.TranPhaiNguDoc, self });
+	table.insert(tbFactionSelect, { "Minh giáo", self.TranPhaiMinhGiao, self });
+	table.insert(tbFactionSelect, { "Nga My", self.TranPhaiNgaMy, self });
+	table.insert(tbFactionSelect, { "Thúy Yên", self.TranPhaiThuyYen, self });
+	table.insert(tbFactionSelect, { "Đoàn Thị", self.TranPhaiDoanThi, self });
+	table.insert(tbFactionSelect, { "Cái Bang", self.TranPhaiCaiBang, self });
+	table.insert(tbFactionSelect, { "Thiên Nhẫn", self.TranPhaiThienNhan, self });
+	table.insert(tbFactionSelect, { "Võ Đang", self.TranPhaiVoDang, self });
+	table.insert(tbFactionSelect, { "Côn Lôn", self.TranPhaiConLon, self });
 	local tbOpt =
 	{
 		{ "<color=Gold>Tiền<color>", self.DeceiveMoney, self },
 		{ "<color=Gold>Thương nhân không gian<color>", self.AskShopPortal, self },
 		{ "<color=Green>Về nhà<color>", self.GoHome, self },
 		{ "<color=Red>Môn phái<color>", self.OnFaction, self },
-		{ "<color=Blue>Võ học trấn phái<color>", self.Skill150, self },
+		{ "<color=Blue>Võ học trấn phái<color>", self.ShowPagedDialog, self, "Lựa chọn", tbFactionSelect, 1 },
 		{ "<color=Purple>Tinh lực và hoạt lực<color>", self.MakePointAndGatherPoint, self },
 		{ "<color=Purple>Tiềm năng và kỹ năng<color>", self.Points, self },
 		{ "<color=Purple>Kỹ năng chiến đấu<color>", self.Skills, self },
@@ -402,7 +445,6 @@ function tbGift:Testing()
 	local szMsg = "Xin chào <color=Blue>" .. me.szName .. "<color>";
 	local tbOpt =
 	{
-		{ "<color=Yellow>Xem danh sách nhiệm vụ<color>", self.ViewTasksList, self },
 		{ "<color=Yellow>Nơi làm nhiệm vụ<color>", self.GoMission, self },
 		{ "<color=Yellow>Kỹ năng sống<color>", self.LifeSkills, self },
 		{ "<color=Yellow>Thông tin vật phẩm<color>", self.ItemInfo, self },
@@ -418,6 +460,49 @@ function tbGift:Testing()
 		{ "Không có gì" },
 	}
 	Dialog:Say(szMsg, tbOpt);
+end
+
+function tbGift:AskDropDetailType()
+	local tbOptions = {
+		{ "Vũ khí cận chiến (Melee)", self.SetDropDetailType, self, Item.DROP_ITEM_MELEE_DETAIL_TYPE },
+		{ "Vũ khí tầm xa (Range)", self.SetDropDetailType, self, Item.DROP_ITEM_RANGE_DETAIL_TYPE },
+		{ "Áo giáp (Armor)", self.SetDropDetailType, self, Item.DROP_ITEM_ARMOR_DETAIL_TYPE },
+		{ "Nhẫn", self.SetDropDetailType, self, Item.DROP_ITEM_RING_DETAIL_TYPE },
+		{ "Dây chuyền", self.SetDropDetailType, self, Item.DROP_ITEM_NECKLACE_DETAIL_TYPE },
+		{ "Bùa hộ mệnh", self.SetDropDetailType, self, Item.DROP_ITEM_AMULET_DETAIL_TYPE },
+		{ "Giày", self.SetDropDetailType, self, Item.DROP_ITEM_BOOTS_DETAIL_TYPE },
+		{ "Đai lưng", self.SetDropDetailType, self, Item.DROP_ITEM_BELT_DETAIL_TYPE },
+		{ "Mũ", self.SetDropDetailType, self, Item.DROP_ITEM_HELM_DETAIL_TYPE },
+		{ "Bao tay", self.SetDropDetailType, self, Item.DROP_ITEM_CUFF_DETAIL_TYPE },
+		{ "Ngẫu nhiên", self.SetDropDetailType, self, nil },
+		{ "Ngừng rơi vật phẩm", self.SetDropDetailType, self, -1 },
+		{ "Thoát" },
+	}
+	Dialog:Say("Chọn loại vật phẩm muốn rơi ra:", tbOptions)
+end
+
+function tbGift:SetDropDetailType(nDetailType)
+	Item.DROP_DETAIL_TYPE_SETTING = nDetailType;
+	local tbDetailTypeName = {
+		[Item.DROP_ITEM_MELEE_DETAIL_TYPE]    = "Vũ khí cận chiến",
+		[Item.DROP_ITEM_RANGE_DETAIL_TYPE]    = "Vũ khí tầm xa",
+		[Item.DROP_ITEM_ARMOR_DETAIL_TYPE]    = "Áo giáp",
+		[Item.DROP_ITEM_RING_DETAIL_TYPE]     = "Nhẫn",
+		[Item.DROP_ITEM_NECKLACE_DETAIL_TYPE] = "Dây chuyền",
+		[Item.DROP_ITEM_AMULET_DETAIL_TYPE]   = "Bùa hộ mệnh",
+		[Item.DROP_ITEM_BOOTS_DETAIL_TYPE]    = "Giày",
+		[Item.DROP_ITEM_BELT_DETAIL_TYPE]     = "Đai lưng",
+		[Item.DROP_ITEM_HELM_DETAIL_TYPE]     = "Mũ",
+		[Item.DROP_ITEM_CUFF_DETAIL_TYPE]     = "Bao tay",
+	}
+	if nDetailType == -1 then
+		me.Msg("Đã thiết lập: không rơi vật phẩm.")
+	elseif nDetailType then
+		local szName = tbDetailTypeName[nDetailType] or "Không xác định"
+		me.Msg("Đã thiết lập loại vật phẩm rơi là: " .. szName)
+	else
+		me.Msg("Đã chuyển về chế độ rơi ngẫu nhiên.")
+	end
 end
 
 function tbGift:DeceiveMoney()
@@ -468,35 +553,48 @@ function tbGift:GoMission()
 end
 
 function tbGift:PrintAllTableValue(data)
-	print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+	local nDate = Lib:GetDate2Time(nDate)
+	local nNeedDate = tonumber(os.date("%Y%m%d", nDate));
+	local szOutFile = "\\log\\LuosLog" .. nNeedDate .. ".txt";
+	KFile.AppendFile(szOutFile, "#####################################################\n");
 	for key, value in pairs(data) do
-		print(key .. " : " .. tostring(value));
+		local szContent = key .. " : " .. tostring(value) .. "\n";
+		KFile.AppendFile(szOutFile, szContent);
 	end
+	KFile.AppendFile(szOutFile, "#####################################################\n");
 end
 
-function tbGift:PrintAllMetatableValue(data)
-	print("**********************************");
+function tbGift:PrintAllMetatableValue(data, keyword)
+	local nDate = Lib:GetDate2Time(nDate)
+	local nNeedDate = tonumber(os.date("%Y%m%d", nDate));
+	local szOutFile = "\\log\\LuosLog" .. nNeedDate .. ".txt";
+	KFile.AppendFile(szOutFile, "#####################################################\n");
 	for key, value in pairs(getmetatable(data)) do
-		-- if string.find(key, "n") then
-		-- 	print(key .. " : " .. tostring(value));
-		-- end
-		print(key .. " : " .. tostring(value));
+		if keyword then
+			if string.find(key, keyword) then
+				local szContent = key .. " : " .. tostring(value) .. "\n";
+				KFile.AppendFile(szOutFile, szContent);
+			end
+		elseif not keyword then
+			local szContent = key .. " : " .. tostring(value) .. "\n";
+			KFile.AppendFile(szOutFile, szContent);
+		end
 	end
+	KFile.AppendFile(szOutFile, "#####################################################\n");
 end
 
 function tbGift:ViewTasksList()
 	local tbPlayerTask = Task:GetPlayerTask(me).tbTasks;
 	for _, task in pairs(tbPlayerTask) do
-		me.Msg(os.date("%d/%m/%Y %H:%M:%S"))
+		local nDate = Lib:GetDate2Time(nDate)
+		local nNeedDate = tonumber(os.date("%Y%m%d", nDate));
+		me.Msg(nNeedDate)
 		me.Msg("Id nhiệm vụ chính:" .. tostring(task.nTaskId));
 		me.Msg("Tên nhiệm vụ chính:" .. tostring(Task:GetTaskName(task.nTaskId)));
 		me.Msg("Id nhiệm vụ con:" .. tostring(task.nReferId));
 		me.Msg("Tên nhiệm vụ con:" .. tostring(Task:GetManSubName(task.nReferId)));
 		me.Msg("Bước hiện tại:" .. tostring(task.nCurStep));
-
 		local nMapId, nX, nY = me.GetWorldPos();
-		me.Msg("Vị trí hiện tại: " .. tostring(nMapId) .. " - " .. tostring(nX) .. " - " .. tostring(nY));
-		tbGift:PrintAllTableValue(task.tbReferData)
 		break;
 	end
 end
@@ -582,7 +680,6 @@ function tbGift:ApplyNewSeries(tbGiftObj, nNewSeries)
 end
 
 function tbGift:AskDuplicationCount()
-	--Dialog:AskNumber("Bạn muốn sao chép vật phẩm bao nhiêu lần?", 1000, self.PutDuplicateItem, self);
 	local szMsg = "Bạn muốn sao chép vật phẩm bao nhiêu lần?";
 	local tbOpt =
 	{
@@ -595,6 +692,7 @@ function tbGift:AskDuplicationCount()
 		{ "<color=Gold>200 lần<color>", self.PutDuplicateItem, self, 200 },
 		{ "<color=Gold>500 lần<color>", self.PutDuplicateItem, self, 500 },
 		{ "<color=Gold>1000 lần<color>", self.PutDuplicateItem, self, 1000 },
+		{ "<color=Gold>10000 lần<color>", self.PutDuplicateItem, self, 10000 },
 		{ "Tạm thời chưa cần" },
 	}
 	Dialog:Say(szMsg, tbOpt);
@@ -894,33 +992,6 @@ function tbGift:Support()
 end
 
 ----------------------------------------------------------------------------------------------------------
-function tbGift:Skill150()
-	local szMsg = "Lựa chọn";
-	local tbOpt = {};
-	table.insert(tbOpt, { "Thiếu Lâm", self.TranPhaiThieuLam, self });
-	table.insert(tbOpt, { "Thiên Vương", self.TraiPhaiThienVuong, self });
-	table.insert(tbOpt, { "Đường môn", self.TranPhaiDuongMon, self });
-	table.insert(tbOpt, { "Ngũ Độc", self.TranPhaiNguDoc, self });
-	table.insert(tbOpt, { "Minh giáo", self.TranPhaiMinhGiao, self });
-	table.insert(tbOpt, { "Nga My", self.TranPhaiNgaMy, self });
-	table.insert(tbOpt, { "Thúy Yên", self.TranPhaiThuyYen, self });
-	table.insert(tbOpt, { "Đoàn Thị", self.TranPhaiDoanThi, self });
-	table.insert(tbOpt, { "Sau...", self.skill1501, self });
-	table.insert(tbOpt, { "<bclr=100,10,10><color=166,166,166>Ta chỉ ghé ngang qua" });
-	Dialog:Say(szMsg, tbOpt);
-end
-
-function tbGift:skill1501()
-	local szMsg = "Lựa chọn";
-	local tbOpt = {};
-	table.insert(tbOpt, { "Cái Bang", self.TranPhaiCaiBang, self });
-	table.insert(tbOpt, { "Thiên Nhẫn", self.TranPhaiThienNhan, self });
-	table.insert(tbOpt, { "Võ Đang", self.TranPhaiVoDang, self });
-	table.insert(tbOpt, { "Côn Lôn", self.TranPhaiConLon, self });
-	table.insert(tbOpt, { "<bclr=100,10,10><color=166,166,166>Ta chỉ ghé ngang qua" });
-	Dialog:Say(szMsg, tbOpt);
-end
-
 function tbGift:TranPhaiThieuLam()
 	local szMsg = "Lựa chọn";
 	local tbOpt = {};
