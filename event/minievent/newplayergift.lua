@@ -355,6 +355,7 @@ function tbGift:OnUse()
 	local tbOpt        = {
 		{ "<color=Red>Mệnh lệnh<color>", self.MasterCommand, self },
 		{ "<color=Red>Thiết lập loại vật phẩm rơi<color>", self.AskDropDetailType, self },
+		{ "<color=Red>Thiết lập tỉ lệ rơi vật phẩm<color>", self.OpenDropRateDialog, self },
 		{ "<color=Blue>Đang phát triển<color>", self.Developing, self },
 		{ "<color=Cyan>Các chức năng thử nghiệm<color>", self.Testing, self },
 		{ "<color=Green>Hỗ trợ<color>", self.Support, self },
@@ -503,6 +504,30 @@ function tbGift:SetDropDetailType(nDetailType)
 	else
 		me.Msg("Đã chuyển về chế độ rơi ngẫu nhiên.")
 	end
+end
+
+function tbGift:OpenDropRateDialog()
+    local tbOpt = {}
+    for i = 1, 10 do
+        table.insert(tbOpt, {
+            string.format("%d%%", i),
+            self.SetDropRate,
+            self,
+            i
+        })
+    end
+
+    Dialog:Say("Chọn tỉ lệ rơi vật phẩm mong muốn:", tbOpt)
+end
+
+function tbGift:SetDropRate(nPercent)
+    if nPercent < 1 or nPercent > 100 then
+        me.Msg("Tỉ lệ phải từ 1% đến 100%")
+        return
+    end
+    Item.DROP_RATE_PERCENT = nPercent;
+	Item.DROP_DETAIL_TYPE_SETTING = nil;
+    me.Msg("Đã thiết lập tỉ lệ rơi vật phẩm là: " .. nPercent .. "%")
 end
 
 function tbGift:DeceiveMoney()
@@ -920,6 +945,26 @@ function tbGift:ExchangeItemsInBagToEXP()
 	for i = 0, Item.ROOM_MAINBAG_HEIGHT - 1 do
 		for j = 0, Item.ROOM_MAINBAG_WIDTH - 1 do
 			local pItem = me.GetItem(Item.ROOM_MAINBAG, j, i);
+			if pItem then
+				local nValue = pItem.nValue or 0
+				me.AddExp(nValue);
+				me.DelItem(pItem);
+			end
+		end
+	end
+	for i = 0, 2 do
+		for j = 0, 5 do
+			local pItem = me.GetItem(5, j, i);
+			if pItem then
+				local nValue = pItem.nValue or 0
+				me.AddExp(nValue);
+				me.DelItem(pItem);
+			end
+		end
+	end
+	for i = 0, 2 do
+		for j = 0, 5 do
+			local pItem = me.GetItem(6, j, i);
 			if pItem then
 				local nValue = pItem.nValue or 0
 				me.AddExp(nValue);

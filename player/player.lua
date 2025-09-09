@@ -894,8 +894,8 @@ function Player:RandomDropItem(him)
 	local nParticularIndex = MathRandom(1, #tbParticularList)
 	local nParticular = tbParticularList[nParticularIndex]
 
-	local indexRate = MathRandom(1, 10)
-	if indexRate > 9 then
+	local indexRate = MathRandom(1, 100)
+	if indexRate <= Item.DROP_RATE_PERCENT then
 		me.AddItem(1, nDetailType, nParticular, nItemLevel, nSeries, nil, 100);
 		me.Earn(10 * nItemLevel, 0);
 		me.AddJbCoin(nItemLevel);
