@@ -864,7 +864,7 @@ function Player:RandomDropItem(him)
 	if nItemLevel < 1 then
 		nItemLevel = 1;
 	end
-	local nSeries = 2;
+	local nSeries = MathRandom(1, 5);
 	local tbParticularMap = {
 		[Item.DROP_ITEM_MELEE_DETAIL_TYPE]    = Item.DROP_ITEM_MELEE_PARTICULAR_TYPE,
 		[Item.DROP_ITEM_RANGE_DETAIL_TYPE]    = Item.DROP_ITEM_RANGE_PARTICULAR_TYPE,
