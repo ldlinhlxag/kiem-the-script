@@ -1,14 +1,14 @@
---╧л╤╗т╓ох╪сть╣д╫е╠╬ё╛╩АйгкЫсп╫е╠╬╪сть╣д╣зр╩╦Ж
+--О©╫л╤О©╫т╓О©╫х╪О©╫О©╫ь╣д╫е╠О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫п╫е╠О©╫О©╫О©╫О©╫ь╣д╣О©╫р╩О©╫О©╫
 
 print("Begin load script files...");
 
---╣ВйтйДЁЖ╦╗жЗ╨╞йЩё╛йДЁЖр╩п╘ж╩сцсз╣Вйт╤Ьнч╧ьсно╥╧╕дэ╣дпео╒
---р╩╟ЦлА╫╩й╠с╕╟якЫсп╣Вйтпео╒и╬╣Тё╛н╙ак╥юж╧мЭ╪ги╬ЁЩ╪╟гЬ╠ПуФуЩр╙йДЁЖ╣дпео╒╤ЬиХ╢к╨╞йЩ╤Ь╡╩р╙ж╠╫ссцprint
---тз╢киХ_DbgOutн╙©уё╛╣Вйтдёй╫й╠©итздЁ╢╕в╙оРн╙print
+--О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫р╩п╘ж╩О©╫О©╫О©╫з╣О©╫О©╫т╤О©╫О©╫ч╧О©╫О©╫О©╫о╥О©╫О©╫О©╫э╣О©╫О©╫О©╫о╒
+--р╩О©╫О©╫О©╫А╫╩й╠с╕О©╫О©╫О©╫О©╫О©╫п╣О©╫О©╫О©╫О©╫О©╫о╒и╬О©╫О©╫О©╫О©╫н╙О©╫к╥О©╫ж╧О©╫О©╫О©╫О©╫и╬О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫р╙О©╫О©╫О©╫О©╫О©╫О©╫О©╫о╒О©╫О©╫О©╫О©╫к╨О©╫О©╫О©╫О©╫О©╫О©╫О©╫р╙ж╠О©╫О©╫О©╫О©╫print
+--О©╫з╢О©╫О©╫О©╫_DbgOutн╙О©╫уёО©╫О©╫О©╫О©╫О©╫дёй╫й╠О©╫О©╫О©╫О©╫дЁО©╫О©╫в╙О©╫О©╫н╙print
 function _DbgOut()
 end
 
---== тьхКсно╥дё©И ==--
+--== О©╫О©╫О©╫О©╫О©╫О©╫о╥дёО©╫О©╫ ==--
 local tbData		= KLib.LoadTabFile("\\setting\\scripttable.txt");
 local tbModuleBase	= { szModuleName = "__ModuleBase" };
 local tbMoudleMT	= { __index	= tbModuleBase };
@@ -21,7 +21,7 @@ end
 Env.tbModelSet		= tbModelSet;
 
 
---== дё©И╩ЫюЮ╨╞йЩ╤╗рЕ ==--
+--== дёО©╫О©╫О©╫О©╫Ю╨╞О©╫О©╫О©╫О©╫О©╫О©╫ ==--
 function tbModuleBase:DbgOut(...)
 	Dbg:Output(self.szModuleName, unpack(arg));
 end
@@ -33,7 +33,7 @@ function tbModuleBase:GetPlayerTempTable(pPlayer)
 end
 
 
---рРExcel╠М╦Я╠Ю╪╜╣╪жбвж╥Ш╢╝г╟╨С╢Ь""ё╛╟я╢Ьсп""╣двж╥Ш╢╝╣д""╨ех╔╣Т
+--О©╫О©╫ExcelО©╫О©╫О©╫О©╫Ю╪╜О©╫О©╫О©╫О©╫О©╫ж╥О©╫О©╫О©╫г╟О©╫О©╫О©╫""О©╫О©╫О©╫я╢О©╫О©╫О©╫""О©╫О©╫О©╫ж╥О©╫О©╫О©╫О©╫О©╫""О©╫О©╫х╔О©╫О©╫
 local function ClearStrQuote(szParam)
 	if szParam == nil then
 		szParam = "";
@@ -54,7 +54,7 @@ local function ClearStrQuote(szParam)
 end
 
 
---== тьхК╫е╠╬ЁёйЩ ==--
+--== О©╫О©╫О©╫О©╫е╠О©╫О©╫О©╫О©╫О©╫ ==--
 local tbFileData		= KLib.LoadTabFile("\\setting\\scriptvalue\\filelist.txt");
 for nFileRow = 2, #tbFileData do
 	local szTableName	= tbFileData[nFileRow][1];
@@ -78,11 +78,11 @@ for nFileRow = 2, #tbFileData do
 end
 
 
-if (not GetLocalDate) then	-- аый╠╫Б╬ЖGCц╩сп╤тс╕╨╞йЩ
+if (not GetLocalDate) then	-- О©╫О©╫й╠О©╫О©╫О©╫GCц╩О©╫п╤О©╫с╕О©╫О©╫О©╫О©╫
 	GetLocalDate	= os.date;
 end
 
---╫Шсц╫е╠╬ж╦аН
+--О©╫О©╫О©╫ц╫е╠О©╫ж╦О©╫О©╫
 dofile		= nil;
 loadfile	= nil;
 io			= nil;
@@ -116,7 +116,7 @@ function os.date(format, time)
 	return old_date(format, time);
 end
 
---х╚╬ж╠Да©╠ё╩╓ё╛╢с╢к╡╩тйпМЁЖожпб╣дх╚╬ж╠Да©
+--х╚О©╫ж╠О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫с╢к╡О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫б╣О©╫х╚О©╫ж╠О©╫О©╫О©╫
 local tbMetaTable	= {
 	__newindex	= function (tb, key, value)
 		if (key == "it" or key == "him" or key == "me") then
@@ -128,12 +128,12 @@ local tbMetaTable	= {
 };
 setmetatable(_G, tbMetaTable);
 
---== л╚Ёёсц╣дпХр╙г╟жц╣днд╪Чё╛╥етзуБюОр╩╢нптRequire ==--
+--== л╚О©╫О©╫О©╫ц╣О©╫О©╫О©╫р╙г╟О©╫ц╣О©╫О©╫д╪О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫р╩О©╫О©╫О©╫О©╫Require ==--
 
--- х╚╡©м╗сц
+-- х╚О©╫О©╫м╗О©╫О©╫
 Require("\\script\\lib\\lib.lua");
 Require("\\script\\lib\\dbg.lua");
 Require("\\script\\lib\\calc.lua");
 Require("\\script\\common\\env.lua");
 Require("\\script\\lib\\vfactory.lua");
-
+DoScript("\\script\\common\\common_lib.lua");

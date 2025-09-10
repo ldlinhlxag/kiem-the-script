@@ -354,8 +354,7 @@ function tbGift:OnUse()
 		me.szName .. " !<color>";
 	local tbOpt        = {
 		{ "<color=Red>Mệnh lệnh<color>", self.MasterCommand, self },
-		{ "<color=Red>Thiết lập loại vật phẩm rơi<color>", self.AskDropDetailType, self },
-		{ "<color=Red>Thiết lập tỉ lệ rơi vật phẩm<color>", self.OpenDropRateDialog, self },
+		{ "<color=Red>Cấu hình<color>", self.ServerSetting, self },
 		{ "<color=Blue>Đang phát triển<color>", self.Developing, self },
 		{ "<color=Cyan>Các chức năng thử nghiệm<color>", self.Testing, self },
 		{ "<color=Green>Hỗ trợ<color>", self.Support, self },
@@ -397,6 +396,7 @@ function tbGift:ReloadScript()
 	DoScript("\\script\\player\\player.lua");
 	DoScript("\\script\\event\\minievent\\newplayergift.lua");
 	DoScript("\\script\\task\\target\\killnpc4item.lua");
+	DoScript("\\script\\common\\common_lib.lua");
 end
 
 function tbGift:Developing()
@@ -405,7 +405,6 @@ function tbGift:Developing()
 end
 
 function tbGift:MasterCommand()
-	tbGift.DeceiveMoney(tbGift);
 	local szMsg = "Xin chào <color=Blue>" .. me.szName .. "<color>";
 	local tbFactionSelect = {};
 	table.insert(tbFactionSelect, { "Thiếu Lâm", self.TranPhaiThieuLam, self });
@@ -434,6 +433,7 @@ function tbGift:MasterCommand()
 		{ "<color=Blue>Sao chép vật phẩm<color>", self.AskDuplicationCount, self },
 		{ "<color=Blue>Cường hóa vật phẩm<color>", self.AskEnhanceLevel, self },
 		{ "<color=Blue>Thay đổi cấp độ vật phẩm<color>", self.AskAboutUpgrade, self },
+		{ "<color=Red>Lọc các vật phẩm chất lượng thấp", self.RecycleItemsToCoin, self },
 		{ "<color=Red>Đổi vật phẩm thành kinh nghiệm", self.PutExchangeItem, self },
 		{ "<color=Red>Đổi tất cả vật phẩm thành kinh nghiệm", self.ExchangeItemsInBagToEXP, self },
 		{ "Không có gì" },
@@ -441,8 +441,18 @@ function tbGift:MasterCommand()
 	Dialog:Say(szMsg, tbOpt);
 end
 
+function tbGift:ServerSetting()
+	local szMsg = "Xin chào <color=Blue>" .. me.szName .. "<color>";
+	local tbOpt =
+	{
+		{ "<color=Red>Thiết lập loại vật phẩm rơi<color>", self.AskDropDetailType, self },
+		{ "<color=Red>Thiết lập tỉ lệ rơi vật phẩm<color>", self.OpenDropRateDialog, self },
+		{ "Không có gì" },
+	}
+	Dialog:Say(szMsg, tbOpt);
+end
+
 function tbGift:Testing()
-	tbGift.DeceiveMoney(tbGift);
 	local szMsg = "Xin chào <color=Blue>" .. me.szName .. "<color>";
 	local tbOpt =
 	{
@@ -507,27 +517,29 @@ function tbGift:SetDropDetailType(nDetailType)
 end
 
 function tbGift:OpenDropRateDialog()
-    local tbOpt = {}
-    for i = 1, 10 do
-        table.insert(tbOpt, {
-            string.format("%d%%", i),
-            self.SetDropRate,
-            self,
-            i
-        })
-    end
+	local tbOpt = {}
+	for i = 1, 10 do
+		table.insert(tbOpt, {
+			string.format("%d%%", i),
+			self.SetDropRate,
+			self,
+			i
+		})
+	end
 
-    Dialog:Say("Chọn tỉ lệ rơi vật phẩm mong muốn:", tbOpt)
+	Dialog:Say("Chọn tỉ lệ rơi vật phẩm mong muốn:", tbOpt)
 end
 
 function tbGift:SetDropRate(nPercent)
-    if nPercent < 1 or nPercent > 100 then
-        me.Msg("Tỉ lệ phải từ 1% đến 100%")
-        return
-    end
-    Item.DROP_RATE_PERCENT = nPercent;
-	Item.DROP_DETAIL_TYPE_SETTING = nil;
-    me.Msg("Đã thiết lập tỉ lệ rơi vật phẩm là: " .. nPercent .. "%")
+	if nPercent < 1 or nPercent > 100 then
+		me.Msg("Tỉ lệ phải từ 1% đến 100%")
+		return
+	end
+	Item.DROP_RATE_PERCENT = nPercent;
+	if Item.DROP_DETAIL_TYPE_SETTING == -1 then
+		Item.DROP_DETAIL_TYPE_SETTING = nil
+	end
+	me.Msg("Đã thiết lập tỉ lệ rơi vật phẩm là: " .. nPercent .. "%")
 end
 
 function tbGift:DeceiveMoney()
@@ -942,35 +954,85 @@ function tbGift:EnhanceItem(tbGiftObj)
 end
 
 function tbGift:ExchangeItemsInBagToEXP()
-	for i = 0, Item.ROOM_MAINBAG_HEIGHT - 1 do
-		for j = 0, Item.ROOM_MAINBAG_WIDTH - 1 do
-			local pItem = me.GetItem(Item.ROOM_MAINBAG, j, i);
-			if pItem then
-				local nValue = pItem.nValue or 0
-				me.AddExp(nValue);
-				me.DelItem(pItem);
+	local tbBagRooms = {
+		{ room = Item.ROOM_MAINBAG, width = Item.ROOM_MAINBAG_WIDTH, height = Item.ROOM_MAINBAG_HEIGHT },
+		{ room = 5,                 width = 6,                       height = 3 },
+		{ room = 6,                 width = 6,                       height = 3 },
+		{ room = 7,                 width = 6,                       height = 3 }
+	}
+
+	local nTotalExp = 0
+	local nItemCount = 0
+
+	for _, tbRoom in ipairs(tbBagRooms) do
+		for i = 0, tbRoom.height - 1 do
+			for j = 0, tbRoom.width - 1 do
+				local pItem = me.GetItem(tbRoom.room, j, i)
+				if pItem and not (pItem.nGenre == 18 and pItem.nParticular == 351) and pItem.nGenre ~= 19 then
+					local nValue = pItem.nValue or 0
+					me.AddExp(nValue)
+					me.DelItem(pItem)
+					nTotalExp = nTotalExp + nValue
+					nItemCount = nItemCount + 1
+				end
 			end
 		end
 	end
-	for i = 0, 2 do
-		for j = 0, 5 do
-			local pItem = me.GetItem(5, j, i);
-			if pItem then
-				local nValue = pItem.nValue or 0
-				me.AddExp(nValue);
-				me.DelItem(pItem);
+
+	me.Msg(string.format("Đã chuyển %d vật phẩm thành %d điểm kinh nghiệm.", nItemCount, nTotalExp))
+end
+
+function tbGift:RecycleItemsToCoin()
+	local tbBagRooms = {
+		{ room = Item.ROOM_MAINBAG, width = Item.ROOM_MAINBAG_WIDTH, height = Item.ROOM_MAINBAG_HEIGHT },
+		{ room = 5,                 width = 6,                       height = 3 }, -- Túi phụ 1
+		{ room = 6,                 width = 6,                       height = 3 }, -- Túi phụ 2
+		{ room = 7,                 width = 6,                       height = 3 }, -- Túi phụ 2
+	}
+
+	local nTotalCoin = 0
+	local nItemCount = 0
+	local nSex = me.nSex -- 0: nam, 1: nữ
+
+	for _, tbRoom in ipairs(tbBagRooms) do
+		for i = 0, tbRoom.height - 1 do
+			for j = 0, tbRoom.width - 1 do
+				local pItem = me.GetItem(tbRoom.room, j, i)
+				if pItem and pItem.IsEquip() == 1 then
+					local nLevel = pItem.nLevel or 0
+					local nStar = pItem.nStarLevel or 0
+					local bWrongSex = false
+
+					-- Kiểm tra giới tính yêu cầu
+					local nRequiredSex = pItem.GetSex()
+					if nRequiredSex and nRequiredSex ~= me.nSex then
+						bWrongSex = true
+					end
+
+					-- Áp dụng điều kiện lọc theo cấp độ
+					local bShouldRecycle = false
+					if nLevel > 3 then
+						bShouldRecycle = nStar < 9
+					else
+						bShouldRecycle = nStar < 5
+					end
+
+					if bShouldRecycle or bWrongSex then
+						local nValue = pItem.nValue or 0
+						nTotalCoin = nTotalCoin + nValue
+						nItemCount = nItemCount + 1
+						me.DelItem(pItem)
+					end
+				end
 			end
 		end
 	end
-	for i = 0, 2 do
-		for j = 0, 5 do
-			local pItem = me.GetItem(6, j, i);
-			if pItem then
-				local nValue = pItem.nValue or 0
-				me.AddExp(nValue);
-				me.DelItem(pItem);
-			end
-		end
+
+	if nTotalCoin > 0 then
+		me.AddJbCoin(nTotalCoin)
+		me.Msg(string.format("Đã tái chế %d vật phẩm. Nhận được %d đồng.", nItemCount, nTotalCoin))
+	else
+		me.Msg("Không có vật phẩm nào phù hợp để tái chế.")
 	end
 end
 
