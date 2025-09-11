@@ -3,7 +3,6 @@
 -- Hổ trợ add thêm theo yều cầu qua thông tin bên dưới
 -- Email : fallenoneinhell@gmail.com
 ----------------------------------------------------------------------------------
-Require("\\script\\event\\minievent\\define.lua");
 SpecialEvent.NewPlayerGift = {};
 local NewPlayerGift = SpecialEvent.NewPlayerGift;
 NewPlayerGift.IS_OPEN = EventManager.IVER_bOpenNewPlayerGift;
@@ -393,10 +392,10 @@ function tbGift:ShowPagedDialog(szMsg, tbAllOptions, nPage)
 end
 
 function tbGift:ReloadScript()
-	DoScript("\\script\\player\\player.lua");
-	DoScript("\\script\\event\\minievent\\newplayergift.lua");
-	DoScript("\\script\\task\\target\\killnpc4item.lua");
 	DoScript("\\script\\common\\common_lib.lua");
+	DoScript("\\script\\player\\player.lua");
+	DoScript("\\script\\event\\minievent\\define.lua");
+	DoScript("\\script\\event\\minievent\\newplayergift.lua");
 end
 
 function tbGift:Developing()

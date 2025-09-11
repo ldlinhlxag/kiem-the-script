@@ -1,7 +1,28 @@
 function Lib:Trace(msg)
     print("Call stack: "..debug.traceback(msg))
 end
-function Lib:PrintTable(data)
+
+function Lib:Print(msg)
+    local nDate = Lib:GetDate2Time(nDate)
+    local nNeedDate = tonumber(os.date("%Y%m%d", nDate));
+    local szOutFile = "\\log\\Development_" .. nNeedDate .. ".txt";
+    KFile.AppendFile(szOutFile, "#####################################################\n");    
+    local szContent = tostring(msg).."\n";
+    KFile.AppendFile(szOutFile, szContent);
+    KFile.AppendFile(szOutFile, "#####################################################\n");
+end
+
+function Lib:PrintTrace(msg)
+    local nDate = Lib:GetDate2Time(nDate)
+    local nNeedDate = tonumber(os.date("%Y%m%d", nDate));
+    local szOutFile = "\\log\\Development_" .. nNeedDate .. ".txt";
+    KFile.AppendFile(szOutFile, "#####################################################\n");    
+    local szContent = debug.traceback(tostring(msg)).."\n";
+    KFile.AppendFile(szOutFile, szContent);
+    KFile.AppendFile(szOutFile, "#####################################################\n");
+end
+
+function Lib:PrintTable(data,keyword)
     local nDate = Lib:GetDate2Time(nDate)
     local nNeedDate = tonumber(os.date("%Y%m%d", nDate));
     local szOutFile = "\\log\\Development_" .. nNeedDate .. ".txt";
@@ -37,4 +58,20 @@ function Lib:PrintMetatable(data, keyword)
         end
     end
     KFile.AppendFile(szOutFile, "#####################################################\n");
+end
+
+function Lib:PrintData(data, keyword)
+    if not keyword then
+        keyword = "";
+    end
+    local dataType = type(data);
+    if(dataType == "table") then
+        Lib:PrintTable(data,keyword);
+    elseif (dataType == "userdata") then
+        Lib:PrintMetatable(data,keyword);
+    elseif (dataType == "string") then
+        Lib:Print(data);
+    else
+        Lib:Print(data);
+    end
 end
