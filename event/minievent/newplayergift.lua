@@ -1011,7 +1011,9 @@ function tbGift:IsNecessity(pItem)
 
 	-- other
 	if (nGenre == 18 and nDetail == 1) then
-		return true
+		if(nParticular ~=1 ) then
+			return true
+		end
 	end
 end
 
