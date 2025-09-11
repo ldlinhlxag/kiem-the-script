@@ -864,6 +864,9 @@ function Player:RandomDropItem(him)
 	if nItemLevel < 1 then
 		nItemLevel = 1;
 	end
+	if nItemLevel > 10 then
+		nItemLevel = 10;
+	end
 	local nSeries = MathRandom(1, 5);
 	local tbParticularMap = {
 		[Item.DROP_ITEM_MELEE_DETAIL_TYPE]    = Item.DROP_ITEM_MELEE_PARTICULAR_TYPE,
@@ -897,7 +900,6 @@ function Player:RandomDropItem(him)
 	local indexRate = MathRandom(1, 100)
 	if indexRate <= Item.DROP_RATE_PERCENT then
 		me.AddItem(1, nDetailType, nParticular, nItemLevel, nSeries, nil, 100);
-		me.Earn(10 * nItemLevel, 0);
 		me.AddJbCoin(nItemLevel);
 	end
 end

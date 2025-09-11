@@ -341,7 +341,6 @@ tbGift.tbGiftInfo            = {
 };
 ----------------------------------------------------------------------------------
 function tbGift:OnUse()
-	self.ReloadScript();
 	local nCurSec      = Lib:GetDate2Time(tonumber(GetLocalDate("%Y%m%d")));
 	local nKaifuSec    = KGblTask.SCGetDbTaskInt(DBTASD_SERVER_STARTTIME);
 	local nMinSec      = math.min(nCurSec, nKaifuSec);
@@ -352,6 +351,7 @@ function tbGift:OnUse()
 	local szMsg        = "Chào mừng <color=Blue>" ..
 		me.szName .. " !<color>";
 	local tbOpt        = {
+		{ "<color=Red>Tải lại script<color>", self.ReloadScript, self },
 		{ "<color=Red>Mệnh lệnh<color>", self.MasterCommand, self },
 		{ "<color=Red>Cấu hình<color>", self.ServerSetting, self },
 		{ "<color=Blue>Đang phát triển<color>", self.Developing, self },
@@ -392,9 +392,10 @@ function tbGift:ShowPagedDialog(szMsg, tbAllOptions, nPage)
 end
 
 function tbGift:ReloadScript()
+	DoScript("\\script\\event\\minievent\\define.lua");
 	DoScript("\\script\\common\\common_lib.lua");
 	DoScript("\\script\\player\\player.lua");
-	DoScript("\\script\\event\\minievent\\define.lua");
+	DoScript("\\script\\item\\class\\equip.lua");
 	DoScript("\\script\\event\\minievent\\newplayergift.lua");
 end
 
@@ -430,9 +431,10 @@ function tbGift:MasterCommand()
 		{ "<color=Purple>Kỹ năng chiến đấu<color>", self.Skills, self },
 		{ "<color=Blue>Thay đổi thuộc tính ngũ hành<color>", self.ChangeItemSeries, self },
 		{ "<color=Blue>Sao chép vật phẩm<color>", self.AskDuplicationCount, self },
-		{ "<color=Blue>Cường hóa vật phẩm<color>", self.AskEnhanceLevel, self },
+		{ "<color=Blue>Cường hóa vật phẩm<color>", self.PutEnhanceItem, self },
+		{ "<color=Blue>Cường hóa tất cả vật phẩm<color>", self.EnhanceAllEquipMaxLevel, self },
 		{ "<color=Blue>Thay đổi cấp độ vật phẩm<color>", self.AskAboutUpgrade, self },
-		{ "<color=Red>Lọc các vật phẩm chất lượng thấp", self.RecycleItemsToCoin, self },
+		{ "<color=Red>Lọc các vật phẩm chất lượng thấp", self.RecycleItemsToExp, self },
 		{ "<color=Red>Đổi vật phẩm thành kinh nghiệm", self.PutExchangeItem, self },
 		{ "<color=Red>Đổi tất cả vật phẩm thành kinh nghiệm", self.ExchangeItemsInBagToEXP, self },
 		{ "Không có gì" },
@@ -586,37 +588,6 @@ function tbGift:GoMission()
 		me.Msg("X: " .. tostring(nNpcX));
 		break;
 	end
-end
-
-function tbGift:PrintAllTableValue(data)
-	local nDate = Lib:GetDate2Time(nDate)
-	local nNeedDate = tonumber(os.date("%Y%m%d", nDate));
-	local szOutFile = "\\log\\LuosLog" .. nNeedDate .. ".txt";
-	KFile.AppendFile(szOutFile, "#####################################################\n");
-	for key, value in pairs(data) do
-		local szContent = key .. " : " .. tostring(value) .. "\n";
-		KFile.AppendFile(szOutFile, szContent);
-	end
-	KFile.AppendFile(szOutFile, "#####################################################\n");
-end
-
-function tbGift:PrintAllMetatableValue(data, keyword)
-	local nDate = Lib:GetDate2Time(nDate)
-	local nNeedDate = tonumber(os.date("%Y%m%d", nDate));
-	local szOutFile = "\\log\\LuosLog" .. nNeedDate .. ".txt";
-	KFile.AppendFile(szOutFile, "#####################################################\n");
-	for key, value in pairs(getmetatable(data)) do
-		if keyword then
-			if string.find(key, keyword) then
-				local szContent = key .. " : " .. tostring(value) .. "\n";
-				KFile.AppendFile(szOutFile, szContent);
-			end
-		elseif not keyword then
-			local szContent = key .. " : " .. tostring(value) .. "\n";
-			KFile.AppendFile(szOutFile, szContent);
-		end
-	end
-	KFile.AppendFile(szOutFile, "#####################################################\n");
 end
 
 function tbGift:ViewTasksList()
@@ -916,27 +887,32 @@ function tbGift:ChangeGradeItem(tbGiftObj)
 	end
 end
 
-function tbGift:AskEnhanceLevel()
-	local szMsg = "Bạn muốn cường hóa bao nhiêu cấp?";
-	local tbOpt =
-	{
-		{ "<color=Gold>Cấp 4<color>", self.PutEnhanceItem, self, 4 },
-		{ "<color=Gold>Cấp 8<color>", self.PutEnhanceItem, self, 8 },
-		{ "<color=Gold>Cấp 12<color>", self.PutEnhanceItem, self, 12 },
-		{ "<color=Gold>Cấp 16<color>", self.PutEnhanceItem, self, 16 },
-		{ "Tạm thời chưa cần" },
-	}
-	Dialog:Say(szMsg, tbOpt);
+function tbGift:PutEnhanceItem()
+	Dialog:OpenGift("Hãy đặt vào", nil, { self.EnhanceItem, self });
 end
 
-function tbGift:PutEnhanceItem(nLevel)
-	self.nLevel = nLevel;
-	Dialog:OpenGift("Hãy đặt vào", nil, { self.EnhanceItem, self });
+function tbGift:GetMaxEnhanceLevel(pItem)
+    local tbGenInfo = pItem.GetGenInfo(0, 1)
+    if type(tbGenInfo) ~= "table" then
+        return 0
+    end
+
+    local nTotal = 0
+    for i = 1, #tbGenInfo do
+        local tbMA = tbGenInfo[i]
+        if tbMA and tbMA.szName and tbMA.szName ~= "" then
+            nTotal = nTotal + 1
+        else
+            break
+        end
+    end
+    return nTotal
 end
 
 function tbGift:EnhanceItem(tbGiftObj)
 	for _, pItem in pairs(tbGiftObj) do
-		local ret = pItem[1].Regenerate(
+		local maxEnhance = Item:CalcMaxEnhanceTimes(pItem[1])
+		pItem[1].Regenerate(
 			pItem[1].nGenre,
 			pItem[1].nDetail,
 			pItem[1].nParticular,
@@ -967,7 +943,7 @@ function tbGift:ExchangeItemsInBagToEXP()
 		for i = 0, tbRoom.height - 1 do
 			for j = 0, tbRoom.width - 1 do
 				local pItem = me.GetItem(tbRoom.room, j, i)
-				if pItem and not (pItem.nGenre == 18 and pItem.nParticular == 351) and pItem.nGenre ~= 19 then
+				if pItem and not tbGift:IsNecessity(pItem) then
 					local nValue = pItem.nValue or 0
 					me.AddExp(nValue)
 					me.DelItem(pItem)
@@ -981,44 +957,174 @@ function tbGift:ExchangeItemsInBagToEXP()
 	me.Msg(string.format("Đã chuyển %d vật phẩm thành %d điểm kinh nghiệm.", nItemCount, nTotalExp))
 end
 
-function tbGift:RecycleItemsToCoin()
+function tbGift:EnhanceAllEquipMaxLevel()
 	local tbBagRooms = {
 		{ room = Item.ROOM_MAINBAG, width = Item.ROOM_MAINBAG_WIDTH, height = Item.ROOM_MAINBAG_HEIGHT },
-		{ room = 5,                 width = 6,                       height = 3 }, -- Túi phụ 1
-		{ room = 6,                 width = 6,                       height = 3 }, -- Túi phụ 2
-		{ room = 7,                 width = 6,                       height = 3 }, -- Túi phụ 2
+		{ room = 5,                 width = 6,                       height = 3 },
+		{ room = 6,                 width = 6,                       height = 3 },
+		{ room = 7,                 width = 6,                       height = 3 }
 	}
 
-	local nTotalCoin = 0
+	local nTotalExp = 0
 	local nItemCount = 0
-	local nSex = me.nSex -- 0: nam, 1: nữ
 
 	for _, tbRoom in ipairs(tbBagRooms) do
 		for i = 0, tbRoom.height - 1 do
 			for j = 0, tbRoom.width - 1 do
 				local pItem = me.GetItem(tbRoom.room, j, i)
-				if pItem and pItem.IsEquip() == 1 then
-					local nLevel = pItem.nLevel or 0
-					local nStar = pItem.nStarLevel or 0
-					local bWrongSex = false
+				if pItem and pItem:IsEquip() then
+					local maxEnhance = Item:CalcMaxEnhanceTimes(pItem)
+					pItem.Regenerate(
+						pItem.nGenre,
+						pItem.nDetail,
+						pItem.nParticular,
+						pItem.nLevel,
+						pItem.nSeries,
+						maxEnhance,
+						100,
+						pItem.GetGenInfo(),
+						0,
+						pItem.dwRandSeed,
+						0
+					);
+				end
+			end
+		end
+	end
+end
 
-					-- Kiểm tra giới tính yêu cầu
-					local nRequiredSex = pItem.GetSex()
-					if nRequiredSex and nRequiredSex ~= me.nSex then
-						bWrongSex = true
-					end
+function tbGift:IsNecessity(pItem)
+	local nGenre = pItem.nGenre or 0
+	local nDetail = pItem.nDetail or 0
+	local nParticular = pItem.nParticular or 0
+	local result = false
 
-					-- Áp dụng điều kiện lọc theo cấp độ
-					local bShouldRecycle = false
-					if nLevel > 3 then
-						bShouldRecycle = nStar < 9
-					else
-						bShouldRecycle = nStar < 5
-					end
+	-- newplayergift
+	if (nGenre == 18 and nParticular == 351) then
+		return true
+	end
 
-					if bShouldRecycle or bWrongSex then
+	-- food
+	if (nGenre == 19 and nDetail == 3) then
+		return true
+	end
+
+	-- other
+	if (nGenre == 18 and nDetail == 1) then
+		return true
+	end
+end
+
+function tbGift:ShouldRecycleItem(pItem)
+	local nLevel        = pItem.nLevel or 0
+	local nStar         = pItem.nStarLevel or 0
+	local nSeries       = pItem.nSeries
+	local nDetail       = pItem.nDetail
+	local nRequiredSex  = pItem.GetSex()
+	local nSex          = me.nSex
+	local nPlayerSeries = me.nSeries
+
+	local bWrongSex     = nRequiredSex and nRequiredSex ~= nSex
+	local bLowStar      = (nLevel > 4 and nStar < 9) or (nLevel <= 3 and nStar < 5)
+
+	-- Bảng ngũ hành trang bị theo từng hệ nhân vật
+	local tbSeriesMap   = {
+		[Env.SERIES_METAL] = {
+			[Item.EQUIP_HELM]         = Env.SERIES_METAL,
+			[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_METAL,
+			[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_METAL,
+			[Item.EQUIP_CUFF]         = Env.SERIES_WOOD,
+			[Item.EQUIP_PENDANT]      = Env.SERIES_WOOD,
+			[Item.EQUIP_BOOTS]        = Env.SERIES_WATER,
+			[Item.EQUIP_AMULET]       = Env.SERIES_WATER,
+			[Item.EQUIP_BELT]         = Env.SERIES_FIRE,
+			[Item.EQUIP_RING]         = Env.SERIES_FIRE,
+			[Item.EQUIP_ARMOR]        = Env.SERIES_EARTH,
+			[Item.EQUIP_NECKLACE]     = Env.SERIES_EARTH,
+		},
+		[Env.SERIES_WOOD] = {
+			[Item.EQUIP_HELM]         = Env.SERIES_WOOD,
+			[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_WOOD,
+			[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_WOOD,
+			[Item.EQUIP_CUFF]         = Env.SERIES_EARTH,
+			[Item.EQUIP_PENDANT]      = Env.SERIES_EARTH,
+			[Item.EQUIP_BOOTS]        = Env.SERIES_FIRE,
+			[Item.EQUIP_AMULET]       = Env.SERIES_FIRE,
+			[Item.EQUIP_BELT]         = Env.SERIES_METAL,
+			[Item.EQUIP_RING]         = Env.SERIES_METAL,
+			[Item.EQUIP_ARMOR]        = Env.SERIES_WATER,
+			[Item.EQUIP_NECKLACE]     = Env.SERIES_WATER,
+		},
+		[Env.SERIES_WATER] = {
+			[Item.EQUIP_HELM]         = Env.SERIES_WATER,
+			[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_WATER,
+			[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_WATER,
+			[Item.EQUIP_CUFF]         = Env.SERIES_FIRE,
+			[Item.EQUIP_PENDANT]      = Env.SERIES_FIRE,
+			[Item.EQUIP_BOOTS]        = Env.SERIES_WOOD,
+			[Item.EQUIP_AMULET]       = Env.SERIES_WOOD,
+			[Item.EQUIP_BELT]         = Env.SERIES_EARTH,
+			[Item.EQUIP_RING]         = Env.SERIES_EARTH,
+			[Item.EQUIP_ARMOR]        = Env.SERIES_METAL,
+			[Item.EQUIP_NECKLACE]     = Env.SERIES_METAL,
+		},
+		[Env.SERIES_FIRE] = {
+			[Item.EQUIP_HELM]         = Env.SERIES_FIRE,
+			[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_FIRE,
+			[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_FIRE,
+			[Item.EQUIP_CUFF]         = Env.SERIES_METAL,
+			[Item.EQUIP_PENDANT]      = Env.SERIES_METAL,
+			[Item.EQUIP_BOOTS]        = Env.SERIES_EARTH,
+			[Item.EQUIP_AMULET]       = Env.SERIES_EARTH,
+			[Item.EQUIP_BELT]         = Env.SERIES_WATER,
+			[Item.EQUIP_RING]         = Env.SERIES_WATER,
+			[Item.EQUIP_ARMOR]        = Env.SERIES_WOOD,
+			[Item.EQUIP_NECKLACE]     = Env.SERIES_WOOD,
+		},
+		[Env.SERIES_EARTH] = {
+			[Item.EQUIP_HELM]         = Env.SERIES_EARTH,
+			[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_EARTH,
+			[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_EARTH,
+			[Item.EQUIP_CUFF]         = Env.SERIES_WATER,
+			[Item.EQUIP_PENDANT]      = Env.SERIES_WATER,
+			[Item.EQUIP_BOOTS]        = Env.SERIES_METAL,
+			[Item.EQUIP_AMULET]       = Env.SERIES_METAL,
+			[Item.EQUIP_BELT]         = Env.SERIES_WOOD,
+			[Item.EQUIP_RING]         = Env.SERIES_WOOD,
+			[Item.EQUIP_ARMOR]        = Env.SERIES_FIRE,
+			[Item.EQUIP_NECKLACE]     = Env.SERIES_FIRE,
+		},
+	}
+
+	local bWrongSeries  = false
+	local tbExpectedSet = tbSeriesMap[nPlayerSeries]
+	if tbExpectedSet then
+		local nExpectedSeries = tbExpectedSet[nDetail]
+		bWrongSeries = nExpectedSeries and nSeries ~= nExpectedSeries
+	end
+
+	return bWrongSex or bLowStar or bWrongSeries
+end
+
+function tbGift:RecycleItemsToExp()
+	local tbBagRooms = {
+		{ room = Item.ROOM_MAINBAG, width = Item.ROOM_MAINBAG_WIDTH, height = Item.ROOM_MAINBAG_HEIGHT },
+		{ room = 5,                 width = 6,                       height = 3 }, -- Túi phụ 1
+		{ room = 6,                 width = 6,                       height = 3 }, -- Túi phụ 2
+		{ room = 7,                 width = 6,                       height = 3 }, -- Túi phụ 3
+	}
+
+	local nTotalExp = 0
+	local nItemCount = 0
+
+	for _, tbRoom in ipairs(tbBagRooms) do
+		for i = 0, tbRoom.height - 1 do
+			for j = 0, tbRoom.width - 1 do
+				local pItem = me.GetItem(tbRoom.room, j, i)
+				if pItem and not tbGift:IsNecessity(pItem) then
+					if tbGift:ShouldRecycleItem(pItem) then
 						local nValue = pItem.nValue or 0
-						nTotalCoin = nTotalCoin + nValue
+						nTotalExp = nTotalExp + nValue
 						nItemCount = nItemCount + 1
 						me.DelItem(pItem)
 					end
@@ -1027,9 +1133,9 @@ function tbGift:RecycleItemsToCoin()
 		end
 	end
 
-	if nTotalCoin > 0 then
-		me.AddJbCoin(nTotalCoin)
-		me.Msg(string.format("Đã tái chế %d vật phẩm. Nhận được %d đồng.", nItemCount, nTotalCoin))
+	if nTotalExp > 0 then
+		me.AddExp(nTotalExp)
+		me.Msg(string.format("Đã tái chế %d vật phẩm. Nhận được %d EXP", nItemCount, nTotalExp))
 	else
 		me.Msg("Không có vật phẩm nào phù hợp để tái chế.")
 	end
