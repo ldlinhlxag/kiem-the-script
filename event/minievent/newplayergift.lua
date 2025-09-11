@@ -481,11 +481,12 @@ function tbGift:AskDropDetailType()
 		{ "Áo giáp (Armor)", self.SetDropDetailType, self, Item.DROP_ITEM_ARMOR_DETAIL_TYPE },
 		{ "Nhẫn", self.SetDropDetailType, self, Item.DROP_ITEM_RING_DETAIL_TYPE },
 		{ "Dây chuyền", self.SetDropDetailType, self, Item.DROP_ITEM_NECKLACE_DETAIL_TYPE },
-		{ "Bùa hộ mệnh", self.SetDropDetailType, self, Item.DROP_ITEM_AMULET_DETAIL_TYPE },
+		{ "Phù", self.SetDropDetailType, self, Item.DROP_ITEM_AMULET_DETAIL_TYPE },
 		{ "Giày", self.SetDropDetailType, self, Item.DROP_ITEM_BOOTS_DETAIL_TYPE },
 		{ "Đai lưng", self.SetDropDetailType, self, Item.DROP_ITEM_BELT_DETAIL_TYPE },
 		{ "Mũ", self.SetDropDetailType, self, Item.DROP_ITEM_HELM_DETAIL_TYPE },
 		{ "Bao tay", self.SetDropDetailType, self, Item.DROP_ITEM_CUFF_DETAIL_TYPE },
+		{ "Bội", self.SetDropDetailType, self, Item.DROP_ITEM_PENDANT_DETAIL_TYPE },
 		{ "Ngẫu nhiên", self.SetDropDetailType, self, nil },
 		{ "Ngừng rơi vật phẩm", self.SetDropDetailType, self, -1 },
 		{ "Thoát" },
@@ -501,11 +502,12 @@ function tbGift:SetDropDetailType(nDetailType)
 		[Item.DROP_ITEM_ARMOR_DETAIL_TYPE]    = "Áo giáp",
 		[Item.DROP_ITEM_RING_DETAIL_TYPE]     = "Nhẫn",
 		[Item.DROP_ITEM_NECKLACE_DETAIL_TYPE] = "Dây chuyền",
-		[Item.DROP_ITEM_AMULET_DETAIL_TYPE]   = "Bùa hộ mệnh",
+		[Item.DROP_ITEM_AMULET_DETAIL_TYPE]   = "Phù",
 		[Item.DROP_ITEM_BOOTS_DETAIL_TYPE]    = "Giày",
 		[Item.DROP_ITEM_BELT_DETAIL_TYPE]     = "Đai lưng",
 		[Item.DROP_ITEM_HELM_DETAIL_TYPE]     = "Mũ",
 		[Item.DROP_ITEM_CUFF_DETAIL_TYPE]     = "Bao tay",
+		[Item.DROP_ITEM_PENDANT_DETAIL_TYPE]     = "Bội",
 	}
 	if nDetailType == -1 then
 		me.Msg("Đã thiết lập: không rơi vật phẩm.")
