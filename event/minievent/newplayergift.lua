@@ -351,14 +351,14 @@ function tbGift:OnUse()
 	local szMsg        = "Chào mừng <color=Blue>" ..
 		me.szName .. " !<color>";
 	local tbOpt        = {
-		{ "<color=Red>Tải lại script<color>", self.ReloadScript, self },
+		{ "<color=Orange>Tải lại script<color>", self.ReloadScript, self },
 		{ "<color=Red>Mệnh lệnh<color>", self.MasterCommand, self },
 		{ "<color=Red>Cấu hình<color>", self.ServerSetting, self },
-		{ "<color=Gold>Bật Timer<color>", self.StartTimer, self },
-		{ "<color=Gold>Tắt Timer<color>", self.StopTimer, self },
-		{ "<color=Blue>Đang phát triển<color>", self.Developing, self },
-		{ "<color=Cyan>Các chức năng thử nghiệm<color>", self.Testing, self },
-		{ "<color=Green>Hỗ trợ<color>", self.Support, self },
+		{ "<color=Gold>Bật timer<color>", self.StartTimer, self },
+		{ "<color=Gold>Tắt timer<color>", self.StopTimer, self },
+		{ "<color=Yellow>Debug<color>", self.Debugging, self },
+		{ "<color=Yellow>Các chức năng thử nghiệm<color>", self.Testing, self },
+		{ "<color=Blue>Hỗ trợ<color>", self.Support, self },
 		{ "Kết thúc đối thoại" },
 	};
 	if nMaxSec <= Lib:GetDate2Time(self.WULINSHIJIA_ENDTIME) and nMinSec >= Lib:GetDate2Time(self.WULINSHIJIA_STARTTIME) then
@@ -370,6 +370,71 @@ function tbGift:OnUse()
 		end
 	end
 	Dialog:Say(szMsg, tbOpt);
+end
+
+function tbGift:ReloadScript()
+	DoScript("\\script\\event\\minievent\\define.lua");
+	DoScript("\\script\\common\\common_lib.lua");
+	DoScript("\\script\\player\\player.lua");
+	DoScript("\\script\\item\\class\\equip.lua");
+	DoScript("\\script\\event\\minievent\\newplayergift.lua");
+end
+
+function tbGift:MasterCommand()
+	local szMsg = "Xin chào <color=Blue>" .. me.szName .. "<color>";
+	local tbFactionHandlers = {
+		ThieuLam = self.TranPhaiThieuLam,
+		ThienVuong = self.TraiPhaiThienVuong,
+		DuongMon = self.TranPhaiDuongMon,
+		NguDoc = self.TranPhaiNguDoc,
+		MinhGiao = self.TranPhaiMinhGiao,
+		NgaMy = self.TranPhaiNgaMy,
+		ThuyYen = self.TranPhaiThuyYen,
+		DoanThi = self.TranPhaiDoanThi,
+		CaiBang = self.TranPhaiCaiBang,
+		ThienNhan = self.TranPhaiThienNhan,
+		VoDang = self.TranPhaiVoDang,
+		ConLon = self.TranPhaiConLon,
+	}
+	local tbOpt =
+	{
+		{ "<color=Gold>Tiền<color>", self.DeceiveMoney, self },
+		{ "<color=Gold>Thương nhân không gian<color>", self.AskShopPortal, self },
+		{ "<color=Green>Về nhà<color>", self.GoHome, self },
+		{ "<color=Blue>Môn phái<color>", self.OnFaction, self },
+		{ "<color=Blue>Võ học trấn phái<color>", self.ShowPagedDialog, self, "Lựa chọn", self:GetFactionOptions(tbFactionHandlers), 1 },
+		{ "<color=Purple>Tinh lực và hoạt lực<color>", self.MakePointAndGatherPoint, self },
+		{ "<color=Purple>Tiềm năng và kỹ năng<color>", self.Points, self },
+		{ "<color=Purple>Kỹ năng chiến đấu<color>", self.Skills, self },
+		{ "<color=Blue>Thay đổi thuộc tính ngũ hành<color>", self.ChangeItemSeries, self },
+		{ "<color=Blue>Sao chép vật phẩm<color>", self.AskDuplicationCount, self },
+		{ "<color=Blue>Cường hóa vật phẩm<color>", self.PutEnhanceItem, self },
+		{ "<color=Blue>Cường hóa tất cả vật phẩm<color>", self.EnhanceAllEquipMaxLevel, self },
+		{ "<color=Blue>Thay đổi cấp độ vật phẩm<color>", self.AskAboutUpgrade, self },
+		{ "<color=Red>Lọc các vật phẩm chất lượng thấp", self.RecycleItemsToExp, self },
+		{ "<color=Red>Đổi vật phẩm thành kinh nghiệm", self.PutExchangeItem, self },
+		{ "<color=Red>Đổi tất cả vật phẩm thành kinh nghiệm", self.ExchangeItemsInBagToEXP, self },
+		{ "Không có gì" },
+	}
+	Dialog:Say(szMsg, tbOpt);
+end
+
+function tbGift:GetFactionOptions(tbHandlers)
+	local tbFactionSelect = {
+		{ "Thiếu Lâm", tbHandlers["ThieuLam"], self },
+		{ "Thiên Vương", tbHandlers["ThienVuong"], self },
+		{ "Đường môn", tbHandlers["DuongMon"], self },
+		{ "Ngũ Độc", tbHandlers["NguDoc"], self },
+		{ "Minh giáo", tbHandlers["MinhGiao"], self },
+		{ "Nga My", tbHandlers["NgaMy"], self },
+		{ "Thúy Yên", tbHandlers["ThuyYen"], self },
+		{ "Đoàn Thị", tbHandlers["DoanThi"], self },
+		{ "Cái Bang", tbHandlers["CaiBang"], self },
+		{ "Thiên Nhẫn", tbHandlers["ThienNhan"], self },
+		{ "Võ Đang", tbHandlers["VoDang"], self },
+		{ "Côn Lôn", tbHandlers["ConLon"], self },
+	}
+	return tbFactionSelect
 end
 
 function tbGift:ShowPagedDialog(szMsg, tbAllOptions, nPage)
@@ -393,55 +458,9 @@ function tbGift:ShowPagedDialog(szMsg, tbAllOptions, nPage)
 	Dialog:Say(szMsg .. " (Trang " .. nPage .. ")", tbOpt)
 end
 
-function tbGift:ReloadScript()
-	DoScript("\\script\\event\\minievent\\define.lua");
-	DoScript("\\script\\common\\common_lib.lua");
-	DoScript("\\script\\player\\player.lua");
-	DoScript("\\script\\item\\class\\equip.lua");
-	DoScript("\\script\\event\\minievent\\newplayergift.lua");
-end
-
-function tbGift:Developing()
+function tbGift:Debugging()
 	local pPlayer = KPlayer.GetPlayerObjById(me.nId);
 	tbGift:PrintAllMetatableValue(me);
-end
-
-function tbGift:MasterCommand()
-	local szMsg = "Xin chào <color=Blue>" .. me.szName .. "<color>";
-	local tbFactionSelect = {};
-	table.insert(tbFactionSelect, { "Thiếu Lâm", self.TranPhaiThieuLam, self });
-	table.insert(tbFactionSelect, { "Thiên Vương", self.TraiPhaiThienVuong, self });
-	table.insert(tbFactionSelect, { "Đường môn", self.TranPhaiDuongMon, self });
-	table.insert(tbFactionSelect, { "Ngũ Độc", self.TranPhaiNguDoc, self });
-	table.insert(tbFactionSelect, { "Minh giáo", self.TranPhaiMinhGiao, self });
-	table.insert(tbFactionSelect, { "Nga My", self.TranPhaiNgaMy, self });
-	table.insert(tbFactionSelect, { "Thúy Yên", self.TranPhaiThuyYen, self });
-	table.insert(tbFactionSelect, { "Đoàn Thị", self.TranPhaiDoanThi, self });
-	table.insert(tbFactionSelect, { "Cái Bang", self.TranPhaiCaiBang, self });
-	table.insert(tbFactionSelect, { "Thiên Nhẫn", self.TranPhaiThienNhan, self });
-	table.insert(tbFactionSelect, { "Võ Đang", self.TranPhaiVoDang, self });
-	table.insert(tbFactionSelect, { "Côn Lôn", self.TranPhaiConLon, self });
-	local tbOpt =
-	{
-		{ "<color=Gold>Tiền<color>", self.DeceiveMoney, self },
-		{ "<color=Gold>Thương nhân không gian<color>", self.AskShopPortal, self },
-		{ "<color=Green>Về nhà<color>", self.GoHome, self },
-		{ "<color=Red>Môn phái<color>", self.OnFaction, self },
-		{ "<color=Blue>Võ học trấn phái<color>", self.ShowPagedDialog, self, "Lựa chọn", tbFactionSelect, 1 },
-		{ "<color=Purple>Tinh lực và hoạt lực<color>", self.MakePointAndGatherPoint, self },
-		{ "<color=Purple>Tiềm năng và kỹ năng<color>", self.Points, self },
-		{ "<color=Purple>Kỹ năng chiến đấu<color>", self.Skills, self },
-		{ "<color=Blue>Thay đổi thuộc tính ngũ hành<color>", self.ChangeItemSeries, self },
-		{ "<color=Blue>Sao chép vật phẩm<color>", self.AskDuplicationCount, self },
-		{ "<color=Blue>Cường hóa vật phẩm<color>", self.PutEnhanceItem, self },
-		{ "<color=Blue>Cường hóa tất cả vật phẩm<color>", self.EnhanceAllEquipMaxLevel, self },
-		{ "<color=Blue>Thay đổi cấp độ vật phẩm<color>", self.AskAboutUpgrade, self },
-		{ "<color=Red>Lọc các vật phẩm chất lượng thấp", self.RecycleItemsToExp, self },
-		{ "<color=Red>Đổi vật phẩm thành kinh nghiệm", self.PutExchangeItem, self },
-		{ "<color=Red>Đổi tất cả vật phẩm thành kinh nghiệm", self.ExchangeItemsInBagToEXP, self },
-		{ "Không có gì" },
-	}
-	Dialog:Say(szMsg, tbOpt);
 end
 
 function tbGift:ServerSetting()
@@ -557,7 +576,7 @@ function tbGift:StartTimer()
 		me.Msg("Timer gift đang chạy rồi!")
 		return
 	end
-	Env.GIFT_TIMER_ID = Timer:Register(10 * Env.GAME_FPS, self.OnTimer, self)
+	Env.GIFT_TIMER_ID = Timer:Register(5 * Env.GAME_FPS, self.OnTimer, self)
 	me.Msg("Đã bật timer gift!")
 end
 
@@ -832,7 +851,6 @@ function tbGift:Points()
 end
 
 function tbGift:PotentialPoints()
-
 end
 
 function tbGift:SkillPoints()
@@ -1049,7 +1067,7 @@ function tbGift:IsNecessity(pItem)
 	end
 end
 
-function tbGift:ShouldRecycleItem(pItem)
+function tbGift:ShouldRecycleItem(pItem, isFilterSeries)
 	local nLevel        = pItem.nLevel or 0
 	local nStar         = pItem.nStarLevel or 0
 	local nSeries       = pItem.nSeries
@@ -1060,83 +1078,83 @@ function tbGift:ShouldRecycleItem(pItem)
 
 	local bWrongSex     = nRequiredSex and nRequiredSex ~= nSex
 	local bLowStar      = (nLevel > 4 and nStar < 9) or (nLevel <= 3 and nStar < 5)
-
-	-- Bảng ngũ hành trang bị theo từng hệ nhân vật
-	local tbSeriesMap   = {
-		[Env.SERIES_METAL] = {
-			[Item.EQUIP_HELM]         = Env.SERIES_METAL,
-			[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_METAL,
-			[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_METAL,
-			[Item.EQUIP_CUFF]         = Env.SERIES_WOOD,
-			[Item.EQUIP_PENDANT]      = Env.SERIES_WOOD,
-			[Item.EQUIP_BOOTS]        = Env.SERIES_WATER,
-			[Item.EQUIP_AMULET]       = Env.SERIES_WATER,
-			[Item.EQUIP_BELT]         = Env.SERIES_FIRE,
-			[Item.EQUIP_RING]         = Env.SERIES_FIRE,
-			[Item.EQUIP_ARMOR]        = Env.SERIES_EARTH,
-			[Item.EQUIP_NECKLACE]     = Env.SERIES_EARTH,
-		},
-		[Env.SERIES_WOOD] = {
-			[Item.EQUIP_HELM]         = Env.SERIES_WOOD,
-			[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_WOOD,
-			[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_WOOD,
-			[Item.EQUIP_CUFF]         = Env.SERIES_EARTH,
-			[Item.EQUIP_PENDANT]      = Env.SERIES_EARTH,
-			[Item.EQUIP_BOOTS]        = Env.SERIES_FIRE,
-			[Item.EQUIP_AMULET]       = Env.SERIES_FIRE,
-			[Item.EQUIP_BELT]         = Env.SERIES_METAL,
-			[Item.EQUIP_RING]         = Env.SERIES_METAL,
-			[Item.EQUIP_ARMOR]        = Env.SERIES_WATER,
-			[Item.EQUIP_NECKLACE]     = Env.SERIES_WATER,
-		},
-		[Env.SERIES_WATER] = {
-			[Item.EQUIP_HELM]         = Env.SERIES_WATER,
-			[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_WATER,
-			[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_WATER,
-			[Item.EQUIP_CUFF]         = Env.SERIES_FIRE,
-			[Item.EQUIP_PENDANT]      = Env.SERIES_FIRE,
-			[Item.EQUIP_BOOTS]        = Env.SERIES_WOOD,
-			[Item.EQUIP_AMULET]       = Env.SERIES_WOOD,
-			[Item.EQUIP_BELT]         = Env.SERIES_EARTH,
-			[Item.EQUIP_RING]         = Env.SERIES_EARTH,
-			[Item.EQUIP_ARMOR]        = Env.SERIES_METAL,
-			[Item.EQUIP_NECKLACE]     = Env.SERIES_METAL,
-		},
-		[Env.SERIES_FIRE] = {
-			[Item.EQUIP_HELM]         = Env.SERIES_FIRE,
-			[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_FIRE,
-			[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_FIRE,
-			[Item.EQUIP_CUFF]         = Env.SERIES_METAL,
-			[Item.EQUIP_PENDANT]      = Env.SERIES_METAL,
-			[Item.EQUIP_BOOTS]        = Env.SERIES_EARTH,
-			[Item.EQUIP_AMULET]       = Env.SERIES_EARTH,
-			[Item.EQUIP_BELT]         = Env.SERIES_WATER,
-			[Item.EQUIP_RING]         = Env.SERIES_WATER,
-			[Item.EQUIP_ARMOR]        = Env.SERIES_WOOD,
-			[Item.EQUIP_NECKLACE]     = Env.SERIES_WOOD,
-		},
-		[Env.SERIES_EARTH] = {
-			[Item.EQUIP_HELM]         = Env.SERIES_EARTH,
-			[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_EARTH,
-			[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_EARTH,
-			[Item.EQUIP_CUFF]         = Env.SERIES_WATER,
-			[Item.EQUIP_PENDANT]      = Env.SERIES_WATER,
-			[Item.EQUIP_BOOTS]        = Env.SERIES_METAL,
-			[Item.EQUIP_AMULET]       = Env.SERIES_METAL,
-			[Item.EQUIP_BELT]         = Env.SERIES_WOOD,
-			[Item.EQUIP_RING]         = Env.SERIES_WOOD,
-			[Item.EQUIP_ARMOR]        = Env.SERIES_FIRE,
-			[Item.EQUIP_NECKLACE]     = Env.SERIES_FIRE,
-		},
-	}
-
 	local bWrongSeries  = false
-	local tbExpectedSet = tbSeriesMap[nPlayerSeries]
-	if tbExpectedSet then
-		local nExpectedSeries = tbExpectedSet[nDetail]
-		bWrongSeries = nExpectedSeries and nSeries ~= nExpectedSeries
-	end
+	if isFilterSeries then
+		-- Bảng ngũ hành trang bị theo từng hệ nhân vật
+		local tbSeriesMap = {
+			[Env.SERIES_METAL] = {
+				[Item.EQUIP_HELM]         = Env.SERIES_METAL,
+				[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_METAL,
+				[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_METAL,
+				[Item.EQUIP_CUFF]         = Env.SERIES_WOOD,
+				[Item.EQUIP_PENDANT]      = Env.SERIES_WOOD,
+				[Item.EQUIP_BOOTS]        = Env.SERIES_WATER,
+				[Item.EQUIP_AMULET]       = Env.SERIES_WATER,
+				[Item.EQUIP_BELT]         = Env.SERIES_FIRE,
+				[Item.EQUIP_RING]         = Env.SERIES_FIRE,
+				[Item.EQUIP_ARMOR]        = Env.SERIES_EARTH,
+				[Item.EQUIP_NECKLACE]     = Env.SERIES_EARTH,
+			},
+			[Env.SERIES_WOOD] = {
+				[Item.EQUIP_HELM]         = Env.SERIES_WOOD,
+				[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_WOOD,
+				[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_WOOD,
+				[Item.EQUIP_CUFF]         = Env.SERIES_EARTH,
+				[Item.EQUIP_PENDANT]      = Env.SERIES_EARTH,
+				[Item.EQUIP_BOOTS]        = Env.SERIES_FIRE,
+				[Item.EQUIP_AMULET]       = Env.SERIES_FIRE,
+				[Item.EQUIP_BELT]         = Env.SERIES_METAL,
+				[Item.EQUIP_RING]         = Env.SERIES_METAL,
+				[Item.EQUIP_ARMOR]        = Env.SERIES_WATER,
+				[Item.EQUIP_NECKLACE]     = Env.SERIES_WATER,
+			},
+			[Env.SERIES_WATER] = {
+				[Item.EQUIP_HELM]         = Env.SERIES_WATER,
+				[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_WATER,
+				[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_WATER,
+				[Item.EQUIP_CUFF]         = Env.SERIES_FIRE,
+				[Item.EQUIP_PENDANT]      = Env.SERIES_FIRE,
+				[Item.EQUIP_BOOTS]        = Env.SERIES_WOOD,
+				[Item.EQUIP_AMULET]       = Env.SERIES_WOOD,
+				[Item.EQUIP_BELT]         = Env.SERIES_EARTH,
+				[Item.EQUIP_RING]         = Env.SERIES_EARTH,
+				[Item.EQUIP_ARMOR]        = Env.SERIES_METAL,
+				[Item.EQUIP_NECKLACE]     = Env.SERIES_METAL,
+			},
+			[Env.SERIES_FIRE] = {
+				[Item.EQUIP_HELM]         = Env.SERIES_FIRE,
+				[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_FIRE,
+				[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_FIRE,
+				[Item.EQUIP_CUFF]         = Env.SERIES_METAL,
+				[Item.EQUIP_PENDANT]      = Env.SERIES_METAL,
+				[Item.EQUIP_BOOTS]        = Env.SERIES_EARTH,
+				[Item.EQUIP_AMULET]       = Env.SERIES_EARTH,
+				[Item.EQUIP_BELT]         = Env.SERIES_WATER,
+				[Item.EQUIP_RING]         = Env.SERIES_WATER,
+				[Item.EQUIP_ARMOR]        = Env.SERIES_WOOD,
+				[Item.EQUIP_NECKLACE]     = Env.SERIES_WOOD,
+			},
+			[Env.SERIES_EARTH] = {
+				[Item.EQUIP_HELM]         = Env.SERIES_EARTH,
+				[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_EARTH,
+				[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_EARTH,
+				[Item.EQUIP_CUFF]         = Env.SERIES_WATER,
+				[Item.EQUIP_PENDANT]      = Env.SERIES_WATER,
+				[Item.EQUIP_BOOTS]        = Env.SERIES_METAL,
+				[Item.EQUIP_AMULET]       = Env.SERIES_METAL,
+				[Item.EQUIP_BELT]         = Env.SERIES_WOOD,
+				[Item.EQUIP_RING]         = Env.SERIES_WOOD,
+				[Item.EQUIP_ARMOR]        = Env.SERIES_FIRE,
+				[Item.EQUIP_NECKLACE]     = Env.SERIES_FIRE,
+			},
+		}
 
+		local tbExpectedSet = tbSeriesMap[nPlayerSeries]
+		if tbExpectedSet then
+			local nExpectedSeries = tbExpectedSet[nDetail]
+			bWrongSeries = nExpectedSeries and nSeries ~= nExpectedSeries
+		end
+	end
 	return bWrongSex or bLowStar or bWrongSeries
 end
 
@@ -1156,7 +1174,7 @@ function tbGift:RecycleItemsToExp()
 			for j = 0, tbRoom.width - 1 do
 				local pItem = me.GetItem(tbRoom.room, j, i)
 				if pItem and not tbGift:IsNecessity(pItem) then
-					if tbGift:ShouldRecycleItem(pItem) then
+					if tbGift:ShouldRecycleItem(pItem,true) then
 						local nValue = pItem.nValue or 0
 						nTotalExp = nTotalExp + nValue
 						nItemCount = nItemCount + 1

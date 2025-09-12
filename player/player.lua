@@ -859,7 +859,7 @@ function Player:RandomDropItem(him)
 	if Env.DROP_RATE_PERCENT == 0 then
 		return
 	end
-	local nItemLevel = math.floor(me.nLevel / 10);
+	local nItemLevel = math.floor(him.nLevel / 10);
 	if nItemLevel < 1 then
 		nItemLevel = 1;
 	end
