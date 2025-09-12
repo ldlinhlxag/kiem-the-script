@@ -354,6 +354,8 @@ function tbGift:OnUse()
 		{ "<color=Red>Tải lại script<color>", self.ReloadScript, self },
 		{ "<color=Red>Mệnh lệnh<color>", self.MasterCommand, self },
 		{ "<color=Red>Cấu hình<color>", self.ServerSetting, self },
+		{ "<color=Gold>Bật Timer<color>", self.StartTimer, self },
+		{ "<color=Gold>Tắt Timer<color>", self.StopTimer, self },
 		{ "<color=Blue>Đang phát triển<color>", self.Developing, self },
 		{ "<color=Cyan>Các chức năng thử nghiệm<color>", self.Testing, self },
 		{ "<color=Green>Hỗ trợ<color>", self.Support, self },
@@ -488,14 +490,13 @@ function tbGift:AskDropDetailType()
 		{ "Bao tay", self.SetDropDetailType, self, Item.DROP_ITEM_CUFF_DETAIL_TYPE },
 		{ "Bội", self.SetDropDetailType, self, Item.DROP_ITEM_PENDANT_DETAIL_TYPE },
 		{ "Ngẫu nhiên", self.SetDropDetailType, self, nil },
-		{ "Ngừng rơi vật phẩm", self.SetDropDetailType, self, -1 },
 		{ "Thoát" },
 	}
 	Dialog:Say("Chọn loại vật phẩm muốn rơi ra:", tbOptions)
 end
 
 function tbGift:SetDropDetailType(nDetailType)
-	Item.DROP_DETAIL_TYPE_SETTING = nDetailType;
+	Env.DROP_DETAIL_TYPE_SETTING = nDetailType;
 	local tbDetailTypeName = {
 		[Item.DROP_ITEM_MELEE_DETAIL_TYPE]    = "Vũ khí cận chiến",
 		[Item.DROP_ITEM_RANGE_DETAIL_TYPE]    = "Vũ khí tầm xa",
@@ -507,11 +508,9 @@ function tbGift:SetDropDetailType(nDetailType)
 		[Item.DROP_ITEM_BELT_DETAIL_TYPE]     = "Đai lưng",
 		[Item.DROP_ITEM_HELM_DETAIL_TYPE]     = "Mũ",
 		[Item.DROP_ITEM_CUFF_DETAIL_TYPE]     = "Bao tay",
-		[Item.DROP_ITEM_PENDANT_DETAIL_TYPE]     = "Bội",
+		[Item.DROP_ITEM_PENDANT_DETAIL_TYPE]  = "Bội",
 	}
-	if nDetailType == -1 then
-		me.Msg("Đã thiết lập: không rơi vật phẩm.")
-	elseif nDetailType then
+	if nDetailType then
 		local szName = tbDetailTypeName[nDetailType] or "Không xác định"
 		me.Msg("Đã thiết lập loại vật phẩm rơi là: " .. szName)
 	else
@@ -521,6 +520,12 @@ end
 
 function tbGift:OpenDropRateDialog()
 	local tbOpt = {}
+	table.insert(tbOpt, {
+		"Ngừng rơi vật phẩm",
+		self.SetDropRate,
+		self,
+		0
+	})
 	for i = 1, 10 do
 		table.insert(tbOpt, {
 			string.format("%d%%", i),
@@ -529,7 +534,12 @@ function tbGift:OpenDropRateDialog()
 			i
 		})
 	end
-
+	table.insert(tbOpt, {
+		string.format("%d%%", 100),
+		self.SetDropRate,
+		self,
+		100
+	})
 	Dialog:Say("Chọn tỉ lệ rơi vật phẩm mong muốn:", tbOpt)
 end
 
@@ -538,11 +548,31 @@ function tbGift:SetDropRate(nPercent)
 		me.Msg("Tỉ lệ phải từ 1% đến 100%")
 		return
 	end
-	Item.DROP_RATE_PERCENT = nPercent;
-	if Item.DROP_DETAIL_TYPE_SETTING == -1 then
-		Item.DROP_DETAIL_TYPE_SETTING = nil
-	end
+	Env.DROP_RATE_PERCENT = nPercent;
 	me.Msg("Đã thiết lập tỉ lệ rơi vật phẩm là: " .. nPercent .. "%")
+end
+
+function tbGift:StartTimer()
+	if Env.GIFT_TIMER_ID > 0 then
+		me.Msg("Timer gift đang chạy rồi!")
+		return
+	end
+	Env.GIFT_TIMER_ID = Timer:Register(10 * Env.GAME_FPS, self.OnTimer, self)
+	me.Msg("Đã bật timer gift!")
+end
+
+function tbGift:StopTimer()
+	if Env.GIFT_TIMER_ID > 0 then
+		Timer:Close(Env.GIFT_TIMER_ID)
+		Env.GIFT_TIMER_ID = 0
+		me.Msg("Đã tắt timer gift!")
+	else
+		me.Msg("Timer gift chưa được bật!")
+	end
+end
+
+function tbGift:OnTimer()
+	self.RecycleItemsToExp()
 end
 
 function tbGift:DeceiveMoney()
@@ -894,21 +924,21 @@ function tbGift:PutEnhanceItem()
 end
 
 function tbGift:GetMaxEnhanceLevel(pItem)
-    local tbGenInfo = pItem.GetGenInfo(0, 1)
-    if type(tbGenInfo) ~= "table" then
-        return 0
-    end
+	local tbGenInfo = pItem.GetGenInfo(0, 1)
+	if type(tbGenInfo) ~= "table" then
+		return 0
+	end
 
-    local nTotal = 0
-    for i = 1, #tbGenInfo do
-        local tbMA = tbGenInfo[i]
-        if tbMA and tbMA.szName and tbMA.szName ~= "" then
-            nTotal = nTotal + 1
-        else
-            break
-        end
-    end
-    return nTotal
+	local nTotal = 0
+	for i = 1, #tbGenInfo do
+		local tbMA = tbGenInfo[i]
+		if tbMA and tbMA.szName and tbMA.szName ~= "" then
+			nTotal = nTotal + 1
+		else
+			break
+		end
+	end
+	return nTotal
 end
 
 function tbGift:EnhanceItem(tbGiftObj)
@@ -1013,7 +1043,7 @@ function tbGift:IsNecessity(pItem)
 
 	-- other
 	if (nGenre == 18 and nDetail == 1) then
-		if(nParticular ~=1 ) then
+		if (nParticular ~= 1) then
 			return true
 		end
 	end

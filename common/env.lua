@@ -64,6 +64,10 @@ Env.ZONE_TYPE_NAME	=
 	[2]		= "Netcom",
 };
 
+Env.GIFT_TIMER_ID	= 0;
+Env.DROP_DETAIL_TYPE_SETTING = nil;
+Env.DROP_RATE_PERCENT = 1;
+
 function Env:GetZoneType(szGatewayName)
 	local nZoneId	= tonumber(string.sub(szGatewayName, 5, 6));
 	return self.ZONE_TYPE[nZoneId] or 1;

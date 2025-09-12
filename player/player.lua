@@ -789,9 +789,8 @@ function Player:_OnKillNpc()
 	-- 如果是精英怪，首领怪，判断是否要给玩家的同伴添加经验
 	if him.GetNpcType() ~= 0 then
 		Partner:OnKillBoss(me, him);
-	else
-		Player:RandomDropItem(him);
 	end
+	Player:RandomDropItem(him);
 	Task:OnKillNpc(me, him);
 	Player:CheckDoPet(me);
 	if me.nMapId == 130 or me.nMapId == 131 or me.nMapId == 132 or me.nMapId == 133 or me.nMapId == 134 or me.nMapId == 135 or me.nMapId == 136 or me.nMapId == 137 then
@@ -857,7 +856,7 @@ function Player:RandomHoaTet(him)
 end
 
 function Player:RandomDropItem(him)
-	if Item.DROP_DETAIL_TYPE_SETTING == -1 then
+	if Env.DROP_RATE_PERCENT == 0 then
 		return
 	end
 	local nItemLevel = math.floor(me.nLevel / 10);
@@ -883,10 +882,10 @@ function Player:RandomDropItem(him)
 	}
 
 	local nDetailType
-	if Item.DROP_DETAIL_TYPE_SETTING and tbParticularMap[Item.DROP_DETAIL_TYPE_SETTING] then
-		nDetailType = Item.DROP_DETAIL_TYPE_SETTING
+	if Env.DROP_DETAIL_TYPE_SETTING and tbParticularMap[Env.DROP_DETAIL_TYPE_SETTING] then
+		nDetailType = Env.DROP_DETAIL_TYPE_SETTING
 	else
-		local tbDetailTypes = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }
+		local tbDetailTypes = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
 		local nRandIndex = MathRandom(1, #tbDetailTypes)
 		nDetailType = tbDetailTypes[nRandIndex]
 	end
@@ -899,7 +898,7 @@ function Player:RandomDropItem(him)
 	local nParticular = tbParticularList[nParticularIndex]
 
 	local indexRate = MathRandom(1, 100)
-	if indexRate <= Item.DROP_RATE_PERCENT then
+	if indexRate <= Env.DROP_RATE_PERCENT then
 		me.AddItem(1, nDetailType, nParticular, nItemLevel, nSeries, nil, 100);
 		me.AddJbCoin(nItemLevel);
 	end
