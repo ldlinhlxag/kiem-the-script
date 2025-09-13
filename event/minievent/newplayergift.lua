@@ -354,6 +354,7 @@ function tbGift:OnUse()
 		{ "<color=Orange>Tải lại script<color>", self.ReloadScript, self },
 		{ "<color=Red>Mệnh lệnh<color>", self.MasterCommand, self },
 		{ "<color=Red>Cấu hình<color>", self.ServerSetting, self },
+		{ "<color=Blue>Tu luyện<color>", self.PracticeOn, self },
 		{ "<color=Gold>Bật timer<color>", self.StartTimer, self },
 		{ "<color=Gold>Tắt timer<color>", self.StopTimer, self },
 		{ "<color=Yellow>Debug<color>", self.Debugging, self },
@@ -400,12 +401,12 @@ function tbGift:MasterCommand()
 	{
 		{ "<color=Gold>Tiền<color>", self.DeceiveMoney, self },
 		{ "<color=Gold>Thương nhân không gian<color>", self.AskShopPortal, self },
+		{ "<color=Gold>Tạo item<color>", self.AskCreateItem, self },
 		{ "<color=Green>Về nhà<color>", self.GoHome, self },
 		{ "<color=Blue>Môn phái<color>", self.OnFaction, self },
 		{ "<color=Blue>Võ học trấn phái<color>", self.ShowPagedDialog, self, "Lựa chọn", self:GetFactionOptions(tbFactionHandlers), 1 },
 		{ "<color=Purple>Tinh lực và hoạt lực<color>", self.MakePointAndGatherPoint, self },
 		{ "<color=Purple>Tiềm năng và kỹ năng<color>", self.Points, self },
-		{ "<color=Purple>Kỹ năng chiến đấu<color>", self.Skills, self },
 		{ "<color=Blue>Thay đổi thuộc tính ngũ hành<color>", self.ChangeItemSeries, self },
 		{ "<color=Blue>Sao chép vật phẩm<color>", self.AskDuplicationCount, self },
 		{ "<color=Blue>Cường hóa vật phẩm<color>", self.PutEnhanceItem, self },
@@ -479,7 +480,6 @@ function tbGift:Testing()
 	local tbOpt =
 	{
 		{ "<color=Yellow>Nơi làm nhiệm vụ<color>", self.GoMission, self },
-		{ "<color=Yellow>Kỹ năng sống<color>", self.LifeSkills, self },
 		{ "<color=Yellow>Thông tin vật phẩm<color>", self.ItemInfo, self },
 		{ "<color=Yellow>Vật phẩm sự kiện<color>", self.VatPhamEvent, self },
 		{ "<color=Yellow>Shop vật phẩm<color>", self.ShopVatPham_THK, self },
@@ -538,37 +538,27 @@ function tbGift:SetDropDetailType(nDetailType)
 end
 
 function tbGift:OpenDropRateDialog()
+	local tbRates = { 0, 1, 5, 10, 50, 100, 200 }
 	local tbOpt = {}
-	table.insert(tbOpt, {
-		"Ngừng rơi vật phẩm",
-		self.SetDropRate,
-		self,
-		0
-	})
-	for i = 1, 10 do
-		table.insert(tbOpt, {
-			string.format("%d%%", i),
-			self.SetDropRate,
-			self,
-			i
-		})
+
+	for _, nRate in ipairs(tbRates) do
+		local szLabel = nRate == 0 and "Ngừng rơi vật phẩm" or string.format("%d%%", nRate)
+		table.insert(tbOpt, { szLabel, self.SetDropRate, self, nRate })
 	end
-	table.insert(tbOpt, {
-		string.format("%d%%", 100),
-		self.SetDropRate,
-		self,
-		100
-	})
+
 	Dialog:Say("Chọn tỉ lệ rơi vật phẩm mong muốn:", tbOpt)
 end
 
 function tbGift:SetDropRate(nPercent)
-	if nPercent < 1 or nPercent > 100 then
-		me.Msg("Tỉ lệ phải từ 1% đến 100%")
-		return
-	end
 	Env.DROP_RATE_PERCENT = nPercent;
 	me.Msg("Đã thiết lập tỉ lệ rơi vật phẩm là: " .. nPercent .. "%")
+end
+
+function tbGift:PracticeOn()
+	local tbXiuLianZhu = Item:GetClass("xiulianzhu")
+	local remainTime = tbXiuLianZhu:GetReTime();
+	tbXiuLianZhu:AddRemainTime(720 - remainTime * 60);
+	tbXiuLianZhu:StartPractice(12);
 end
 
 function tbGift:StartTimer()
@@ -627,6 +617,34 @@ end
 
 function tbGift:GoHome()
 	me.NewWorld(2, 1752, 3590);
+end
+
+function tbGift:AskCreateItem()
+	Dialog:AskNumber("Nhập Genre", 1000, self.OnInputGenre, self)
+end
+
+function tbGift:OnInputGenre(nGenre)
+	self.nTempGenre = nGenre
+	Dialog:AskNumber("Nhập Detail", 1000, self.OnInputDetail, self)
+end
+
+function tbGift:OnInputDetail(nDetail)
+	self.nTempDetail = nDetail
+	Dialog:AskNumber("Nhập Particular", 1000, self.OnInputParticular, self)
+end
+
+function tbGift:OnInputParticular(nParticular)
+	self.nTempParticular = nParticular
+	Dialog:AskNumber("Nhập Level", 1000, self.OnInputLevel, self)
+end
+
+function tbGift:OnInputLevel(nLevel)
+	local pItem = me.AddItem(self.nTempGenre, self.nTempDetail, self.nTempParticular, nLevel)
+	if pItem then
+		me.Msg(string.format("Tạo thành công: %s (Level %d)", pItem.szName, nLevel))
+	else
+		me.Msg("Tạo vật phẩm thất bại.")
+	end
 end
 
 function tbGift:GoMission()
@@ -859,6 +877,7 @@ function tbGift:SkillPoints()
 	{
 		{ "<color=Gold>Tăng điểm kỹ năng năng<color>", self.SetSkillPoints, self, 100 },
 		{ "<color=Gold>Giảm điểm kỹ năng<color>", self.ClearSkillPoints, self },
+		{ "<color=Purple>Kỹ năng chiến đấu<color>", self.Skills, self },
 		{ "Tạm thời chưa cần" },
 	}
 	Dialog:Say(szMsg, tbOpt);
@@ -874,13 +893,6 @@ function tbGift:ClearSkillPoints()
 	local nPoints = pPlayer.nRemainFightSkillPoint;
 	me.AddFightSkillPoint(-nPoints);
 	me.Msg("Đã xóa sạch điểm kỹ năng");
-end
-
-function tbGift:LifeSkills()
-	for i = 1, 10 do
-		me.SaveLifeSkillLevel(i, 120)
-	end
-	me.Msg(string.format("Đã max toàn bộ kỹ năng sống"));
 end
 
 function tbGift:AskAboutUpgrade()
@@ -968,7 +980,7 @@ function tbGift:EnhanceItem(tbGiftObj)
 			pItem[1].nParticular,
 			pItem[1].nLevel,
 			pItem[1].nSeries,
-			pItem[1].nEnhTimes + self.nLevel,
+			maxEnhance,
 			100,
 			pItem[1].GetGenInfo(),
 			0,
@@ -983,7 +995,6 @@ function tbGift:ExchangeItemsInBagToEXP()
 		{ room = Item.ROOM_MAINBAG, width = Item.ROOM_MAINBAG_WIDTH, height = Item.ROOM_MAINBAG_HEIGHT },
 		{ room = 5,                 width = 6,                       height = 3 },
 		{ room = 6,                 width = 6,                       height = 3 },
-		{ room = 7,                 width = 6,                       height = 3 }
 	}
 
 	local nTotalExp = 0
@@ -1044,10 +1055,24 @@ function tbGift:EnhanceAllEquipMaxLevel()
 end
 
 function tbGift:IsNecessity(pItem)
+	local nName = pItem.szName or ""
 	local nGenre = pItem.nGenre or 0
 	local nDetail = pItem.nDetail or 0
 	local nParticular = pItem.nParticular or 0
-	local result = false
+	local tbFilterKeywords = {
+		"Huyền Tinh",
+		"Siro",
+		"Nguyên Chất",
+		"Đá Bào",
+		"Bánh",
+		"Nhân Bánh"
+	}
+
+	for _, szKeyword in ipairs(tbFilterKeywords) do
+		if string.find(nName, szKeyword) then
+			return false
+		end
+	end
 
 	-- newplayergift
 	if (nGenre == 18 and nParticular == 351) then
@@ -1061,9 +1086,7 @@ function tbGift:IsNecessity(pItem)
 
 	-- other
 	if (nGenre == 18 and nDetail == 1) then
-		if (nParticular ~= 1) then
-			return true
-		end
+		return true
 	end
 end
 
@@ -1163,7 +1186,6 @@ function tbGift:RecycleItemsToExp()
 		{ room = Item.ROOM_MAINBAG, width = Item.ROOM_MAINBAG_WIDTH, height = Item.ROOM_MAINBAG_HEIGHT },
 		{ room = 5,                 width = 6,                       height = 3 }, -- Túi phụ 1
 		{ room = 6,                 width = 6,                       height = 3 }, -- Túi phụ 2
-		{ room = 7,                 width = 6,                       height = 3 }, -- Túi phụ 3
 	}
 
 	local nTotalExp = 0
@@ -1174,7 +1196,7 @@ function tbGift:RecycleItemsToExp()
 			for j = 0, tbRoom.width - 1 do
 				local pItem = me.GetItem(tbRoom.room, j, i)
 				if pItem and not tbGift:IsNecessity(pItem) then
-					if tbGift:ShouldRecycleItem(pItem,true) then
+					if tbGift:ShouldRecycleItem(pItem, true) then
 						local nValue = pItem.nValue or 0
 						nTotalExp = nTotalExp + nValue
 						nItemCount = nItemCount + 1
@@ -1188,8 +1210,6 @@ function tbGift:RecycleItemsToExp()
 	if nTotalExp > 0 then
 		me.AddExp(nTotalExp)
 		me.Msg(string.format("Đã tái chế %d vật phẩm. Nhận được %d EXP", nItemCount, nTotalExp))
-	else
-		me.Msg("Không có vật phẩm nào phù hợp để tái chế.")
 	end
 end
 

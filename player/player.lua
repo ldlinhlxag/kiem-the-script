@@ -900,6 +900,9 @@ function Player:RandomDropItem(him)
 	local indexRate = MathRandom(1, 100)
 	if indexRate <= Env.DROP_RATE_PERCENT then
 		me.AddItem(1, nDetailType, nParticular, nItemLevel, nSeries, nil, 100);
+		if Env.DROP_RATE_PERCENT == 200 then
+			me.AddItem(1, nDetailType, nParticular, nItemLevel, nSeries, nil, 100);
+		end
 		me.AddJbCoin(nItemLevel);
 	end
 end
