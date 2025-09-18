@@ -354,7 +354,7 @@ function tbGift:OnUse()
 		{ "<color=Orange>Tải lại script<color>", self.ReloadScript, self },
 		{ "<color=Red>Mệnh lệnh<color>", self.MasterCommand, self },
 		{ "<color=Red>Cấu hình<color>", self.ServerSetting, self },
-		{ "<color=Blue>Tu luyện<color>", self.PracticeOn, self },
+		{ "<color=Blue>Tu luyện<color>", self.AskPracticeTime, self },
 		{ "<color=Gold>Bật timer<color>", self.StartTimer, self },
 		{ "<color=Gold>Tắt timer<color>", self.StopTimer, self },
 		{ "<color=Yellow>Debug<color>", self.Debugging, self },
@@ -461,7 +461,25 @@ end
 
 function tbGift:Debugging()
 	local pPlayer = KPlayer.GetPlayerObjById(me.nId);
-	tbGift:PrintAllMetatableValue(me);
+end
+
+function tbGift:GetFightSkillIds()
+	local tbFightSkillIds = {};
+	local tbFightSkills = me.GetFightSkillList(me.nRouteId);
+	for _, skill in ipairs(tbFightSkills) do
+		table.insert(tbFightSkillIds, skill.uId);
+	end
+end
+
+function tbGift:IncreaseFightSkillPoint()
+	local tbFightSkills = me.GetFightSkillList(me.nRouteId);
+	for _, skill in ipairs(tbFightSkills) do
+		if (me.nLevel >= skill.nReqLevel) and (skill.nLevel < skill.nMaxLevel) and (skill.nLevel < (me.nLevel - skill.nReqLevel + 1)) then
+			local needPoints = me.nLevel - skill.nReqLevel + 1;
+			me.AddFightSkill(skill.uId, needPoints);
+			me.AddFightSkillPoint(-needPoints);
+		end
+	end
 end
 
 function tbGift:ServerSetting()
@@ -497,9 +515,9 @@ end
 
 function tbGift:AskDropDetailType()
 	local tbOptions = {
-		{ "Vũ khí cận chiến (Melee)", self.SetDropDetailType, self, Item.DROP_ITEM_MELEE_DETAIL_TYPE },
-		{ "Vũ khí tầm xa (Range)", self.SetDropDetailType, self, Item.DROP_ITEM_RANGE_DETAIL_TYPE },
-		{ "Áo giáp (Armor)", self.SetDropDetailType, self, Item.DROP_ITEM_ARMOR_DETAIL_TYPE },
+		{ "Vũ khí cận chiến", self.SetDropDetailType, self, Item.DROP_ITEM_MELEE_DETAIL_TYPE },
+		{ "Vũ khí tầm xa", self.SetDropDetailType, self, Item.DROP_ITEM_RANGE_DETAIL_TYPE },
+		{ "Áo giáp", self.SetDropDetailType, self, Item.DROP_ITEM_ARMOR_DETAIL_TYPE },
 		{ "Nhẫn", self.SetDropDetailType, self, Item.DROP_ITEM_RING_DETAIL_TYPE },
 		{ "Dây chuyền", self.SetDropDetailType, self, Item.DROP_ITEM_NECKLACE_DETAIL_TYPE },
 		{ "Phù", self.SetDropDetailType, self, Item.DROP_ITEM_AMULET_DETAIL_TYPE },
@@ -538,7 +556,7 @@ function tbGift:SetDropDetailType(nDetailType)
 end
 
 function tbGift:OpenDropRateDialog()
-	local tbRates = { 0, 1, 5, 10, 50, 100, 200 }
+	local tbRates = { 0, 1, 5, 10, 50, 100, 500, 1000 }
 	local tbOpt = {}
 
 	for _, nRate in ipairs(tbRates) do
@@ -554,11 +572,25 @@ function tbGift:SetDropRate(nPercent)
 	me.Msg("Đã thiết lập tỉ lệ rơi vật phẩm là: " .. nPercent .. "%")
 end
 
-function tbGift:PracticeOn()
+
+function tbGift:AskPracticeTime()
+	local tbHours = { 0.5, 1, 2, 3, 4, 5, 6, 7, 8 }
+	local tbOpt = {}
+	for _, nHour in ipairs(tbHours) do
+		local szLabel = string.format("%g h", nHour)
+		table.insert(tbOpt, { szLabel, self.PracticeOn, self, nHour })
+	end
+	Dialog:Say("Chọn số giờ sẽ tu luyện:", tbOpt)
+end
+
+function tbGift:PracticeOn(nHour)
+	if not nHour or nHour <= 0 then
+		return
+	end
 	local tbXiuLianZhu = Item:GetClass("xiulianzhu")
 	local remainTime = tbXiuLianZhu:GetReTime();
-	tbXiuLianZhu:AddRemainTime(720 - remainTime * 60);
-	tbXiuLianZhu:StartPractice(12);
+	tbXiuLianZhu:AddRemainTime(480 - remainTime * 60);
+	tbXiuLianZhu:StartPractice(nHour);
 end
 
 function tbGift:StartTimer()
@@ -877,6 +909,7 @@ function tbGift:SkillPoints()
 	{
 		{ "<color=Gold>Tăng điểm kỹ năng năng<color>", self.SetSkillPoints, self, 100 },
 		{ "<color=Gold>Giảm điểm kỹ năng<color>", self.ClearSkillPoints, self },
+		{ "<color=Gold>Tự động nâng kỹ năng<color>", self.IncreaseFightSkillPoint, self },
 		{ "<color=Purple>Kỹ năng chiến đấu<color>", self.Skills, self },
 		{ "Tạm thời chưa cần" },
 	}
@@ -1200,7 +1233,60 @@ function tbGift:RecycleItemsToExp()
 						local nValue = pItem.nValue or 0
 						nTotalExp = nTotalExp + nValue
 						nItemCount = nItemCount + 1
+						local maxEnhance = Item:CalcMaxEnhanceTimes(pItem)
+						pItem.Regenerate(
+							pItem.nGenre,
+							pItem.nDetail,
+							pItem.nParticular,
+							pItem.nLevel,
+							pItem.nSeries,
+							maxEnhance,
+							100,
+							pItem.GetGenInfo(),
+							0,
+							pItem.dwRandSeed,
+							0
+						);
 						me.DelItem(pItem)
+					else
+						local nEquipPos = pItem.nEquipPos;
+						local pOldItem = me.GetEquip(nEquipPos)
+						local maxEnhance = Item:CalcMaxEnhanceTimes(pItem)
+						if pItem.nEnhTimes < maxEnhance then
+							pItem.Regenerate(
+								pItem.nGenre,
+								pItem.nDetail,
+								pItem.nParticular,
+								pItem.nLevel,
+								pItem.nSeries,
+								maxEnhance,
+								100,
+								pItem.GetGenInfo(),
+								0,
+								pItem.dwRandSeed,
+								0
+							);
+						end
+						if pOldItem then
+							if (pItem.nValue > pOldItem.nValue) and (pItem.nEquipCategory == pOldItem.nEquipCategory) then
+								me.AutoEquip(pItem)
+								me.DelItem(pOldItem)
+							else
+								me.DelItem(pItem)
+							end
+						else
+							if nEquipPos == 3 then
+								if pItem.nEquipCategory == 11 then
+									me.AutoEquip(pItem)
+									me.DelItem(pOldItem)
+								else
+									me.DelItem(pItem)
+								end
+							else
+								me.AutoEquip(pItem)
+								me.DelItem(pOldItem)
+							end
+						end
 					end
 				end
 			end

@@ -790,7 +790,7 @@ function Player:_OnKillNpc()
 	if him.GetNpcType() ~= 0 then
 		Partner:OnKillBoss(me, him);
 	end
-	Player:RandomDropItem(him);
+	Player:RandomDropItemByRate(him);
 	Task:OnKillNpc(me, him);
 	Player:CheckDoPet(me);
 	if me.nMapId == 130 or me.nMapId == 131 or me.nMapId == 132 or me.nMapId == 133 or me.nMapId == 134 or me.nMapId == 135 or me.nMapId == 136 or me.nMapId == 137 then
@@ -855,11 +855,21 @@ function Player:RandomHoaTet(him)
 	end;
 end
 
-function Player:RandomDropItem(him)
+function Player:RandomDropItemByRate(him)
 	if Env.DROP_RATE_PERCENT == 0 then
 		return
 	end
-	local nItemLevel = math.floor(him.nLevel / 10);
+	if Env.DROP_RATE_PERCENT > 100 then
+		for i = 1, math.floor(Env.DROP_RATE_PERCENT / 100) do
+			Player:RandomDropItem(him)
+		end
+	else
+		Player:RandomDropItem(him)
+	end
+end
+
+function Player:RandomDropItem(him)
+	local nItemLevel = math.floor(me.nLevel / 10);
 	if nItemLevel < 1 then
 		nItemLevel = 1;
 	end
@@ -900,9 +910,6 @@ function Player:RandomDropItem(him)
 	local indexRate = MathRandom(1, 100)
 	if indexRate <= Env.DROP_RATE_PERCENT then
 		me.AddItem(1, nDetailType, nParticular, nItemLevel, nSeries, nil, 100);
-		if Env.DROP_RATE_PERCENT == 200 then
-			me.AddItem(1, nDetailType, nParticular, nItemLevel, nSeries, nil, 100);
-		end
 		me.AddJbCoin(nItemLevel);
 	end
 end
