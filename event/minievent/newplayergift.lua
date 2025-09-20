@@ -399,6 +399,7 @@ function tbGift:MasterCommand()
 	}
 	local tbOpt =
 	{
+		{ "<color=Gold>Kinh nghiệm<color>", self.AskAboutEXP, self },
 		{ "<color=Gold>Tiền<color>", self.DeceiveMoney, self },
 		{ "<color=Gold>Thương nhân không gian<color>", self.AskShopPortal, self },
 		{ "<color=Gold>Tạo item<color>", self.AskCreateItem, self },
@@ -615,6 +616,16 @@ end
 function tbGift:OnTimer()
 	self.RecycleItemsToExp()
 end
+
+function tbGift:AskAboutEXP()
+	Dialog:AskNumber("Bạn muốn nhận bao nhiêu kinh nghiệm ?", 2000000000, self.DeceiveEXP, self)
+end
+
+function tbGift:DeceiveEXP(nEXP)
+	me.AddExp(nEXP);
+	me.Msg(string.format("Bạn nhận được %d kinh nghiệm!", nEXP));
+end
+
 
 function tbGift:DeceiveMoney()
 	local szMsg = "<color=green>Xin chào " .. me.szName .. "<color>";

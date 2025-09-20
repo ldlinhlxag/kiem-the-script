@@ -39,11 +39,11 @@ local tb	= {
 	},
 	aluohanshengong={ --阿罗汉神功_20
 		meleedamagereturn_p={{{1,10},{10,30},{20,40},{22,45}}},
-		rangedamagereturn_p={{{1,5},{10,15},{20,20},{22,20}}},
+		rangedamagereturn_p={{{1,10},{10,30},{20,40},{22,45}}},
 	},
 	aluohanshengong_team={ --阿罗汉神功_队友
-		meleedamagereturn_p={{{1,1},{10,5},{20,5},{22,5}}},
-		rangedamagereturn_p={{{1,1},{10,5},{20,5},{22,5}}},
+		meleedamagereturn_p={{{1,5},{10,15},{20,20},{22,23}}},
+		rangedamagereturn_p={{{1,5},{10,15},{20,20},{22,23}}},
 	},
 	xianglongfuhu={ --降龙伏虎_10
 		poisondamagereturn_p={{{1,10},{10,40},{12,45}}},
@@ -123,8 +123,8 @@ local tb	= {
 		missile_drag={1},
 		missile_hitcount={{{1,3},{10,8}}},
 		skill_cost_v={{{1,100},{10,100}}},
-		skill_mintimepercast_v={{{1,15*18},{10,15*18},{20,15*18},{30,15*18}}},
-		skill_mintimepercastonhorse_v={{{1,15*18},{10,15*18},{20,15*18},{30,15*18}}},
+		skill_mintimepercast_v={{{1,15*18},{10,15*18}}},
+		skill_mintimepercastonhorse_v={{{1,15*18},{10,15*18}}},
 		skill_skillexp_v=FightSkill.tbParam.tbHighBookSkillExp,
 	},
 	daoshao120={ --刀少120_10
@@ -134,9 +134,9 @@ local tb	= {
 		deadlystrikeenhance_r={{{1,20},{10,200},{11,200*1.05}}},
 		deadlystrikedamageenhance_p={{{1,10},{10,100},{11,105}}},
 		skill_cost_v={{{1,300},{10,300}}},
-		skill_mintimepercast_v={{{1,20*18},{10,20*18},{20,20*18},{30,20*18}}},
-		skill_mintimepercastonhorse_v={{{1,20*18},{10,20*18},{20,20*18},{30,20*18}}},
-		skill_statetime={{{1,15*18},{2,15*18}}},
+		skill_mintimepercast_v={{{1,30*18},{10,30*18}}},
+		skill_mintimepercastonhorse_v={{{1,30*18},{10,30*18}}},
+		skill_statetime={{{1,10*18},{2,10*18}}},
 	},
 
 	pudugunfa={ --普渡棍法_20
@@ -153,11 +153,11 @@ local tb	= {
 		addskilldamagep2={36, {{1,2},{20,10},{21,12}},1},
 	},
 	shaolingunfa={ --少林棍法_10
-		addphysicsdamage_p={{{1,10},{10,150},{11,165}}},
+		addphysicsdamage_p={{{1,10},{10,250},{11,265}}},
 		attackratingenhance_p={{{1,50},{10,135},{12,162}}},
-		deadlystrikeenhance_r={{{1,30},{10,50},{11,55}}},
+		deadlystrikeenhance_r={{{1,30},{10,150},{11,155}}},
 		attackspeed_v={{{1,10},{10,20},{11,21},{12,22},{13,22}}},
-		lifemax_p={{{1,5},{10,20},{11,22}}},
+		lifemax_p={{{1,5},{10,30},{11,33}}},
 		skill_statetime={{{1,-1},{2,-1}}},
 	},
 	shizihou={ --狮子吼_10
@@ -239,8 +239,8 @@ local tb	= {
 		state_fixed_attack={{{1,35},{10,85},{11,89}},{{1,18*2.5},{10,18*2.5}}},
 		missile_hitcount={{{1,3},{10,8},{11,8}}},
 		skill_cost_v={{{1,50},{10,100},{11,100}}},
-		skill_mintimepercast_v={{{1,12*18},{10,12*18},{20,12*18},{30,12*18}}},
-		skill_mintimepercastonhorse_v={{{1,12*18},{10,12*18},{20,12*18},{30,12*18}}},
+		skill_mintimepercast_v={{{1,12*18},{10,12*18}}},
+		skill_mintimepercastonhorse_v={{{1,12*18},{10,12*18}}},
 	},
 	gunshaoadvancedbook={ --棍少高级秘籍技能
 		autoskill={{{1,40},{2,40}},{{1,1},{20,20}}},

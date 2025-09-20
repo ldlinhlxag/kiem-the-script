@@ -15,7 +15,7 @@ local tb	= {
 		addskilldamagep3={182, {{1,2},{20,10},{21,12}}},
 	},
 	kunlundaofa={ --昆仑刀法_10
-		addphysicsdamage_p={{{1,10},{10,105},{11,115}}},
+		addphysicsdamage_p={{{1,10},{10,205},{11,215}}},
 		attackratingenhance_p={{{1,50},{10,150},{11,165}}},
 		deadlystrikeenhance_r={{{1,30},{10,50},{11,55}}},
 		attackspeed_v={{{1,5},{10,15},{11,16},{12,17},{13,17}}},
@@ -50,12 +50,12 @@ local tb	= {
 		prop_showhide={1},
 		skill_statetime={{{1,18*30},{10,18*60*1.5},{11,18*93}}},
 		skill_cost_v={{{1,200},{10,300}}},
-		skill_mintimepercast_v={{{1,5*60*18},{10,3*60*18},{11,171*18},{20,171*18},{30,171*18}}},
-		skill_mintimepercastonhorse_v={{{1,5*60*18},{10,3*60*18},{11,171*18},{20,171*18},{30,171*18}}},
+		skill_mintimepercast_v={{{1,5*60*18},{10,3*60*18},{11,171*18}}},
+		skill_mintimepercastonhorse_v={{{1,5*60*18},{10,3*60*18},{11,171*18}}},
 	},
 	juyuanshu={ --聚元术
 		skill_statetime={{{1,300*18},{10,300*18}}},
-		lifemax_p={{{1,10},{10,70},{11,72}}},
+		lifemax_p={{{1,10},{10,90},{11,95}}},
 	},
 	xuantianwuji={	--玄天无极_10
 		dynamicmagicshield_v={{{1,50},{10,200},{11,210}},40},
@@ -125,10 +125,12 @@ local tb	= {
 	},
 	
 	wurenwuwo={ --无人无我_10
+		deadlystrikeenhance_r={{{1,30},{10,150},{11,155}}},
 		ignoredefenseenhance_v={{{1,50},{10,200},{11,210}}},
 		state_stun_resisttime={{{1,60},{10,160},{11,168}}},
 	},
 	wurenwuwo_team={ --无人无我
+		deadlystrikeenhance_r={{{1,30},{10,60},{11,65}}},
 		ignoredefenseenhance_v={{{1,38},{10,150},{12,165}}},
 		state_stun_resisttime={{{1,45},{10,120},{11,126}}},
 	},
@@ -137,8 +139,8 @@ local tb	= {
 		skillselfdamagetrim	={{{1,-1.5},{10,-15},{11,-16}}},
 		
 		skill_cost_v={{{1,150},{10,150}}},
-		skill_mintimepercast_v={{{1,1*18},{10,1*18},{20,1*18},{30,1*18}}},
-		skill_mintimepercastonhorse_v={{{1,1*18},{10,1*18},{20,1*18},{30,1*18}}},
+		skill_mintimepercast_v={{{1,1*18},{10,1*18}}},
+		skill_mintimepercastonhorse_v={{{1,1*18},{10,1*18}}},
 		skill_skillexp_v=FightSkill.tbParam.tbHighBookSkillExp,
 		skill_missilenum_v={{{1,8},{10,8}},1},
 		skill_maxmissile={{{1,4*8},{10,4*8}}},
@@ -150,13 +152,14 @@ local tb	= {
 		skill_statetime={{{1,18*1},{10,18*1}}},
 	},
 	daokun120={ --刀昆120_10
+		deadlystrikeenhance_r={{{1,30},{10,150},{11,155}}},
+		deadlystrikedamageenhance_p={{{1,2},{10,20},{11,22}}},
 		autoskill={{{1,62},{2,62}},{{1,1},{10,10}}},
 		addstartskill={182, 1660, {{1,1}, {10, 10}}},
 		skill_statetime={{{1,-1},{10,-1}}},
 	},
 	daokun120_child={ --刀昆120_子2拉回_10
 		state_drag_attack={{{1,35},{10,85},{11,90}},{{1,11},{10,11}},{{1,32},{2,32}}},
-		missile_drag={1},
 	},
 	daokun120_child2={ --刀昆120_子子10
 		missile_random={{{1,5},{10,5},{11,5}},{{1,0},{10,0}}},
@@ -213,8 +216,8 @@ local tb	= {
 		state_stun_attack={{{1,35},{10,60},{11,61}},{{1,18*1},{10,18*2},{11,18*2.1}}},
 		missile_hitcount={{{1,3},{10,5},{11,5},{12,5}}},
 		skill_cost_v={{{1,50},{10,100},{20,100}}},
-		skill_mintimepercast_v={{{1,60*18},{10,30*18},{11,28.5*18},{20,28.5*18},{30,28.5*18}}},
-		skill_mintimepercastonhorse_v={{{1,60*18},{10,30*18},{11,28.5*18},{20,28.5*18},{30,28.5*18}}},
+		skill_mintimepercast_v={{{1,60*18},{10,30*18},{11,28.5*18}}},
+		skill_mintimepercastonhorse_v={{{1,60*18},{10,30*18},{11,28.5*18}}},
 	},
 	daoguxianfeng_ally={ --道骨仙风
 		damage_physics_resist={{{1,10},{20,60},{21,63}}},
@@ -258,7 +261,7 @@ local tb	= {
 	
 	huasuiwuyi={ --中级秘籍：化髓无意
 		addenchant={13, {{1,1}, {2, 2}}},
-		lifemax_p={{{1,10},{10,50},{12,60}}},
+		lifemax_p={{{1,10},{10,100},{12,110}}},
 		skill_skillexp_v=FightSkill.tbParam.tbMidBookSkillExp,
 		skill_statetime={{{1,-1},{2,-1}}},
 	},
@@ -280,8 +283,8 @@ local tb	= {
 		damage_all_resist={{{1,-50},{10,-200},{11,-210}}},
 		missile_hitcount={{{1,5},{10,5}}},
 		skill_cost_v={{{1,300},{10,300}}},
-		skill_mintimepercast_v={{{1,45*18},{10,45*18},{20,45*18},{30,45*18}}},
-		skill_mintimepercastonhorse_v={{{1,45*18},{10,45*18},{20,45*18},{30,45*18}}},
+		skill_mintimepercast_v={{{1,45*18},{10,45*18}}},
+		skill_mintimepercastonhorse_v={{{1,45*18},{10,45*18}}},
 		skill_statetime={{{1,15*18},{10,15*18}}},
 		skill_skillexp_v=FightSkill.tbParam.tbHighBookSkillExp,
 	},
@@ -289,12 +292,14 @@ local tb	= {
 		autoskill={64, {{1,1}, {2, 2}}},
 		skill_statetime={{{1,-1},{2,-1}}},
 	},
-	jiankun120_child={ --剑昆120_子_10
-		skilldamageptrim={{{1,1},{10,5}}},
-		superposemagic={{{1,1},{10,10},{11,10}}},
-		skill_statetime={{{1,10*18},{10,10*18}}},
+	jiankun120_child={ --剑昆120_子_10	
+		skilldamageptrim		={{{1,2},{10,4},{11,5}}},
+		skillselfdamagetrim		={{{1,2},{10,4},{11,5}}},
+		deadlystrikeenhance_r={{{1,10},{10,30},{15,40},{25,60},{26,65}}}, -- Chí mạng
+		state_stun_attacktime={{{1,5},{10,20},{15,30},{25,40},{26,42}}}, -- Thời gian gây choáng
+		superposemagic={{{1,1},{10,5},{11,5}}}, -- Cộng dồn tối đa
+		skill_statetime={{{1,3*18},{10,3*18}}},		
 	},
-
 	baidubuqin={ --百毒不侵
 		damage_poison_resist={{{1,10},{20,100}}},
 		skill_cost_v={{{1,15},{20,25}}},

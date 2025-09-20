@@ -65,10 +65,10 @@ local tb	= {
 		manareplenish_p={{{1,10},{20,20},{21,21}}},
 	},
 	bingxinxianzi={ --冰心仙子
-		appenddamage_p= {{{1,90*FightSkill.tbParam.nS1},{10,90},{20,90*FightSkill.tbParam.nS20},{21,90*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}}},
+		appenddamage_p= {{{1,60*FightSkill.tbParam.nS1},{10,60},{20,60*FightSkill.tbParam.nS20},{21,60*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}}},
 		colddamage_v={
-			[1]={{1,400*0.9*FightSkill.tbParam.nS1},{10,400*0.9},{20,400*0.9*FightSkill.tbParam.nS20},{21,400*0.9*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}},
-			[3]={{1,400*1.1*FightSkill.tbParam.nS1},{10,400*1.1},{20,400*1.1*FightSkill.tbParam.nS20},{21,400*1.1*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}}
+			[1]={{1,300*0.9*FightSkill.tbParam.nS1},{10,300*0.9},{20,300*0.9*FightSkill.tbParam.nS20},{21,300*0.9*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}},
+			[3]={{1,300*1.1*FightSkill.tbParam.nS1},{10,300*1.1},{20,300*1.1*FightSkill.tbParam.nS20},{21,300*1.1*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}}
 			},
 		seriesdamage_r={{{1,100},{20,250},{21,250}}},
 		skill_cost_v={{{1,100},{20,200},{21,200}}},
@@ -107,8 +107,8 @@ local tb	= {
 		state_knock_ignore={1},
 		state_drag_ignore={1},
 		state_freeze_ignore={1},
-		skill_mintimepercast_v={{{1,40*18},{10,20*18},{11,20*18},{20,20*18},{30,20*18}}},
-		skill_mintimepercastonhorse_v={{{1,40*18},{10,20*18},{11,20*18},{20,20*18},{30,20*18}}},
+		skill_mintimepercast_v={{{1,40*18},{10,20*18},{11,20*18}}},
+		skill_mintimepercastonhorse_v={{{1,40*18},{10,20*18},{11,20*18}}},
 		skill_skillexp_v=FightSkill.tbParam.tbMidBookSkillExp,
 		skill_statetime={{{1,18*0.5},{10,18*5},{12,18*5.5}}},
 	},
@@ -134,8 +134,8 @@ local tb	= {
 		skill_eventskilllevel={{{1,1},{10,10},{11,10}}},
 		skill_showevent={{{1,1},{10,1}}},
 		skill_cost_v={{{1,100},{10,100},{11,100}}},
-		skill_mintimepercast_v={{{1,80*18},{10,80*18},{11,80*18},{20,80*18},{30,80*18}}},
-		skill_mintimepercastonhorse_v={{{1,80*18},{10,80*18},{11,80*18},{20,80*18},{30,80*18}}},
+		skill_mintimepercast_v={{{1,80*18},{10,80*18},{11,80*18}}},
+		skill_mintimepercastonhorse_v={{{1,80*18},{10,80*18},{11,80*18}}},
 	},
 	shimianmaifu={ --十面埋伏_队友_10
 		autoskill={{{1,71},{2,71}},{{1,1},{10,10}}},
@@ -157,8 +157,8 @@ local tb	= {
 	},
 	jiancuiadvancedbook_fellow={ --剑翠高级秘籍_10
 		skill_cost_v={{{1,200},{10,200}}},
-		skill_mintimepercast_v={{{1,15*18},{10,15*18},{20,15*18},{30,15*18}}},
-		skill_mintimepercastonhorse_v={{{1,15*18},{10,15*18},{20,15*18},{30,15*18}}},
+		skill_mintimepercast_v={{{1,15*18},{10,15*18}}},
+		skill_mintimepercastonhorse_v={{{1,15*18},{10,15*18}}},
 		skill_skillexp_v=FightSkill.tbParam.tbHighBookSkillExp,
 		skill_maxmissile={{{1,3},{10,3}}},
 	},
@@ -166,8 +166,8 @@ local tb	= {
 		autoskill={{{1,53},{2,53}},{{1,1},{10,10}}},
 		skill_statetime={{{1,15*18},{2,15*18}}},
 		skill_cost_v={{{1,500},{10,500}}},
-		skill_mintimepercast_v={{{1,10*18},{10,10*18},{20,10*18},{30,10*18}}},
-		skill_mintimepercastonhorse_v={{{1,10*18},{10,10*18},{20,10*18},{30,10*18}}},
+		skill_mintimepercast_v={{{1,30*18},{10,30*18}}},
+		skill_mintimepercastonhorse_v={{{1,30*18},{10,30*18}}},
 	},
 	jiancui120_child={ --剑翠120_子_10
 		appenddamage_p= {{{1,75*0.7},{10,75},{11,75*FightSkill.tbParam.nSadd}}},
@@ -196,6 +196,7 @@ local tb	= {
 		missile_speed_v={40},
 	},
 	cuiyandaofa={ --翠烟刀法_10
+			lifemax_p={{{1,10},{10,30},{11,33}}},
 		addphysicsdamage_p={{{1,10},{10,150},{11,165}}},
 		attackratingenhance_p={{{1,50},{10,150},{11,165}}},
 		deadlystrikeenhance_r={{{1,30},{10,50},{11,55}}},
@@ -205,8 +206,8 @@ local tb	= {
 	yuxueyin={ --御雪隐_10
 		skill_cost_v={{{1,50},{10,100},{11,100}}},
 		hide={0,{{1,5*18},{10,30*18},{13,33*18}}, 1},
-		skill_mintimepercast_v={{{1,60*18},{10,40*18},{11,40*18},{20,40*18},{30,40*18}}},
-		skill_mintimepercastonhorse_v={{{1,60*18},{10,40*18},{11,40*18},{20,40*18},{30,40*18}}},
+		skill_mintimepercast_v={{{1,60*18},{10,40*18},{11,40*18}}},
+		skill_mintimepercastonhorse_v={{{1,60*18},{10,40*18},{11,40*18}}},
 	},
 	yuxueyin_child={ --御雪隐_会心
 		deadlystrikeenhance_r={{{1,4000},{10,8000},{11,8400}}},
@@ -298,8 +299,8 @@ local tb	= {
 		state_freeze_attack={{{1,25},{10,75}},{{1,18*3},{10,18*7.5},{11,18*8}}},
 		missile_hitcount={{{1,2},{10,11},{11,12}}},
 		skill_cost_v={{{1,100},{10,100}}},
-		skill_mintimepercast_v={{{1,90*18},{10,90*18},{20,90*18},{30,90*18}}},
-		skill_mintimepercastonhorse_v={{{1,90*18},{10,90*18},{20,90*18},{30,90*18}}},
+		skill_mintimepercast_v={{{1,90*18},{10,90*18}}},
+		skill_mintimepercastonhorse_v={{{1,90*18},{10,90*18}}},
 		skill_skillexp_v=FightSkill.tbParam.tbHighBookSkillExp,
 	},
 	daocui120={ --刀翠120_10
@@ -312,9 +313,8 @@ local tb	= {
 	},
 	daocui120_child={ --刀翠120_伤害增加_10
 		autoskill={{{1,58},{2,58}},{{1,1},{10,10}}},
-		skilldamageptrim={{{1,2},{10,7},{14,8}}},
+		skilldamageptrim={{{1,2},{10,10},{14,14}}},
 		skillselfdamagetrim={{{1,2},{10,7},{14,8}}},
-		superposemagic={{{1,2},{10,20}}},
 		skill_statetime={{{1,5*18},{2,5*18}}},
 	},
 	daocui120_child1={ --刀翠120_子1_10

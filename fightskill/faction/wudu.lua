@@ -118,8 +118,8 @@ local tb	= {
 		state_palsy_attack={{{1,35},{10,85}},{{1,22},{10,22}}},
 		appenddamage_p= {{{1,30},{10,60},{11,63}}},
 		poisondamage_v={{{1,60},{10,180},{11,189}},{{1,9*4},{20,9*4}}},
-		skill_mintimepercast_v={{{1,20*18},{10,20*18},{20,20*18},{30,20*18}}},
-		skill_mintimepercastonhorse_v={{{1,20*18},{10,20*18},{20,20*18},{30,20*18}}},
+		skill_mintimepercast_v={{{1,20*18},{10,20*18}}},
+		skill_mintimepercastonhorse_v={{{1,20*18},{10,20*18}}},
 		missile_hitcount={{{1,7},{10,7}}},
 		skill_maxmissile={{{1,2},{10,2}}},
 	},
@@ -173,15 +173,26 @@ local tb	= {
 		skill_skillexp_v=FightSkill.tbParam.tbHighBookSkillExp,
 	},	
 	daodu120={ --刀毒120_10
-	damage_all_resist={{{1,-20},{10,-120},{10,-126}}},
-		skilldamageptrim={{{1,-2},{10,-25},{14,-28}}},
-		skillselfdamagetrim={{{1,-2},{10,-25},{14,-28}}},
-		skill_cost_v={{{1,600},{10,600}}},
-		skill_mintimepercast_v={{{1,60*18},{10,60*18},{20,60*18},{30,60*18}}},
-		skill_mintimepercastonhorse_v={{{1,60*18},{10,60*18},{20,60*18},{30,60*18}}},
-		skill_statetime={{{1,15*18},{10,15*18}}},
-		},
-	
+		autoskill={{{1,68},{2,68}},{{1,1},{10,10}}},
+		skill_cost_v={{{1,200},{10,200}}},
+		skill_mintimepercast_v={{{1,7*18},{10,7*18}}},
+		skill_mintimepercastonhorse_v={{{1,7*18},{10,7*18}}},
+		skill_statetime={{{1,18*60},{10,18*60}}},
+	},
+	daodu120_child1={ --刀毒120_对敌加攻击_10
+		skilldamageptrim={{{1,9},{10,36},{11,38}}},
+		skillselfdamagetrim={{{1,9},{10,36},{11,38}}},
+		skill_statetime={{{1,18*6},{10,18*6}}},
+	},
+	daodu120_child2={ --刀毒120_自身状态_10
+		autoskill={{{1,69},{2,69}},{{1,1},{10,10}}},
+		skill_statetime={{{1,18*6},{10,18*6}}},
+	},
+	daodu120_child3={ --刀毒120_对敌减攻击_10
+		skilldamageptrim={{{1,-3},{10,-12},{11,-13}}},
+		skillselfdamagetrim={{{1,-3},{10,-12},{11,-13}}},
+		skill_statetime={{{1,18*4},{10,18*4}}},
+	},
 	dushazhang={ --毒砂掌_20
 		appenddamage_p= {{{1,100},{20,100},{21,100*FightSkill.tbParam.nSadd}}},
 		skill_cost_v={{{1,10},{20,50},{21,50}}},
@@ -193,7 +204,7 @@ local tb	= {
 		addskilldamagep3={94, {{1,2},{20,10},{21,12}}},
 	},
 	wuduzhangfa={ --五毒掌法_10
-		addpoisonmagic_v={{{1,2},{10,40},{11,44}},{{1,10*9},{20,10*9}}},
+		addpoisonmagic_v={{{1,50},{10,100},{11,105}},{{1,10*9},{20,10*9}}},
 		deadlystrikeenhance_r={{{1,30},{10,50},{11,55}}},
 		castspeed_v={{{1,5},{10,10},{11,11},{12,12},{13,12}}},
 		skill_statetime={{{1,-1},{2,-1}}},
@@ -293,8 +304,8 @@ local tb	= {
 	huagumianzhang={ --化骨绵掌_10
 		rdclifewithdis={{{1,40},{10,100},{11,105}}, 234, 1198},
 		missile_hitcount={{{1,7},{10,7},{11,7}}},
-		skill_mintimepercast_v={{{1,25*18},{10,25*18},{20,25*18},{30,25*18}}},
-		skill_mintimepercastonhorse_v={{{1,25*18},{10,25*18},{20,25*18},{30,25*18}}},
+		skill_mintimepercast_v={{{1,25*18},{10,25*18}}},
+		skill_mintimepercastonhorse_v={{{1,25*18},{10,25*18}}},
 		skill_statetime={{{1,18*5},{10,18*10}}},
 	},
 	huagumianzhang_child={ --化骨绵掌子_10
@@ -319,8 +330,8 @@ local tb	= {
 		state_burn_attack		={{{1,20},{10,100},{11,105}},{{1,18*3},{20,18*3}}},
 		state_slowall_attack	={{{1,20},{10,100},{11,105}},{{1,18*2.5},{20,18*2.5}}},
 		skill_cost_v={{{1,600},{10,600}}},
-		skill_mintimepercast_v={{{1,10*18},{10,10*18},{20,10*18},{30,10*18}}},
-		skill_mintimepercastonhorse_v={{{1,60*18},{10,60*18},{20,60*18},{30,60*18}}},
+		skill_mintimepercast_v={{{1,10*18},{10,10*18}}},
+		skill_mintimepercastonhorse_v={{{1,60*18},{10,60*18}}},
 		skill_statetime={{{1,3*18},{10,3*18}}},
 	},
 	jiutiankuanglei={ --九天狂雷

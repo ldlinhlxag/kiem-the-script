@@ -15,8 +15,6 @@ local tb	= {
 		addskilldamagep2={218, {{1,2},{20,30},{21,35}}},
 		addskilldamagep3={223, {{1,2},{20,10},{21,12}},1},
 		addskilldamagep4={224, {{1,2},{20,10},{21,12}}},
-		addskilldamagep5={864, {{1,2},{20,20},{21,20}},1},
-		addskilldamagep6={1664, {{1,2},{20,20},{21,20}}},
 	},
 	duanshizhifa={ --段氏指法_10
 		addphysicsdamage_p={{{1,10},{10,150},{11,165}}},
@@ -29,7 +27,7 @@ local tb	= {
 		skill_cost_v={{{1,20},{10,50},{11,50}}},
 		skill_attackradius={600},
 		skill_mintimepercast_v={18*10},
-		missile_speed_v={100},
+		missile_speed_v={200},
 	},
 	yizhiqiankun={ --一指乾坤_20
 		appenddamage_p= {{{1,50},{20,50},{21,50*FightSkill.tbParam.nSadd1}}},
@@ -44,8 +42,6 @@ local tb	= {
 		skill_cost_v={{{1,20},{20,50},{21,50}}},
 		addskilldamagep={223, {{1,2},{20,30},{21,35}},1},
 		addskilldamagep2={224, {{1,2},{20,30},{21,35}}},
-		addskilldamagep3={864, {{1,2},{20,30},{21,30}},1},
-		addskilldamagep4={1664, {{1,2},{20,30},{21,30}}},
 	},
 	lingboweibu={ --凌波微步_20
 		fastwalkrun_p={{{1,40},{20,100},{21,110}}},
@@ -53,8 +49,8 @@ local tb	= {
 		state_knock_resistrate={{{1,100},{20,1000},{20,1050}}},
 		skill_cost_v={{{1,100},{10,150},{20,300},{21,300}}},
 		skill_statetime={{{1,18*5},{20,18*15},{21,18*16}}},
-		skill_mintimepercast_v={{{1,20*18},{20,45*18},{21,45*18},{30,45*18},{40,45*18}}},--ok
-		skill_mintimepercastonhorse_v={{{1,20*18},{20,45*18},{21,45*18},{30,45*18},{40,45*18}}},--ok
+		skill_mintimepercast_v={{{1,20*18},{20,45*18},{21,45*18}}},--ok
+		skill_mintimepercastonhorse_v={{{1,20*18},{20,45*18},{21,45*18}}},--ok
 		movewithshadow={1},
 	},
 	cibeijue={ --慈悲诀_10
@@ -83,7 +79,7 @@ local tb	= {
 		skill_statetime={{{1,18*1.5},{10,18*3},{20,18*4},{21,18*5},{22,18*5}}},
 	},
 	qianyangshenzhi={ --乾阳神指_20
-		appenddamage_p= {{{1,65*FightSkill.tbParam.nS1},{10,65},{20,65*FightSkill.tbParam.nS20},{21,65*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd1}}},
+		appenddamage_p= {{{1,65*FightSkill.tbParam.nS1},{10,75},{20,75*FightSkill.tbParam.nS20},{21,75*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd1}}},
 		physicsenhance_p={{{1,100*FightSkill.tbParam.nS1},{10,100},{20,100*FightSkill.tbParam.nS20},{21,100*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd1}}},
 		colddamage_v={
 			[1]={{1,550*0.9*FightSkill.tbParam.nS1},{10,550*0.9},{20,550*0.9*FightSkill.tbParam.nS20},{21,550*0.9*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd1}},
@@ -94,12 +90,11 @@ local tb	= {
 		state_hurt_attack={{{1,7},{10,20},{20,25}},{{1,18},{20,18}}},
 		state_slowall_attack={{{1,7},{10,20},{20,25}},{{1,18},{20,36},{21,36}}},
 		missile_hitcount={{{1,5},{20,5}}},
-		addskilldamagep={864, {{1,2},{20,50},{21,50}},1},
-		addskilldamagep2={1664, {{1,2},{20,50},{21,50}}},
 	},
 	jinyuzhifa={ --金玉指法_20
 		state_slowall_attackrate={{{1,10},{20,100}}},
 		state_burn_resistrate={{{1,10},{10,100},{20,150}}},
+		damage_return_receive_p={{{1,-10},{10,-15},{20,-23}}},
 		ignoredefenseenhance_v={{{1,50},{20,180},{21,187}}},
 		skill_statetime={{{1,-1},{2,-1}}},
 	},
@@ -124,10 +119,11 @@ local tb	= {
 		skill_statetime={{{1,-1},{2,-1}}},
 	},
 	miaodizhiqi={ --妙谛指气
+		deadlystrikedamageenhance_p={{{1,3},{10,30},{11,33}}},
 		deadlystrikeenhance_r={{{1,150},{10,275},{11,289}}},
 		skilldamageptrim={{{1,3},{10,30}}},
 		skillselfdamagetrim={{{1,3},{10,30}}},
-		skill_statetime={{{1,18*5},{10,18*5}}},
+		skill_statetime={{{1,18*6.5},{10,18*6.5}}},
 	},
 	zhiduanadvancedbook={ --指段高级秘籍
 		appenddamage_p= {{{1,65*0.7},{10,65}}},
@@ -140,12 +136,12 @@ local tb	= {
 		skill_cost_v={{{1,200},{10,200}}},
 		state_slowall_attack={{{1,5},{10,50}},{{1,45},{10,45}}},
 		missile_hitcount={{{1,3},{10,3}}},
-		skill_mintimepercast_v={{{1,45*18},{10,45*18},{20,45*18},{30,45*18}}},
-		skill_mintimepercastonhorse_v={{{1,45*18},{10,45*18},{20,45*18},{30,45*18}}},
+		skill_mintimepercast_v={{{1,45*18},{10,45*18}}},
+		skill_mintimepercastonhorse_v={{{1,45*18},{10,45*18}}},
 		skill_skillexp_v=FightSkill.tbParam.tbHighBookSkillExp,
 	},
 	zhiduan120={ --指段120_10
-		appenddamage_p= {{{1,65*FightSkill.tbParam.nS1},{10,65*FightSkill.tbParam.nS20},{11,65*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd1}}},
+		appenddamage_p= {{{1,75*FightSkill.tbParam.nS1},{10,75*FightSkill.tbParam.nS20},{11,75*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd1}}},
 		physicsenhance_p={{{1,100*FightSkill.tbParam.nS1},{10,100*FightSkill.tbParam.nS20},{11,100*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd1}}},
 		colddamage_v={
 			[1]={{1,650*0.9*FightSkill.tbParam.nS1},{10,650*0.9*FightSkill.tbParam.nS20},{11,650*0.9*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd1}},
@@ -156,6 +152,9 @@ local tb	= {
 		state_hurt_attack={{{1,7},{10,35}},{{1,18},{10,18}}},
 		state_slowall_attack={{{1,7},{10,35}},{{1,18},{10,36},{11,36}}},
 		missile_hitcount={{{1,5},{10,5}}},
+		skill_statetime={{{1,18*2},{10,18*4},{11,18*4.5}}},
+		skill_mintimepercast_v={{{1,15*18},{10,10*18},{11,9.5*18}}},--ok
+		skill_mintimepercastonhorse_v={{{1,15*18},{10,10*18},{11,9.5*18}}},--ok
 	},
 
 	fengyunbianhuan={ --风云变幻_20
@@ -176,6 +175,7 @@ local tb	= {
 		missile_range={1,0,1},
 	},
 	duanshixinfa={ --段氏心法_10
+		deadlystrikedamageenhance_p={{{1,3},{10,30},{11,33}}},
 		addcoldmagic_v={{{1,20},{10,400},{11,440}}},
 		deadlystrikeenhance_r={{{1,30},{10,50},{11,55}}},
 		castspeed_v={{{1,5},{10,15},{11,16},{12,17},{13,17}}},
@@ -205,7 +205,7 @@ local tb	= {
 		addskilldamagep3={869, {{1,2},{20,30},{21,35}}},
 		addskilldamagep4={870, {{1,2},{20,30},{21,35}}},
 		addskilldamagep5={871, {{1,2},{20,30},{21,35}}},
-		addskilldamagep6={866, {{1,2},{20,40},{21,40}}},
+		addskilldamagep6={872, {{1,2},{20,30},{21,35}}},
 		missile_hitcount={{{1,4},{2,4}}},
 		skill_missilenum_v={{{1,2},{10,3},{15,4},{20,5},{21,5}},1},
 		missile_speed_v={40},
@@ -255,7 +255,6 @@ local tb	= {
 		skill_cost_v={{{1,100},{20,200},{21,200}}},
 		state_hurt_attack={{{1,5},{10,10},{20,15}},{{1,18},{20,18}}},
 		missile_hitcount={{{1,4},{2,4}}},
-		addskilldamagep={866, {{1,2},{20,50},{21,50}}},
 	},
 	liumaishenjian_child={ --六脉神剑_减攻速_作废
 		castspeed_v={{{1,-90},{2,-90}}},
@@ -316,11 +315,11 @@ local tb	= {
 	jingtianyijian={ --惊天一剑_10
 		state_knock_attack={{{1,65},{10,100},{11,100}},{{1,2},{10,2},{11,2}},{{1,32},{2,32}}},
 		state_slowall_attack={{{1,65},{10,100},{11,100}},{{1,36},{10,72},{11,72}}},
-		skill_mintimepercast_v={{{1,30*18},{10,30*18},{11,29*18},{20,29*18},{30,29*18}}},
-		skill_mintimepercastonhorse_v={{{1,30*18},{10,30*18},{11,29*18},{20,29*18},{30,29*18}}},
+		skill_mintimepercast_v={{{1,30*18},{10,30*18},{11,29*18}}},
+		skill_mintimepercastonhorse_v={{{1,30*18},{10,30*18},{11,29*18}}},
 	},
 	qiduanadvancedbook={ --气段高级秘籍_炼气还神_10
-		lifemax_p={{{1,6},{10,60},{11,63}}},
+		lifemax_p={{{1,6},{10,90},{11,93}}},
 		fastwalkrun_p={{{1,1},{10,10},{11,10}}},
 		adddefense_v={{{1,20},{10,200},{11,210}}},
 		autoskill={{{1,49},{2,49}},{{1,1},{10,10}}},
@@ -334,17 +333,29 @@ local tb	= {
 		skill_statetime={{{1,22*18},{2,22*18}}},
 	},
 	qiduan120={ --气段120_9_注意,最高等级9级
-		appenddamage_p= {{{1,2.2*10*0.7},{9,2.2*10},{10,2.2*10*FightSkill.tbParam.nSadd}}},
+		appenddamage_p= {{{1,2.2*25*0.7},{9,2.2*25*0.7},{10,2.2*25*0.7*FightSkill.tbParam.nSadd}}},
 		colddamage_v={
-			[1]={{1,2.2*300*0.9*0.7},{9,2.2*300*0.9},{10,2.2*300*0.9*FightSkill.tbParam.nSadd}},
-			[3]={{1,2.2*300*1.1*0.7},{9,2.2*300*1.1},{10,2.2*300*1.1*FightSkill.tbParam.nSadd}}
+			[1]={{1,2.2*250*0.9*0.7},{9,2.2*250*0.9},{10,2.2*250*0.9*FightSkill.tbParam.nSadd}},
+			[3]={{1,2.2*250*1.1*0.7},{9,2.2*250*1.1},{10,2.2*250*1.1*FightSkill.tbParam.nSadd}}
 			},
-		seriesdamage_r={{{1,150},{9,150}}},
-		skill_cost_v={{{1,150},{9,150}}},
-		state_slowall_attack={{{1,30},{9,45}},{{1,35},{9,35}}},
+		seriesdamage_r={{{1,250},{10,250}}},
+		skill_cost_v={{{1,300},{10,300}}},
+		state_slowall_attack={{{1,45},{9,50}},{{1,45},{9,45}}},
 		missile_hitcount={{{1,4},{2,4}}},
-		skill_appendskill2={{{1,160},{18,160}},{{1,1},{10,20},{11,21}}},
+		skill_appendskill={{{1,226},{10,226}},{{1,1},{9,20},{10,21}}},
+		skill_appendskill2={{{1,232},{9,232}},{{1,1},{9,20},{10,21}}},
+		skill_mintimepercast_v={{{1,5*18},{10,5*18}}},
+		skill_mintimepercastonhorse_v={{{1,5*18},{10,5*18}}},
 	},
+	qiduan120_2={ --气段120_附属技能_1
+		changecdtype={{{1,866},{10,866}},{{1,1300},{10,1300}},{{1,100},{10,100}}},
+		autoskill={{{1,67},{2,67}},{{1,1},{10,10}}},
+		skill_statetime={{{1,-1},{2,-1}}},
+	},
+	qiduan120_2_child={ --气段120_附属技能_触发回复使用次数_10
+		recover_usepoint={{{1,866},{10,866}},{{1,100},{10,100}}},
+	},
+	
 }
 
 FightSkill:AddMagicData(tb)
@@ -465,6 +476,24 @@ function tbSkill:GetAutoDesc(tbAutoInfo, tbSkillInfo)
 		tbChildInfo2.tbWholeMagic["superposemagic"][1],
 		FightSkill:Frame2Sec(tbChildInfo2.nStateTime)
 		);
+	return szMsg;
+end;
+local tbSkill	= FightSkill:GetClass("zhiduan120");
+
+function tbSkill:GetAutoDesc(tbAutoInfo, tbSkillInfo)
+	local tbChildInfo	= KFightSkill.GetSkillInfo(tbAutoInfo.nSkillId, tbAutoInfo.nSkillLevel);
+	local tbMsg = {};
+	local szMsg = ""
+	szMsg = szMsg.."<color=green>[Nhất Dương Chỉ]<color> chính xác giúp <color=green>[Huyền Băng Cửu Kiếp]<color> hồi <color=gold>"..(tbChildInfo.tbWholeMagic["recover_usepoint"][2]/100).."<color>"
+	return szMsg;
+end;
+local tbSkill	= FightSkill:GetClass("qiduan120_2");
+
+function tbSkill:GetAutoDesc(tbAutoInfo, tbSkillInfo)
+	local tbChildInfo	= KFightSkill.GetSkillInfo(tbAutoInfo.nSkillId, tbAutoInfo.nSkillLevel);
+	local tbMsg = {};
+	local szMsg = ""
+	szMsg = szMsg.."Đánh chính xác <color=gold>"..tbAutoInfo.nPercent.."%<color> giúp <color=green>[Sơ Ảnh]<color> hồi <color=gold>1<color>"
 	return szMsg;
 end;
 

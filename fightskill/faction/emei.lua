@@ -21,7 +21,7 @@ local tb	= {
 		skill_statetime={{{1,-1},{2,-1}}},
 	},
 	cihangpudu={ --慈航普渡_10
-		fastlifereplenish_v={{{1,250},{10,750},{12,825}}},
+		fastlifereplenish_v={{{1,50},{10,200},{12,225}}},
 		skill_cost_v={{{1,100},{10,350},{11,450}}},
 		skill_statetime={{{1,18*5},{2,18*5}}},
 		missile_range={9,0,9},
@@ -50,11 +50,11 @@ local tb	= {
 		missile_hitcount={{{1,3},{2,3}}},
 	},
 	foxinciyou={ --佛心慈佑_20
-		lifemax_p={{{1,30},{20,100},{21,105}}},
+		lifemax_p={{{1,10},{20,50},{21,55}}},
 		manamax_p={{{1,10},{20,50},{22,55}}},
 	},
 	foxinciyou_team={ --佛心慈佑
-		lifemax_p={{{1,15},{20,50},{21,50}}},
+		lifemax_p={{{1,10},{20,25},{21,25}}},
 		manamax_p={{{1,10},{20,25},{21,25}}},
 	},
 	bumiebujue={ --不灭不绝_10
@@ -74,7 +74,7 @@ local tb	= {
 		appenddamage_p= {{{1,96*FightSkill.tbParam.nS1},{10,96},{20,96*FightSkill.tbParam.nS20},{21,96*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}}},
 		colddamage_v={
 			[1]={{1,2200*0.9*FightSkill.tbParam.nS1},{10,2200*0.9},{20,2200*0.9*FightSkill.tbParam.nS20},{21,2200*0.9*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}},
-			[3]={{1,2200*1.1*FightSkill.tbParam.nS1},{10,2200*1.1},{20,2200*1.1*FightSkill.tbParam.nS20},{21,2200*1.1*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}}
+			[3]={{1,2500*2.2*FightSkill.tbParam.nS1},{10,2500*2.2},{20,2500*2.2*FightSkill.tbParam.nS20},{21,2500*2.2*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}}
 			},
 		seriesdamage_r={{{1,100},{20,250},{21,250}}},
 		skill_cost_v={{{1,100},{20,200},{21,200}}},
@@ -152,8 +152,8 @@ local tb	= {
 	zhange120={ --掌峨120_10
 		autoskill={{{1,56},{2,56}},{{1,1},{10,10}}},
 		skill_cost_v={{{1,300},{10,300}}},
-		skill_mintimepercast_v={{{1,15*18},{10,15*18},{20,15*18},{30,15*18}}},
-		skill_mintimepercastonhorse_v={{{1,15*18},{10,15*18},{20,15*18},{30,15*18}}},
+		skill_mintimepercast_v={{{1,15*18},{10,15*18}}},
+		skill_mintimepercastonhorse_v={{{1,15*18},{10,15*18}}},
 		skill_statetime={{{1,18*60},{10,18*60}}},
 	},
 	zhange120_child={ --掌峨120_10
@@ -226,13 +226,13 @@ local tb	= {
 		damage_all_resist={{{1,40},{10,120},{11,126}}},
 	},
 	puduzhongsheng_team={ --普渡众生_10
-		damage_all_resist={{{1,20},{10,100},{11,105}}},
+		damage_all_resist={{{1,20},{10,50},{11,55}}},
 	},
 	foguangpuzhao={ --佛光普照_10
 		missile_missrate={{{1,0},{10,0}}},
 		revive={{{1,25},{10,100},{11,100}},{{1,25},{10,100},{11,100}},{{1,25},{10,100},{11,100}}},
-		skill_mintimepercast_v={{{1,5*60*18},{10,2*60*18},{11,110*18},{20,110*18},{30,110*18}}},
-		skill_mintimepercastonhorse_v={{{1,5*60*18},{10,2*60*18},{11,110*18},{20,110*18},{30,110*18}}},
+		skill_mintimepercast_v={{{1,5*60*18},{10,2*60*18},{11,110*18}}},
+		skill_mintimepercastonhorse_v={{{1,5*60*18},{10,2*60*18},{11,110*18}}},
 		skill_cost_v={{{1,500},{10,1500},{11,1500}}},
 	},
 	qianfoqianye={ --千佛千叶_20
@@ -288,10 +288,10 @@ local tb	= {
 		skill_skillexp_v=FightSkill.tbParam.tbHighBookSkillExp,
 	},
 	fue120={ --辅峨120_10
-		defencedeadlystrikedamagetrim={{{1,8},{10,80},{11,84}}},
+		defencedeadlystrikedamagetrim={{{1,3},{10,30},{11,33}}},
 	},
 	fue120_team={ ----辅峨120_子_10
-		defencedeadlystrikedamagetrim={{{1,6},{10,60},{11,63}}},
+		defencedeadlystrikedamagetrim={{{1,1},{10,10},{11,11}}},
 	},
 }
 
