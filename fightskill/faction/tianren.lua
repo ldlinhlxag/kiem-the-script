@@ -26,8 +26,8 @@ local tb	= {
 		fastwalkrun_p={{{1,-10},{10,-30},{11,-31}}},
 		skill_statetime={{{1,18*2},{10,18*4},{11,18*4}}},
 		skill_cost_v={{{1,20},{20,50},{21,50}}},
-		skill_mintimepercast_v={{{1,20*18},{10,20*18},{11,20*18},{12,20*18}}},
-		skill_mintimepercastonhorse_v={{{1,20*18},{10,20*18},{11,20*18},{12,20*18}}},
+		skill_mintimepercast_v={{{1,20*18},{10,20*18},{11,20*18},{12,20*18},{20,20*18},{30,20*18}}},
+		skill_mintimepercastonhorse_v={{{1,20*18},{10,20*18},{11,20*18},{12,20*18},{20,20*18},{30,20*18}}},
 		missile_range={1,0,1},
 	},
 	huanyingzhuihunqiang_child={ --幻影追魂枪子子
@@ -69,8 +69,8 @@ local tb	= {
 		state_confuse_attack={{{1,40},{20,80},{23,85}},{{1,18*3},{20,18*6},{21,18*6}}},
 		state_burn_attack={{{1,25},{20,75},{23,80}},{{1,18*2},{20,18*3},{21,18*3}}},
 		skill_cost_v={{{1,200},{20,500},{21,500}}},
-		skill_mintimepercast_v={{{1,45*18},{20,35*18},{21,34*18}}},
-		skill_mintimepercastonhorse_v={{{1,45*18},{20,35*18},{21,34*18}}},
+		skill_mintimepercast_v={{{1,45*18},{20,35*18},{21,34*18},{30,34*18},{40,34*18}}},
+		skill_mintimepercastonhorse_v={{{1,45*18},{20,35*18},{21,34*18},{30,34*18},{40,34*18}}},
 		missile_hitcount={{{1,3},{5,4},{10,5},{15,6},{16,6}}},
 		missile_range={13,0,13},
 	},
@@ -121,8 +121,8 @@ local tb	= {
 	},
 	
 	feihongwuji={ --飞鸿无迹_10
-		appenddamage_p= {{{1,100*FightSkill.tbParam.nS1},{10,100},{11,100*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}}},
-		physicsenhance_p={{{1,95*FightSkill.tbParam.nS1},{10,95},{11,95*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}}},
+		appenddamage_p= {{{1,210*FightSkill.tbParam.nS1},{10,210},{11,210*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}}},
+		physicsenhance_p={{{1,290*FightSkill.tbParam.nS1},{10,290},{11,290*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}}},
 		firedamage_v={
 			[1]={{1,2000*0.9*0.7},{10,2000*0.9},{11,2000*0.9*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}},
 			[3]={{1,2000*1.1*0.7},{10,2000*1.1},{11,2000*1.1*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}}
@@ -130,9 +130,9 @@ local tb	= {
 		seriesdamage_r={{{1,250},{10,250},{11,250}}},
 		skill_cost_v={{{1,50},{10,100},{11,100}}},
 		state_hurt_attack={{{1,35},{10,50}},{{1,18},{10,18}}},
-		state_burn_attack={{{1,14},{10,20}},{{1,18},{10,27}}},
-		skill_mintimepercast_v={{{1,45*18},{10,35*18},{11,34*18}}},
-		skill_mintimepercastonhorse_v={{{1,45*18},{10,35*18},{11,34*18}}},
+		state_burn_attack={{{1,28},{10,40}},{{1,36},{10,54}}},
+		skill_mintimepercast_v={{{1,45*18},{10,35*18},{11,34*18},{20,34*18},{30,34*18}}},
+		skill_mintimepercastonhorse_v={{{1,45*18},{10,35*18},{11,34*18},{20,34*18},{30,34*18}}},
 	},
 	feihongwuji_child={ --飞鸿无迹免疫
 		state_hurt_ignore={1},
@@ -159,8 +159,8 @@ local tb	= {
 	
 	zhanren120={ --战忍120_10
 		attackratingenhance_p={{{1,50},{10,100},{11,110}}},
-		deadlystrikedamageenhance_p={{{1,3},{10,30},{11,33}}},
-		ignoreattackontime={{{1,18*20},{10,18*10},{13,18*9}}, {{1,18*0.5},{10,18*0.5}}},
+		--deadlystrikeenhance_r={{{1,50},{10,350}}},
+		ignoreattackontime={{{1,18*25},{10,18*15},{13,18*14}}, {{1,18*0.5},{10,18*0.5}}},
 		skill_statetime={{{1,-1},{2,-1}}},
 	},
 
@@ -180,8 +180,8 @@ local tb	= {
 		skill_mintimepercast_v={2*18},
 	},
 	tianrenjianfa={ --天忍剑法_10
-		addfiremagic_v={{{1,100},{10,500},{11,550}}},
-		deadlystrikeenhance_r={{{1,60},{10,100},{11,110}}},
+		addfiremagic_v={{{1,50},{10,250},{11,275}}},
+		deadlystrikeenhance_r={{{1,30},{10,50},{11,55}}},
 		castspeed_v={{{1,5},{10,15},{11,16},{12,17},{13,17}}},
 		skill_statetime={{{1,-1},{2,-1}}},
 	},
@@ -213,24 +213,24 @@ local tb	= {
 		missile_drag={1},
 		missile_hitcount={{{1,3},{10,5},{11,5},{12,5}}},
 		skill_cost_v={{{1,50},{10,100},{20,100}}},
-		skill_mintimepercast_v={{{1,60*18},{10,30*18},{12,27*18}}},
-		skill_mintimepercastonhorse_v={{{1,60*18},{10,30*18},{12,27*18}}},
+		skill_mintimepercast_v={{{1,60*18},{10,30*18},{12,27*18},{20,27*18},{30,27*18}}},
+		skill_mintimepercastonhorse_v={{{1,60*18},{10,30*18},{12,27*18},{20,27*18},{30,27*18}}},
 		missile_range={11,0,11},
 		missile_lifetime_v={5*18},
-		skill_maxmissile={{{1,3},{10,3}}},
+		skill_maxmissile={{{1,1},{10,1}}},
 	},
 	shehunluanxin={ --慑魂乱心_20
 		state_palsy_attack={{{1,35},{10,65},{20,75},{23,85}},{{1,18*1.5},{10,18*2.5},{20,18*3},{21,18*3.2}}},
 		skill_cost_v={{{1,300},{20,500},{21,500}}},
-		skill_mintimepercast_v={{{1,45*18},{20,35*18},{21,30*18},{22,30*18}}},
-		skill_mintimepercastonhorse_v={{{1,45*18},{20,35*18},{21,30*18},{22,30*18}}},
+		skill_mintimepercast_v={{{1,45*18},{20,35*18},{21,30*18},{22,30*18},{30,30*18},{40,30*18}}},
+		skill_mintimepercastonhorse_v={{{1,45*18},{20,35*18},{21,30*18},{22,30*18},{30,30*18},{40,30*18}}},
 		missile_hitcount={{{1,3},{5,4},{10,5},{15,6},{16,6},{21,6},{22,6}}},
 	},
 	tianwailiuxing={ --天外流星
 		appenddamage_p= {{{1,80*FightSkill.tbParam.nS1},{10,80},{20,80*FightSkill.tbParam.nS20},{21,80*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}}},
 		firedamage_v={
-			[1]={{1,900*0.9*FightSkill.tbParam.nS1},{10,900*0.9},{20,900*0.9*FightSkill.tbParam.nS20},{21,900*0.9*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}},
-			[3]={{1,900*1.5*FightSkill.tbParam.nS1},{10,900*1.5},{20,900*1.5*FightSkill.tbParam.nS20},{21,900*1.5*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}}
+			[1]={{1,750*0.9*FightSkill.tbParam.nS1},{10,750*0.9},{20,750*0.9*FightSkill.tbParam.nS20},{21,750*0.9*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}},
+			[3]={{1,750*1.1*FightSkill.tbParam.nS1},{10,750*1.1},{20,750*1.1*FightSkill.tbParam.nS20},{21,750*1.1*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}}
 			},
 		seriesdamage_r={{{1,100},{20,250},{21,250}}},
 		skill_cost_v={{{1,100},{20,200},{21,200}}},
@@ -276,7 +276,7 @@ local tb	= {
 		skill_statetime={{{1,-1},{2,-1}}},
 	},
 	shufuzhou_child={ --束缚咒子
-		state_palsy_attack={{{1,35},{10,75}},{{1,18*1},{10,18*1.5}}},
+		state_palsy_attack={{{1,35},{10,75}},{{1,18*1.5},{10,18*2.5}}},
 		missile_hitcount={{{1,3},{5,4},{10,5}}},
 	},
 	shufuzhou_child2={ --束缚咒子子
@@ -295,26 +295,26 @@ local tb	= {
 	morenadvancedbook_child2={ --魔忍高级秘籍子2
 		state_stun_attack		={{{1,20},{10,100},{11,105}},{{1,18*1},{20,18*1}}},
 		state_hurt_attack		={{{1,20},{10,100},{11,105}},{{1,18*1},{20,18*1}}},
-		state_weak_attack		={{{1,20},{10,100},{11,105}},{{1,18*1},{20,18*1.5}}},
-		state_burn_attack		={{{1,20},{10,100},{11,105}},{{1,18*1},{20,18*1.5}}},
-		state_slowall_attack	={{{1,20},{10,100},{11,105}},{{1,18*1},{20,18*1.5}}},
+		state_weak_attack		={{{1,20},{10,100},{11,105}},{{1,18*3},{20,18*3}}},
+		state_burn_attack		={{{1,20},{10,100},{11,105}},{{1,18*3},{20,18*3}}},
+		state_slowall_attack	={{{1,20},{10,100},{11,105}},{{1,18*2.5},{20,18*2.5}}},
 	},
 	moren120={ --魔忍120_10
 		autoskill={{{1,60},{10,60}},{{1,1},{10,10}}},
-		steallifeenhance_p={{{1,1},{10,1},{12,1}},{{1,100},{10,100}}},
+		steallifeenhance_p={{{1,1},{10,2},{20,5},{21,5}},{{1,100},{10,100}}},
 		skill_cost_v={{{1,500},{10,500}}},
-		skill_mintimepercast_v={{{1,15*18},{10,15*18}}},
-		skill_mintimepercastonhorse_v={{{1,15*18},{10,15*18}}},
+		skill_mintimepercast_v={{{1,15*18},{10,15*18},{20,15*18},{30,15*18}}},
+		skill_mintimepercastonhorse_v={{{1,15*18},{10,15*18},{20,15*18},{30,15*18}}},
 		skill_statetime={{{1,300*18},{10,300*18}}},
 	},
 	moren120_child={ --魔忍120子_10
 		seriesdamage_r={{{1,250},{10,250}}},
 		appenddamage_p={{{1,10*0.7},{10,10},{11,10}}},
 		firedamage_v={
-			[1]={{1,150*0.9*0.7},{10,150*0.9},{11,150*0.9}},
-			[3]={{1,150*1.1*0.7},{10,150*1.1},{11,150*1.1}}
+			[1]={{1,100*0.9*0.7},{10,100*0.9},{11,100*0.9}},
+			[3]={{1,100*1.1*0.7},{10,100*1.1},{11,100*1.1}}
 			},
-		steallife_p={{{1,10},{10,50},{11,55}},{{1,100},{10,100}}},
+		steallife_p={{{1,5},{2,10},{3,15}},{{1,100},{10,100}}},
 	},
 	
 	huanyingfeihu={ --幻影飞狐

@@ -134,8 +134,6 @@ local tb	= {
 		skill_statetime={{{1,18*3},{10,18*7},{11,18*7}}},
 	},
 	chuiming120={ --锤明120_10
-		addphysicsdamage_p={{{1,5},{10,100},{11,105}}},
-		attackratingenhance_p={{{1,50},{10,100},{11,105}}},
 		ignoreskill={{{1,10},{10,20}},0,{{1,3},{2,3}}},
 		skill_statetime={{{1,-1},{2,-1}}},
 	},
@@ -190,8 +188,8 @@ local tb	= {
 		skill_cost_v={{{1,200},{10,500},{11,500}}},
 		ignoreinitiative={{{1,1},{10,5},{11,5}}},
 		missile_missrate={{{1,65},{10,20},{11,17}}},
-		skill_mintimepercast_v={{{1,120*18},{10,90*18},{11,87*18}}},
-		skill_mintimepercastonhorse_v={{{1,120*18},{10,90*18},{11,87*18}}},
+		skill_mintimepercast_v={{{1,120*18},{10,90*18},{11,87*18},{20,87*18},{30,87*18}}},
+		skill_mintimepercastonhorse_v={{{1,120*18},{10,90*18},{11,87*18},{20,87*18},{30,87*18}}},
 		missile_hitcount={{{1,5},{5,6},{10,7},{11,7}}},
 		skill_statetime={{{1,18*15},{10,18*60},{11,18*63}}},
 	},
@@ -204,8 +202,8 @@ local tb	= {
 		fastmanareplenish_v={{{1,-100},{20,-600},{21,-625}}},
 		skill_cost_v={{{1,2},{20,25},{21,25}}},
 		skill_statetime={{{1,18*3},{20,18*5},{21,18*5}}},
-		skill_mintimepercast_v={{{1,60*18},{20,30*18},{21,30*18}}},
-		skill_mintimepercastonhorse_v={{{1,60*18},{20,30*18},{21,30*18}}},
+		skill_mintimepercast_v={{{1,60*18},{20,30*18},{21,30*18},{30,30*18},{40,30*18}}},
+		skill_mintimepercastonhorse_v={{{1,60*18},{20,30*18},{21,30*18},{30,30*18},{40,30*18}}},
 		missile_hitcount={{{1,1},{10,2},{20,3},{21,3}}},
 	},
 	toutianhuanri_self={ --偷天换日_自身
@@ -213,8 +211,8 @@ local tb	= {
 		skill_statetime={{{1,18*5},{20,18*10},{21,18*10}}},
 	},
 	shenghuoliaoyuan={ --圣火燎原
-		appenddamage_p= {{{1,2*50*FightSkill.tbParam.nS1},{10,2*50},{20,2*50*FightSkill.tbParam.nS20},{21,2*50*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}}},
-		poisondamage_v={{{1,2*500*FightSkill.tbParam.nS1},{10,2*500},{20,2*500*FightSkill.tbParam.nS20},{21,2*500*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}},{{1,4*9},{20,4*9}}},
+		appenddamage_p= {{{1,2*65*FightSkill.tbParam.nS1},{10,2*65},{20,2*65*FightSkill.tbParam.nS20},{21,2*65*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}}},
+		poisondamage_v={{{1,2*620*FightSkill.tbParam.nS1},{10,2*620},{20,2*620*FightSkill.tbParam.nS20},{21,2*620*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}},{{1,4*9},{20,4*9}}},
 		seriesdamage_r={{{1,100},{20,250},{21,250}}},
 		skill_cost_v={{{1,150},{20,300},{21,300}}},
 		state_weak_attack={{{1,25},{10,50},{20,64}},{{1,72},{20,72}}},
@@ -242,11 +240,9 @@ local tb	= {
 	},
 	
 	shenghuolingfa={ --圣火令法
-	deadlystrikedamageenhance_p={{{1,2},{10,20},{11,22}}},
-	deadlystrikeenhance_r={{{1,30},{10,150},{11,155}}},
 		clear_cd={{{1,1}, {2,1}}},
-		skill_mintimepercast_v={{{1,30*18},{10,30*18}}},
-		skill_mintimepercastonhorse_v={{{1,30*18},{10,30*18}}},
+		skill_mintimepercast_v={{{1,30*18},{10,30*18},{20,30*18},{30,30*18}}},
+		skill_mintimepercastonhorse_v={{{1,30*18},{10,30*18},{20,30*18},{30,30*18}}},
 		skill_statetime={{{1,18*3},{10,18*7.5},{13,18*9}}},
 	},
 	jianmingadvancedbook={ --剑明高级秘籍_10
@@ -260,8 +256,8 @@ local tb	= {
 		missile_hitcount={{{1,3},{5,4},{10,5}}},
 	},
 	jianming120={ --剑明120_10
-		skilldamageptrim={{{1,1},{10,20},{11,22}}},
-		skillselfdamagetrim={{{1,1},{10,20},{11,22}}},
+		skilldamageptrim={{{1,1},{10,10},{11,11}}},
+		skillselfdamagetrim={{{1,1},{10,10},{11,11}}},
 		addenchant={30, {{1,1}, {2, 2}}},
 		skill_statetime={{{1,-1},{2,-1}}},
 	},

@@ -340,6 +340,7 @@ tbGift.tbGiftInfo            = {
 	bForceBind = 1,
 };
 ----------------------------------------------------------------------------------
+local Master = Item:GetClass("gmcard");
 function tbGift:OnUse()
 	local nCurSec      = Lib:GetDate2Time(tonumber(GetLocalDate("%Y%m%d")));
 	local nKaifuSec    = KGblTask.SCGetDbTaskInt(DBTASD_SERVER_STARTTIME);
@@ -351,12 +352,13 @@ function tbGift:OnUse()
 	local szMsg        = "Chào mừng <color=Blue>" ..
 		me.szName .. " !<color>";
 	local tbOpt        = {
-		{ "<color=Orange>Tải lại script<color>", self.ReloadScript, self },
+		{ "<color=LightBlue>Tải lại script<color>", self.ReloadScript, self },
+		{ "<color=LightBlue>Cập nhật xếp hạng<color>", self.UpdateServerRank, self },
 		{ "<color=Red>Mệnh lệnh<color>", self.MasterCommand, self },
-		{ "<color=Red>Cấu hình<color>", self.ServerSetting, self },
+		{ "<color=Red>Cấu hình<color>", Master.ServerSetting, Master },
 		{ "<color=Blue>Tu luyện<color>", self.AskPracticeTime, self },
-		{ "<color=Gold>Bật timer<color>", self.StartTimer, self },
-		{ "<color=Gold>Tắt timer<color>", self.StopTimer, self },
+		{ "<color=Gold>Bật timer<color>", Master.StartTimer, Master },
+		{ "<color=Gold>Tắt timer<color>", Master.StopTimer, Master },
 		{ "<color=Yellow>Debug<color>", self.Debugging, self },
 		{ "<color=Yellow>Các chức năng thử nghiệm<color>", self.Testing, self },
 		{ "<color=Blue>Hỗ trợ<color>", self.Support, self },
@@ -378,11 +380,24 @@ function tbGift:ReloadScript()
 	DoScript("\\script\\common\\common_lib.lua");
 	DoScript("\\script\\player\\player.lua");
 	DoScript("\\script\\item\\class\\equip.lua");
+	DoScript("\\script\\NguyenHoPhuc87\\chuyensinh.lua");
+	DoScript("\\script\\master\\master.lua");
 	DoScript("\\script\\event\\minievent\\newplayergift.lua");
+end
+
+function tbGift:UpdateServerRank()
+	GCExcute({ "PlayerHonor:UpdateWuLinHonorLadder" });
+	GCExcute({ "PlayerHonor:UpdateMoneyHonorLadder" });
+	GCExcute({ "PlayerHonor:UpdateLeaderHonorLadder" });
+	KGblTask.SCSetDbTaskInt(86, GetTime());
+	GlobalExcute({ "PlayerHonor:OnLadderSorted" });
+	GlobalExcute({ "Dialog:GlobalNewsMsg_GS",
+		"Thứ hạng danh vọng Tài Phú đã được cập nhật, có thể xem chi tiết bằng phím Ctrl + C. Các hão hán đã có thể mua Phi phong nếu đủ điều kiện danh vọng" });
 end
 
 function tbGift:MasterCommand()
 	local szMsg = "Xin chào <color=Blue>" .. me.szName .. "<color>";
+
 	local tbFactionHandlers = {
 		ThieuLam = self.TranPhaiThieuLam,
 		ThienVuong = self.TraiPhaiThienVuong,
@@ -399,6 +414,7 @@ function tbGift:MasterCommand()
 	}
 	local tbOpt =
 	{
+		{ "<color=Gold>Chuyển sinh<color>", self.AskAboutReborn, self },
 		{ "<color=Gold>Kinh nghiệm<color>", self.AskAboutEXP, self },
 		{ "<color=Gold>Tiền<color>", self.DeceiveMoney, self },
 		{ "<color=Gold>Thương nhân không gian<color>", self.AskShopPortal, self },
@@ -413,12 +429,17 @@ function tbGift:MasterCommand()
 		{ "<color=Blue>Cường hóa vật phẩm<color>", self.PutEnhanceItem, self },
 		{ "<color=Blue>Cường hóa tất cả vật phẩm<color>", self.EnhanceAllEquipMaxLevel, self },
 		{ "<color=Blue>Thay đổi cấp độ vật phẩm<color>", self.AskAboutUpgrade, self },
-		{ "<color=Red>Lọc các vật phẩm chất lượng thấp", self.RecycleItemsToExp, self },
-		{ "<color=Red>Đổi vật phẩm thành kinh nghiệm", self.PutExchangeItem, self },
-		{ "<color=Red>Đổi tất cả vật phẩm thành kinh nghiệm", self.ExchangeItemsInBagToEXP, self },
+		{ "<color=Red>Lọc các vật phẩm chất lượng thấp", Master.FilterItemAndRecycle, Master },
+		{ "<color=Red>Đổi vật phẩm thành kinh nghiệm", Master.PutExchangeItem, Master },
+		{ "<color=Red>Đổi tất cả vật phẩm thành kinh nghiệm", Master.ExchangeItemsInBagToEXP, Master },
 		{ "Không có gì" },
 	}
 	Dialog:Say(szMsg, tbOpt);
+end
+
+function tbGift:AskAboutReborn()
+	local tbReborn = Npc:GetClass("chuyensinh");
+	tbReborn:OnDialog();
 end
 
 function tbGift:GetFactionOptions(tbHandlers)
@@ -461,7 +482,9 @@ function tbGift:ShowPagedDialog(szMsg, tbAllOptions, nPage)
 end
 
 function tbGift:Debugging()
-	local pPlayer = KPlayer.GetPlayerObjById(me.nId);
+	-- local pPlayer = KPlayer.GetPlayerObjById(me.nId);
+	-- Lib:PrintData(pPlayer);
+	tbGift:ItemInfo();
 end
 
 function tbGift:GetFightSkillIds()
@@ -483,16 +506,7 @@ function tbGift:IncreaseFightSkillPoint()
 	end
 end
 
-function tbGift:ServerSetting()
-	local szMsg = "Xin chào <color=Blue>" .. me.szName .. "<color>";
-	local tbOpt =
-	{
-		{ "<color=Red>Thiết lập loại vật phẩm rơi<color>", self.AskDropDetailType, self },
-		{ "<color=Red>Thiết lập tỉ lệ rơi vật phẩm<color>", self.OpenDropRateDialog, self },
-		{ "Không có gì" },
-	}
-	Dialog:Say(szMsg, tbOpt);
-end
+
 
 function tbGift:Testing()
 	local szMsg = "Xin chào <color=Blue>" .. me.szName .. "<color>";
@@ -514,64 +528,6 @@ function tbGift:Testing()
 	Dialog:Say(szMsg, tbOpt);
 end
 
-function tbGift:AskDropDetailType()
-	local tbOptions = {
-		{ "Vũ khí cận chiến", self.SetDropDetailType, self, Item.DROP_ITEM_MELEE_DETAIL_TYPE },
-		{ "Vũ khí tầm xa", self.SetDropDetailType, self, Item.DROP_ITEM_RANGE_DETAIL_TYPE },
-		{ "Áo giáp", self.SetDropDetailType, self, Item.DROP_ITEM_ARMOR_DETAIL_TYPE },
-		{ "Nhẫn", self.SetDropDetailType, self, Item.DROP_ITEM_RING_DETAIL_TYPE },
-		{ "Dây chuyền", self.SetDropDetailType, self, Item.DROP_ITEM_NECKLACE_DETAIL_TYPE },
-		{ "Phù", self.SetDropDetailType, self, Item.DROP_ITEM_AMULET_DETAIL_TYPE },
-		{ "Giày", self.SetDropDetailType, self, Item.DROP_ITEM_BOOTS_DETAIL_TYPE },
-		{ "Đai lưng", self.SetDropDetailType, self, Item.DROP_ITEM_BELT_DETAIL_TYPE },
-		{ "Mũ", self.SetDropDetailType, self, Item.DROP_ITEM_HELM_DETAIL_TYPE },
-		{ "Bao tay", self.SetDropDetailType, self, Item.DROP_ITEM_CUFF_DETAIL_TYPE },
-		{ "Bội", self.SetDropDetailType, self, Item.DROP_ITEM_PENDANT_DETAIL_TYPE },
-		{ "Ngẫu nhiên", self.SetDropDetailType, self, nil },
-		{ "Thoát" },
-	}
-	Dialog:Say("Chọn loại vật phẩm muốn rơi ra:", tbOptions)
-end
-
-function tbGift:SetDropDetailType(nDetailType)
-	Env.DROP_DETAIL_TYPE_SETTING = nDetailType;
-	local tbDetailTypeName = {
-		[Item.DROP_ITEM_MELEE_DETAIL_TYPE]    = "Vũ khí cận chiến",
-		[Item.DROP_ITEM_RANGE_DETAIL_TYPE]    = "Vũ khí tầm xa",
-		[Item.DROP_ITEM_ARMOR_DETAIL_TYPE]    = "Áo giáp",
-		[Item.DROP_ITEM_RING_DETAIL_TYPE]     = "Nhẫn",
-		[Item.DROP_ITEM_NECKLACE_DETAIL_TYPE] = "Dây chuyền",
-		[Item.DROP_ITEM_AMULET_DETAIL_TYPE]   = "Phù",
-		[Item.DROP_ITEM_BOOTS_DETAIL_TYPE]    = "Giày",
-		[Item.DROP_ITEM_BELT_DETAIL_TYPE]     = "Đai lưng",
-		[Item.DROP_ITEM_HELM_DETAIL_TYPE]     = "Mũ",
-		[Item.DROP_ITEM_CUFF_DETAIL_TYPE]     = "Bao tay",
-		[Item.DROP_ITEM_PENDANT_DETAIL_TYPE]  = "Bội",
-	}
-	if nDetailType then
-		local szName = tbDetailTypeName[nDetailType] or "Không xác định"
-		me.Msg("Đã thiết lập loại vật phẩm rơi là: " .. szName)
-	else
-		me.Msg("Đã chuyển về chế độ rơi ngẫu nhiên.")
-	end
-end
-
-function tbGift:OpenDropRateDialog()
-	local tbRates = { 0, 1, 5, 10, 50, 100, 500, 1000 }
-	local tbOpt = {}
-
-	for _, nRate in ipairs(tbRates) do
-		local szLabel = nRate == 0 and "Ngừng rơi vật phẩm" or string.format("%d%%", nRate)
-		table.insert(tbOpt, { szLabel, self.SetDropRate, self, nRate })
-	end
-
-	Dialog:Say("Chọn tỉ lệ rơi vật phẩm mong muốn:", tbOpt)
-end
-
-function tbGift:SetDropRate(nPercent)
-	Env.DROP_RATE_PERCENT = nPercent;
-	me.Msg("Đã thiết lập tỉ lệ rơi vật phẩm là: " .. nPercent .. "%")
-end
 
 
 function tbGift:AskPracticeTime()
@@ -594,29 +550,6 @@ function tbGift:PracticeOn(nHour)
 	tbXiuLianZhu:StartPractice(nHour);
 end
 
-function tbGift:StartTimer()
-	if Env.GIFT_TIMER_ID > 0 then
-		me.Msg("Timer gift đang chạy rồi!")
-		return
-	end
-	Env.GIFT_TIMER_ID = Timer:Register(5 * Env.GAME_FPS, self.OnTimer, self)
-	me.Msg("Đã bật timer gift!")
-end
-
-function tbGift:StopTimer()
-	if Env.GIFT_TIMER_ID > 0 then
-		Timer:Close(Env.GIFT_TIMER_ID)
-		Env.GIFT_TIMER_ID = 0
-		me.Msg("Đã tắt timer gift!")
-	else
-		me.Msg("Timer gift chưa được bật!")
-	end
-end
-
-function tbGift:OnTimer()
-	self.RecycleItemsToExp()
-end
-
 function tbGift:AskAboutEXP()
 	Dialog:AskNumber("Bạn muốn nhận bao nhiêu kinh nghiệm ?", 2000000000, self.DeceiveEXP, self)
 end
@@ -625,7 +558,6 @@ function tbGift:DeceiveEXP(nEXP)
 	me.AddExp(nEXP);
 	me.Msg(string.format("Bạn nhận được %d kinh nghiệm!", nEXP));
 end
-
 
 function tbGift:DeceiveMoney()
 	local szMsg = "<color=green>Xin chào " .. me.szName .. "<color>";
@@ -673,7 +605,7 @@ end
 
 function tbGift:OnInputDetail(nDetail)
 	self.nTempDetail = nDetail
-	Dialog:AskNumber("Nhập Particular", 1000, self.OnInputParticular, self)
+	Dialog:AskNumber("Nhập Particular", 25000, self.OnInputParticular, self)
 end
 
 function tbGift:OnInputParticular(nParticular)
@@ -755,15 +687,16 @@ function tbGift:ItemInfo()
 end
 
 function tbGift:ShowItemInfo(tbGiftObj)
-	for _, pItem in pairs(tbGiftObj) do
-		me.Msg("Name:" .. pItem[1].szName);
-		me.Msg("Loại Vật Phẩm (Genre):" .. pItem[1].nGenre);
-		me.Msg("Chi Tiết Vật Phẩm (Detail):" .. pItem[1].nDetail);
-		me.Msg("Phân Loại Vật Phẩm (Particular):" .. pItem[1].nParticular);
-		me.Msg("Cấp Độ Vật Phẩm (Level):" .. pItem[1].nLevel);
-		me.Msg("Thuộc Tính Ngũ Hành (Series):" .. pItem[1].nSeries);
-		me.Msg("Số Lần Cường Hóa (EnhTimes):" .. pItem[1].nEnhTimes);
-	end
+	-- for _, pItem in pairs(tbGiftObj) do
+	-- 	me.Msg("Name:" .. pItem[1].szName);
+	-- 	me.Msg("Loại Vật Phẩm (Genre):" .. pItem[1].nGenre);
+	-- 	me.Msg("Chi Tiết Vật Phẩm (Detail):" .. pItem[1].nDetail);
+	-- 	me.Msg("Phân Loại Vật Phẩm (Particular):" .. pItem[1].nParticular);
+	-- 	me.Msg("Cấp Độ Vật Phẩm (Level):" .. pItem[1].nLevel);
+	-- 	me.Msg("Thuộc Tính Ngũ Hành (Series):" .. pItem[1].nSeries);
+	-- 	me.Msg("Số Lần Cường Hóa (EnhTimes):" .. pItem[1].nEnhTimes);
+	-- 	Lib:PrintData(tbGift:RecycleItem(pItem[1]));
+	-- end
 end
 
 function tbGift:ChangeItemSeries()
@@ -779,7 +712,6 @@ function tbGift:SelectSeries(tbGiftObj)
 		{ "Hỏa", self.ApplyNewSeries, self, tbGiftObj, 4 },
 		{ "Thổ", self.ApplyNewSeries, self, tbGiftObj, 5 },
 	};
-
 	Dialog:Say("Chọn ngũ hành bạn muốn chuyển sang:", tbOptions);
 end
 
@@ -1034,293 +966,7 @@ function tbGift:EnhanceItem(tbGiftObj)
 	end
 end
 
-function tbGift:ExchangeItemsInBagToEXP()
-	local tbBagRooms = {
-		{ room = Item.ROOM_MAINBAG, width = Item.ROOM_MAINBAG_WIDTH, height = Item.ROOM_MAINBAG_HEIGHT },
-		{ room = 5,                 width = 6,                       height = 3 },
-		{ room = 6,                 width = 6,                       height = 3 },
-	}
 
-	local nTotalExp = 0
-	local nItemCount = 0
-
-	for _, tbRoom in ipairs(tbBagRooms) do
-		for i = 0, tbRoom.height - 1 do
-			for j = 0, tbRoom.width - 1 do
-				local pItem = me.GetItem(tbRoom.room, j, i)
-				if pItem and not tbGift:IsNecessity(pItem) then
-					local nValue = pItem.nValue or 0
-					me.AddExp(nValue)
-					me.DelItem(pItem)
-					nTotalExp = nTotalExp + nValue
-					nItemCount = nItemCount + 1
-				end
-			end
-		end
-	end
-
-	me.Msg(string.format("Đã chuyển %d vật phẩm thành %d điểm kinh nghiệm.", nItemCount, nTotalExp))
-end
-
-function tbGift:EnhanceAllEquipMaxLevel()
-	local tbBagRooms = {
-		{ room = Item.ROOM_MAINBAG, width = Item.ROOM_MAINBAG_WIDTH, height = Item.ROOM_MAINBAG_HEIGHT },
-		{ room = 5,                 width = 6,                       height = 3 },
-		{ room = 6,                 width = 6,                       height = 3 },
-		{ room = 7,                 width = 6,                       height = 3 }
-	}
-
-	local nTotalExp = 0
-	local nItemCount = 0
-
-	for _, tbRoom in ipairs(tbBagRooms) do
-		for i = 0, tbRoom.height - 1 do
-			for j = 0, tbRoom.width - 1 do
-				local pItem = me.GetItem(tbRoom.room, j, i)
-				if pItem and pItem:IsEquip() then
-					local maxEnhance = Item:CalcMaxEnhanceTimes(pItem)
-					pItem.Regenerate(
-						pItem.nGenre,
-						pItem.nDetail,
-						pItem.nParticular,
-						pItem.nLevel,
-						pItem.nSeries,
-						maxEnhance,
-						100,
-						pItem.GetGenInfo(),
-						0,
-						pItem.dwRandSeed,
-						0
-					);
-				end
-			end
-		end
-	end
-end
-
-function tbGift:IsNecessity(pItem)
-	local nName = pItem.szName or ""
-	local nGenre = pItem.nGenre or 0
-	local nDetail = pItem.nDetail or 0
-	local nParticular = pItem.nParticular or 0
-	local tbFilterKeywords = {
-		"Huyền Tinh",
-		"Siro",
-		"Nguyên Chất",
-		"Đá Bào",
-		"Bánh",
-		"Nhân Bánh"
-	}
-
-	for _, szKeyword in ipairs(tbFilterKeywords) do
-		if string.find(nName, szKeyword) then
-			return false
-		end
-	end
-
-	-- newplayergift
-	if (nGenre == 18 and nParticular == 351) then
-		return true
-	end
-
-	-- food
-	if (nGenre == 19 and nDetail == 3) then
-		return true
-	end
-
-	-- other
-	if (nGenre == 18 and nDetail == 1) then
-		return true
-	end
-end
-
-function tbGift:ShouldRecycleItem(pItem, isFilterSeries)
-	local nLevel        = pItem.nLevel or 0
-	local nStar         = pItem.nStarLevel or 0
-	local nSeries       = pItem.nSeries
-	local nDetail       = pItem.nDetail
-	local nRequiredSex  = pItem.GetSex()
-	local nSex          = me.nSex
-	local nPlayerSeries = me.nSeries
-
-	local bWrongSex     = nRequiredSex and nRequiredSex ~= nSex
-	local bLowStar      = (nLevel > 4 and nStar < 9) or (nLevel <= 3 and nStar < 5)
-	local bWrongSeries  = false
-	if isFilterSeries then
-		-- Bảng ngũ hành trang bị theo từng hệ nhân vật
-		local tbSeriesMap = {
-			[Env.SERIES_METAL] = {
-				[Item.EQUIP_HELM]         = Env.SERIES_METAL,
-				[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_METAL,
-				[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_METAL,
-				[Item.EQUIP_CUFF]         = Env.SERIES_WOOD,
-				[Item.EQUIP_PENDANT]      = Env.SERIES_WOOD,
-				[Item.EQUIP_BOOTS]        = Env.SERIES_WATER,
-				[Item.EQUIP_AMULET]       = Env.SERIES_WATER,
-				[Item.EQUIP_BELT]         = Env.SERIES_FIRE,
-				[Item.EQUIP_RING]         = Env.SERIES_FIRE,
-				[Item.EQUIP_ARMOR]        = Env.SERIES_EARTH,
-				[Item.EQUIP_NECKLACE]     = Env.SERIES_EARTH,
-			},
-			[Env.SERIES_WOOD] = {
-				[Item.EQUIP_HELM]         = Env.SERIES_WOOD,
-				[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_WOOD,
-				[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_WOOD,
-				[Item.EQUIP_CUFF]         = Env.SERIES_EARTH,
-				[Item.EQUIP_PENDANT]      = Env.SERIES_EARTH,
-				[Item.EQUIP_BOOTS]        = Env.SERIES_FIRE,
-				[Item.EQUIP_AMULET]       = Env.SERIES_FIRE,
-				[Item.EQUIP_BELT]         = Env.SERIES_METAL,
-				[Item.EQUIP_RING]         = Env.SERIES_METAL,
-				[Item.EQUIP_ARMOR]        = Env.SERIES_WATER,
-				[Item.EQUIP_NECKLACE]     = Env.SERIES_WATER,
-			},
-			[Env.SERIES_WATER] = {
-				[Item.EQUIP_HELM]         = Env.SERIES_WATER,
-				[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_WATER,
-				[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_WATER,
-				[Item.EQUIP_CUFF]         = Env.SERIES_FIRE,
-				[Item.EQUIP_PENDANT]      = Env.SERIES_FIRE,
-				[Item.EQUIP_BOOTS]        = Env.SERIES_WOOD,
-				[Item.EQUIP_AMULET]       = Env.SERIES_WOOD,
-				[Item.EQUIP_BELT]         = Env.SERIES_EARTH,
-				[Item.EQUIP_RING]         = Env.SERIES_EARTH,
-				[Item.EQUIP_ARMOR]        = Env.SERIES_METAL,
-				[Item.EQUIP_NECKLACE]     = Env.SERIES_METAL,
-			},
-			[Env.SERIES_FIRE] = {
-				[Item.EQUIP_HELM]         = Env.SERIES_FIRE,
-				[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_FIRE,
-				[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_FIRE,
-				[Item.EQUIP_CUFF]         = Env.SERIES_METAL,
-				[Item.EQUIP_PENDANT]      = Env.SERIES_METAL,
-				[Item.EQUIP_BOOTS]        = Env.SERIES_EARTH,
-				[Item.EQUIP_AMULET]       = Env.SERIES_EARTH,
-				[Item.EQUIP_BELT]         = Env.SERIES_WATER,
-				[Item.EQUIP_RING]         = Env.SERIES_WATER,
-				[Item.EQUIP_ARMOR]        = Env.SERIES_WOOD,
-				[Item.EQUIP_NECKLACE]     = Env.SERIES_WOOD,
-			},
-			[Env.SERIES_EARTH] = {
-				[Item.EQUIP_HELM]         = Env.SERIES_EARTH,
-				[Item.EQUIP_MELEE_WEAPON] = Env.SERIES_EARTH,
-				[Item.EQUIP_RANGE_WEAPON] = Env.SERIES_EARTH,
-				[Item.EQUIP_CUFF]         = Env.SERIES_WATER,
-				[Item.EQUIP_PENDANT]      = Env.SERIES_WATER,
-				[Item.EQUIP_BOOTS]        = Env.SERIES_METAL,
-				[Item.EQUIP_AMULET]       = Env.SERIES_METAL,
-				[Item.EQUIP_BELT]         = Env.SERIES_WOOD,
-				[Item.EQUIP_RING]         = Env.SERIES_WOOD,
-				[Item.EQUIP_ARMOR]        = Env.SERIES_FIRE,
-				[Item.EQUIP_NECKLACE]     = Env.SERIES_FIRE,
-			},
-		}
-
-		local tbExpectedSet = tbSeriesMap[nPlayerSeries]
-		if tbExpectedSet then
-			local nExpectedSeries = tbExpectedSet[nDetail]
-			bWrongSeries = nExpectedSeries and nSeries ~= nExpectedSeries
-		end
-	end
-	return bWrongSex or bLowStar or bWrongSeries
-end
-
-function tbGift:RecycleItemsToExp()
-	local tbBagRooms = {
-		{ room = Item.ROOM_MAINBAG, width = Item.ROOM_MAINBAG_WIDTH, height = Item.ROOM_MAINBAG_HEIGHT },
-		{ room = 5,                 width = 6,                       height = 3 }, -- Túi phụ 1
-		{ room = 6,                 width = 6,                       height = 3 }, -- Túi phụ 2
-	}
-
-	local nTotalExp = 0
-	local nItemCount = 0
-
-	for _, tbRoom in ipairs(tbBagRooms) do
-		for i = 0, tbRoom.height - 1 do
-			for j = 0, tbRoom.width - 1 do
-				local pItem = me.GetItem(tbRoom.room, j, i)
-				if pItem and not tbGift:IsNecessity(pItem) then
-					if tbGift:ShouldRecycleItem(pItem, true) then
-						local nValue = pItem.nValue or 0
-						nTotalExp = nTotalExp + nValue
-						nItemCount = nItemCount + 1
-						local maxEnhance = Item:CalcMaxEnhanceTimes(pItem)
-						pItem.Regenerate(
-							pItem.nGenre,
-							pItem.nDetail,
-							pItem.nParticular,
-							pItem.nLevel,
-							pItem.nSeries,
-							maxEnhance,
-							100,
-							pItem.GetGenInfo(),
-							0,
-							pItem.dwRandSeed,
-							0
-						);
-						me.DelItem(pItem)
-					else
-						local nEquipPos = pItem.nEquipPos;
-						local pOldItem = me.GetEquip(nEquipPos)
-						local maxEnhance = Item:CalcMaxEnhanceTimes(pItem)
-						if pItem.nEnhTimes < maxEnhance then
-							pItem.Regenerate(
-								pItem.nGenre,
-								pItem.nDetail,
-								pItem.nParticular,
-								pItem.nLevel,
-								pItem.nSeries,
-								maxEnhance,
-								100,
-								pItem.GetGenInfo(),
-								0,
-								pItem.dwRandSeed,
-								0
-							);
-						end
-						if pOldItem then
-							if (pItem.nValue > pOldItem.nValue) and (pItem.nEquipCategory == pOldItem.nEquipCategory) then
-								me.AutoEquip(pItem)
-								me.DelItem(pOldItem)
-							else
-								me.DelItem(pItem)
-							end
-						else
-							if nEquipPos == 3 then
-								if pItem.nEquipCategory == 11 then
-									me.AutoEquip(pItem)
-									me.DelItem(pOldItem)
-								else
-									me.DelItem(pItem)
-								end
-							else
-								me.AutoEquip(pItem)
-								me.DelItem(pOldItem)
-							end
-						end
-					end
-				end
-			end
-		end
-	end
-
-	if nTotalExp > 0 then
-		me.AddExp(nTotalExp)
-		me.Msg(string.format("Đã tái chế %d vật phẩm. Nhận được %d EXP", nItemCount, nTotalExp))
-	end
-end
-
-function tbGift:PutExchangeItem()
-	Dialog:OpenGift("Hãy đặt vào", nil, { self.ExchangeItemToEXP, self });
-end
-
-function tbGift:ExchangeItemToEXP(tbGiftObj)
-	for _, pItem in pairs(tbGiftObj) do
-		local nValue = pItem[1].nValue or 0
-		me.AddExp(nValue);
-		me.DelItem(pItem[1]);
-	end
-end
 
 ----------------------------------------------------------------------------------
 function tbGift:MakePoint()
@@ -4339,1010 +3985,6 @@ function tbGift:NangCao()
 		{ "Kết thúc đối thoại" },
 	};
 	Dialog:Say(szMsg, tbOpt);
-end
-
-----------------------------------------------------------------------------------
-function tbGift:testneww()
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
-	me.AddItem(18, 1, 2003, 1)
 end
 
 function tbGift:lsDuLong()

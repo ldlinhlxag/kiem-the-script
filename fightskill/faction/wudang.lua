@@ -13,10 +13,8 @@ local tb	= {
 		addskilldamagep2={165, {{1,2},{20,10},{21,12}},1},
 	},
 	wudangquanfa={ --武当拳法_10
-		lifemax_p={{{1,10},{10,100},{11,105}}},
 		addlightingmagic_v={{{1,5},{10,340},{11,374}}},
-		deadlystrikeenhance_r={{{1,30},{10,150},{11,155}}},
-		deadlystrikedamageenhance_p={{{1,3},{10,30},{11,33}}},
+		deadlystrikeenhance_r={{{1,30},{10,50},{11,55}}},
 		castspeed_v={{{1,10},{10,15},{11,16},{12,17},{13,17}}},
 		skill_statetime={{{1,-1},{2,-1}}},
 	},
@@ -44,16 +42,15 @@ local tb	= {
 		skill_statetime={{{1,-1},{2,-1}}},
 	},
 	chunyangwuji={ --纯阳无极_10
-		staticmagicshieldcur_p ={{{1,170},{10,306},{11,316}},{{1,15*18},{10,30*18},{11,30*18}}},
-		skill_mintimepercast_v={{{1,60*18},{10,30*18},{11,30*18}}},
-		skill_mintimepercastonhorse_v={{{1,60*18},{10,30*18},{11,30*18}}},
+		staticmagicshieldcur_p ={{{1,150},{10,200},{11,206}},{{1,15*18},{10,30*18},{11,30*18}}},
+		skill_mintimepercast_v={{{1,30*18},{10,30*18},{11,30*18},{20,30*18},{30,30*18}}},
+		skill_mintimepercastonhorse_v={{{1,30*18},{10,30*18},{11,30*18},{20,30*18},{30,30*18}}},
 	},
-	-- 7x vo dang khi 140 147 200 210
 	zhenwuqijie_team={ --真武七截
-		addphysicsmagic_p={{{1,35},{20,50},{21,57}}},
+		addphysicsmagic_p={{{1,35},{20,140},{21,147}}},
 	},
 	zhenwuqijie={ --真武七截_20
-		addphysicsmagic_p={{{1,50},{20,100},{21,107}}},
+		addphysicsmagic_p={{{1,50},{20,200},{21,210}}},
 	},
 	tiandiwuji={ --天地无极
 		appenddamage_p= {{{1,45*FightSkill.tbParam.nS1},{10,45},{20,45*FightSkill.tbParam.nS20},{21,45*FightSkill.tbParam.nS20*FightSkill.tbParam.nSadd}}},
@@ -93,16 +90,12 @@ local tb	= {
 		prop_invincibility={1},
 		skill_statetime={{{1,18*1},{10,18*2},{11,18*2.1}}},
 	},
--- skill vd
+	
 	wudangjiuyanggong={ --武当九阳功_10
---		attackenhancebycostmana_p={{{1,1 * 2 / 3},{10,3 * 2 / 3},{12,3 * 2 / 3}}},
-		deadlystrikeenhance_r={{{1,30},{10,150},{11,155}}},
-		deadlystrikedamageenhance_p={{{1,2},{10,20},{11,22}}},
-		attackenhancebycostmana_p={{{1,1},{10,2},{12,2}}},
+		attackenhancebycostmana_p={{{1,0.5},{10,0.5},{12,1},{20,1},{30,1}}},
 		state_stun_attackrate={{{1,55},{10,100},{10,105}}},
 		skill_statetime={{{1,-1},{10,-1}}},
 	},	
-
 	qiwuadvancedbook={ --高级秘籍
 		autoskill={{{1,44},{10,44}},{{1,1},{10,10}}},
 		skill_statetime={{{1,-1},{10,-1}}},
@@ -110,29 +103,29 @@ local tb	= {
 	},
 	
 	qiwuadvancedbook_child={ --高级秘籍子
-		appenddamage_p= {{{1,82*0.7*1.2},{10,82*1.2},{11,82*1.2*1.05}}},
+		appenddamage_p= {{{1,100*0.7*1.2},{10,100*1.2},{11,100*1.2*1.05}}},
 		lightingdamage_v={
-			[1]={{1,1450*0.9*0.7*1.2},{10,1450*0.9*1.2},{11,1450*0.9*1.2*1.05}},
-			[3]={{1,1630*1.1*0.7*1.2},{10,1630*1.1*1.2},{11,1630*1.1*1.2*1.05}},
+			[1]={{1,1650*0.9*0.7*1.2},{10,1650*0.9*1.2},{11,1650*0.9*1.2*1.05}},
+			[3]={{1,1830*1.1*0.7*1.2},{10,1830*1.1*1.2},{11,1830*1.1*1.2*1.05}},
 			},
 		seriesdamage_r={{{1,250},{10,250}}},
 		missile_hitcount={{{1,3},{10,8},{11,8}}},
 	},
 	qiwu120={ --气武120_10
-		appenddamage_p= {{{1,30*0.7},{10,30},{11,30*FightSkill.tbParam.nSadd}}},
+		appenddamage_p= {{{1,40*0.7},{10,40},{11,40*FightSkill.tbParam.nSadd}}},
 		lightingdamage_v={
 			[1]={{1,600*0.7},{10,600},{11,600*FightSkill.tbParam.nSadd}},
 			[3]={{1,750*0.7},{10,750},{11,750*FightSkill.tbParam.nSadd}},
 			},
 		seriesdamage_r={{{1,250},{10,250}}},
 		skill_cost_v={{{1,999},{10,999}}},
-		skill_mintimepercast_v={{{1,30*18},{10,30*18}}},
-		skill_mintimepercastonhorse_v = {{{1,30*18},{10,30*18}}},
+		skill_mintimepercast_v={{{1,30*18},{10,30*18},{20,30*18},{30,30*18}}},
+		skill_mintimepercastonhorse_v = {{{1,30*18},{10,30*18},{20,30*18},{30,30*18}}},
 		missile_hitcount={{{1,15},{10,15}}},
 	},
 	qiwu120_child={ --气武120_子_10
-		deadlystrikeenhance_r={{{1,40*0.7},{10,40},{11,40*FightSkill.tbParam.nSadd}}},
-		superposemagic={{{1,33},{10,33}}},
+		deadlystrikeenhance_r={{{1,50*.7},{10,50},{11,50*FightSkill.tbParam.nSadd}}},
+		superposemagic={{{1,99},{10,99}}},
 		skill_statetime={{{1,15*18},{10,15*18}}},
 	},
 	qiwu120_child2={ --气武120_子子_10
@@ -152,12 +145,11 @@ local tb	= {
 		addskilldamagep2={171, {{1,2},{20,10},{21,12}},1},
 	},
 	wudangjianfa={ --武当剑法_10
-		lifemax_p={{{1,10},{10,60},{11,65}}},
 		addphysicsdamage_p={{{1,35},{10,130},{11,143}}},
 		attackratingenhance_p={{{1,50},{10,200},{11,220}}},
 		adddefense_v={{{1,50},{10,150},{11,165}}},
 		deadlystrikeenhance_r={{{1,30},{10,50},{11,55}}},
-		attackspeed_v={{{1,10},{10,25},{11,26},{12,27},{13,28}}},
+		attackspeed_v={{{1,10},{10,25},{11,26},{12,27},{13,27}}},
 		skill_statetime={{{1,-1},{2,-1}}},
 	},
 	wuwoxinfa={ --无我心法_10
@@ -228,7 +220,7 @@ local tb	= {
 	jianqizongheng={ --剑气纵横_20
 		state_stun_attackrate={{{1,5},{20,50},{21,52}}},
 		state_slowall_resistrate={{{1,10},{10,100},{20,150},{21,157}}},
-		attackspeed_v={{{1,6},{20,16},{23,19},{24,20}}},
+		attackspeed_v={{{1,6},{20,16},{23,19},{24,19}}},
 		manamax_p={{{1,25},{10,45},{20,55},{21,57}}},
 		skill_statetime={{{1,-1},{2,-1}}}
 	},
@@ -250,8 +242,8 @@ local tb	= {
 		},
 		state_fixed_attack={{{1,35},{10,85},{12,90}},{{1,18*2},{20,18*2}}},
 		skill_cost_v={{{1,50},{10,100},{11,100}}},
-		skill_mintimepercast_v={{{1,6*18},{10,6*18},{11,6*18}}},
-		skill_mintimepercastonhorse_v={{{1,6*18},{10,6*18},{11,6*18}}},
+		skill_mintimepercast_v={{{1,6*18},{10,6*18},{11,6*18},{20,6*18},{30,6*18}}},
+		skill_mintimepercastonhorse_v={{{1,6*18},{10,6*18},{11,6*18},{20,6*18},{30,6*18}}},
 		missile_hitcount={{{1,3},{2,3}}},
 		skill_skillexp_v=FightSkill.tbParam.tbMidBookSkillExp,
 	},
@@ -280,11 +272,10 @@ local tb	= {
 		addedwith_enemycount={{{1,1185},{10,1185}},{{1,3},{10,10},{11,11},{12,11}}, {{1,1600},{10,1600}}},
 		skill_statetime={{{1,-1},{2,-1}}}
 	},
-	mizhonghuanying_child={ --迷踪幻影子1
-		deadlystrikeenhance_r={{{1,30},{10,40},{11,45}}},
-		deadlystrikedamageenhance_p={{{1,5},{10,7},{11,8}}},
+	mizhonghuanying_child={ --迷踪幻影子
 		ignoreskill={{{1,7},{10,7}},0,{{1,6},{2,6}}},
 		steallifeenhance_p={{{1,4},{10,4}},{{1,100},{10,100}}},
+		stealmanaenhance_p={{{1,4},{10,4}},{{1,100},{10,100}}},
 		skill_statetime={{{1,18*2},{2,18*2}}},
 	},
 	jianwuadvancedbook={ --剑武高级秘籍_10
@@ -296,8 +287,8 @@ local tb	= {
 			},
 		seriesdamage_r={{{1,250},{10,250}}},
 		skill_cost_v={{{1,1000},{10,1000}}},
-		skill_mintimepercast_v={{{1,60*18},{10,60*18}}},
-		skill_mintimepercastonhorse_v={{{1,60*18},{10,60*18}}},
+		skill_mintimepercast_v={{{1,60*18},{10,60*18},{20,60*18},{30,60*18}}},
+		skill_mintimepercastonhorse_v={{{1,60*18},{10,60*18},{20,60*18},{30,60*18}}},
 		skill_skillexp_v=FightSkill.tbParam.tbHighBookSkillExp,
 	},
 	jianwuadvancedbook_fellow={ --剑武高级秘籍_10

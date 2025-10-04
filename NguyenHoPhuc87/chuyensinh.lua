@@ -148,7 +148,7 @@ function tbChuyenSinh:DoItemCs(nValue)
 end;
 
 function tbChuyenSinh:OnCsOpenGiftOk(nValue, tbItemObj)
-	local nBac = me.GetBindMoney();
+	local nBac = me.nCashMoney;
 	if nBac < 100000000 then
 		me.Msg("Ngươi không mang đủ Bạc !");
 		return 0;

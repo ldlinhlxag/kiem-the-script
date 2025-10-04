@@ -15,10 +15,8 @@ local tb	= {
 		addskilldamagep4={794, {{1,2},{20,30}}},
 	},
 	gaibangzhangfa={ --丐帮掌法_10
-		-- addfiremagic_v={{{1,15},{10,535},{12,642}}},
-		addfiremagic_v={{{1,30},{10,1070},{12,1284}}},
-		-- deadlystrikeenhance_r={{{1,30},{10,50},{11,55}}},
-		deadlystrikeenhance_r={{{1,45},{10,75},{11,83}}},
+		addfiremagic_v={{{1,15},{10,535},{12,642}}},
+		deadlystrikeenhance_r={{{1,30},{10,50},{11,55}}},
 		castspeed_v={{{1,10},{10,15},{11,16},{12,17},{13,17}}},
 		skill_statetime={{{1,-1},{2,-1}}},
 	},
@@ -61,8 +59,8 @@ local tb	= {
 	shichengliulong={ --时乘六龙_10
 		autoskill={{{1,16},{2,16}},{{1,1},{10,10}}},
 		skill_statetime={{{1,5*18},{10,20*18},{11,21*18}}},
-		skill_mintimepercast_v={{{1,60*18},{10,30*18},{12,27*18}}},
-		skill_mintimepercastonhorse_v={{{1,60*18},{10,30*18},{12,27*18}}},
+		skill_mintimepercast_v={{{1,60*18},{10,30*18},{12,27*18},{20,27*18},{30,27*18}}},
+		skill_mintimepercastonhorse_v={{{1,60*18},{10,30*18},{12,27*18},{20,27*18},{30,27*18}}},
 		skill_cost_v={{{1,20},{10,50},{11,50}}},
 	},
 	shichengliulong_child={ --时乘六龙子
@@ -169,7 +167,7 @@ local tb	= {
 		addskilldamagep2={141, {{1,2},{20,10},{21,12}},1},
 	},
 	gaibangbangfa={ --丐帮棒法_10
-		addphysicsdamage_p={{{1,10},{10,250},{11,265}}},
+		addphysicsdamage_p={{{1,10},{10,150},{11,165}}},
 		attackratingenhance_p={{{1,50},{10,150},{11,165}}},
 		deadlystrikeenhance_r={{{1,30},{10,50},{11,55}}},
 		attackspeed_v={{{1,5},{10,15},{11,16},{12,17},{13,17}}},
@@ -179,7 +177,7 @@ local tb	= {
 		attackratingenhance_p={{{1,30},{10,100},{11,105}}},
 		damage_return_receive_p={{{1,-10},{10,-30}}},
 		adddefense_v={{{1,50},{10,200},{20,250}}},
-		lifemax_p={{{1,12},{10,40},{11,43}}},
+		lifemax_p={{{1,12},{10,30},{11,32}}},
 		skill_statetime={{{1,-1},{2,-1}}},
 	},
 	bangdaegou={ --棒打恶狗_20
@@ -199,8 +197,8 @@ local tb	= {
 		state_knock_attack={{{1,65},{10,100},{11,100}},{{1,3},{10,10},{11,11}},{{1,32},{2,32}}},
 		state_fixed_attack={{{1,65},{10,100},{11,100}},{{1,18*2.5},{10,18*2.5}}},
 		skill_cost_v={{{1,20},{20,50},{21,50}}},
-		skill_mintimepercast_v={{{1,20*18},{10,10*18},{13,8*18}}},
-		skill_mintimepercastonhorse_v={{{1,20*18},{10,10*18},{13,8*18}}},
+		skill_mintimepercast_v={{{1,20*18},{10,10*18},{13,8*18},{20,8*18},{30,8*18}}},
+		skill_mintimepercastonhorse_v={{{1,20*18},{10,10*18},{13,8*18},{20,8*18},{30,8*18}}},
 		missile_hitcount={{{1,3},{10,5},{12,5}}},
 	},
 	huntianqigong={ --混天气功_20
@@ -236,23 +234,21 @@ local tb	= {
 	},
 	
 	toulongzhuanfeng={ --中级秘籍：偷龙转凤
-		stealstate={1,100,{{1,1},{10,1}}},
+		stealstate={1,100,{{1,1},{10,10}}},
 		skill_cost_v={{{1,100},{10,100}}},
-		skill_statetime={{{1,23*18},{10,23*18}}},
-		skill_mintimepercast_v={{{1,41*18},{10,41*18}}},
-		skill_mintimepercastonhorse_v={{{1,40*18},{10,40*18}}},
+		skill_statetime={{{1,18*30},{10,18*45},{14,18*54}}},
+		skill_mintimepercast_v={{{1,60*18},{10,60*18},{20,60*18},{30,60*18}}},
+		skill_mintimepercastonhorse_v={{{1,60*18},{10,60*18},{20,60*18},{30,60*18}}},
 		skill_skillexp_v=FightSkill.tbParam.tbMidBookSkillExp,
 	},
 	toulongzhuanfeng_self={ --中级秘籍：偷龙转凤
 		stealskillstate={1},
 		skill_statetime={{{1,5*18},{10,5*18}}},
-		skill_mintimepercast_v={{{1,41*18},{10,41*18}}},
-		skill_mintimepercastonhorse_v={{{1,40*18},{10,40*18}}},		
-	},	
+	},
 	
 	dagouzhenfa={ --打狗阵法_10
-		appenddamage_p= {{{1,150*0.7},{10,150},{11,150*FightSkill.tbParam.nSadd}}},
-		physicsenhance_p={{{1,200*0.7},{10,200},{11,200*FightSkill.tbParam.nSadd}}},
+		appenddamage_p= {{{1,110*0.7},{10,110},{11,110*FightSkill.tbParam.nSadd}}},
+		physicsenhance_p={{{1,186*0.7},{10,186},{11,186*FightSkill.tbParam.nSadd}}},
 		firedamage_v={
 			[1]={{1,775*0.9*0.7},{10,775*0.9},{11,775*0.9*FightSkill.tbParam.nSadd}},
 			[3]={{1,775*1.1*0.7},{10,775*1.1},{11,775*1.1*FightSkill.tbParam.nSadd}}
@@ -261,13 +257,9 @@ local tb	= {
 		state_hurt_attack={{{1,30},{10,50}},{{1,18},{10,18}}},
 		state_burn_attack={{{1,18},{10,30}},{{1,54},{10,54}}},
 		skill_cost_v={{{1,500},{10,500}}},
-		skill_maxmissile={{{1,2},{10,2},{20,3},{21,3}}},
-		skill_mintimepercast_v			={5*18},
-		skill_mintimepercastonhorse_v	={5*18},		
 		missile_hitcount={{{1,7},{2,7}}},
 		missile_drag={1},
 	},
-	
 	gungaiadvancedbook={ --棍丐高级秘籍
 		ignoreskill={{{1,1},{10,10},{11,11}},0,{{1,3},{2,3}}},
 		skill_skillexp_v=FightSkill.tbParam.tbHighBookSkillExp,
@@ -276,8 +268,6 @@ local tb	= {
 		ignoreskill={{{1,1},{10,5},{11,5}},0,{{1,3},{2,3}}},
 	},
 	gungai120={ --棍丐120
-		deadlystrikeenhance_r={{{1,30},{10,150},{11,155}}},
-		deadlystrikedamageenhance_p={{{1,2},{10,20},{11,22}}},
 		addenchant={29, {{1,1}, {2, 2}}},
 		skill_statetime={{{1,18*60*60},{10,18*60*60}}},
 	},
