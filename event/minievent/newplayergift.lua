@@ -340,7 +340,7 @@ tbGift.tbGiftInfo            = {
 	bForceBind = 1,
 };
 ----------------------------------------------------------------------------------
-local Master = Item:GetClass("gmcard");
+local Master                 = Item:GetClass("gmcard");
 function tbGift:OnUse()
 	local nCurSec      = Lib:GetDate2Time(tonumber(GetLocalDate("%Y%m%d")));
 	local nKaifuSec    = KGblTask.SCGetDbTaskInt(DBTASD_SERVER_STARTTIME);
@@ -506,8 +506,6 @@ function tbGift:IncreaseFightSkillPoint()
 	end
 end
 
-
-
 function tbGift:Testing()
 	local szMsg = "Xin chào <color=Blue>" .. me.szName .. "<color>";
 	local tbOpt =
@@ -527,8 +525,6 @@ function tbGift:Testing()
 	}
 	Dialog:Say(szMsg, tbOpt);
 end
-
-
 
 function tbGift:AskPracticeTime()
 	local tbHours = { 0.5, 1, 2, 3, 4, 5, 6, 7, 8 }
@@ -687,16 +683,17 @@ function tbGift:ItemInfo()
 end
 
 function tbGift:ShowItemInfo(tbGiftObj)
-	-- for _, pItem in pairs(tbGiftObj) do
-	-- 	me.Msg("Name:" .. pItem[1].szName);
-	-- 	me.Msg("Loại Vật Phẩm (Genre):" .. pItem[1].nGenre);
-	-- 	me.Msg("Chi Tiết Vật Phẩm (Detail):" .. pItem[1].nDetail);
-	-- 	me.Msg("Phân Loại Vật Phẩm (Particular):" .. pItem[1].nParticular);
-	-- 	me.Msg("Cấp Độ Vật Phẩm (Level):" .. pItem[1].nLevel);
-	-- 	me.Msg("Thuộc Tính Ngũ Hành (Series):" .. pItem[1].nSeries);
-	-- 	me.Msg("Số Lần Cường Hóa (EnhTimes):" .. pItem[1].nEnhTimes);
-	-- 	Lib:PrintData(tbGift:RecycleItem(pItem[1]));
-	-- end
+	for _, pItem in pairs(tbGiftObj) do
+		-- me.Msg("Name:" .. pItem[1].szName);
+		-- me.Msg("Loại Vật Phẩm (Genre):" .. pItem[1].nGenre);
+		-- me.Msg("Chi Tiết Vật Phẩm (Detail):" .. pItem[1].nDetail);
+		-- me.Msg("Phân Loại Vật Phẩm (Particular):" .. pItem[1].nParticular);
+		-- me.Msg("Cấp Độ Vật Phẩm (Level):" .. pItem[1].nLevel);
+		-- me.Msg("Thuộc Tính Ngũ Hành (Series):" .. pItem[1].nSeries);
+		-- me.Msg("Số Lần Cường Hóa (EnhTimes):" .. pItem[1].nEnhTimes);
+		-- Lib:PrintData(tbGift:RecycleItem(pItem[1]));
+		Lib:PrintData(Master:GetEquipMagicDesc(pItem[1]));
+	end
 end
 
 function tbGift:ChangeItemSeries()
@@ -965,8 +962,6 @@ function tbGift:EnhanceItem(tbGiftObj)
 		);
 	end
 end
-
-
 
 ----------------------------------------------------------------------------------
 function tbGift:MakePoint()

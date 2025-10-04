@@ -33,13 +33,17 @@ Item.MAGIC_DESC                         = {
     ["addphysicsmagic_p"]   = { description = "Vật công nội", value = false },
     ["addphysicsdamage_p"]  = { description = "Vật công ngoại", value = false },
     ["addlightingdamage_v"] = { description = "Lôi công ngoại", value = false },
+    ["addlightingmagic_v"]  = { description = "Lôi công nội", value = false },
     ["steallife_p"]         = { description = "Hút sinh lực", value = true },
     ["stealmana_p"]         = { description = "Hút nội lực", value = true },
-    ["fastwalkrun_p"]         = { description = "Tốc độ di chuyển", value = true }
+    ["fastwalkrun_p"]       = { description = "Tốc độ di chuyển", value = true }
 }
 
 Item.MAGIC_VALUABLE_COMBO               = {
-    { "addphysicsdamage_p", "steallife_p" }
+    { "addphysicsdamage_p", "stealmana_p" },
+    { "addphysicsdamage_p", "steallife_p" },
+    { "addphysicsdamage_p", "addlightingdamage_v" },
+    { "addphysicsmagic_p", "addlightingmagic_v" },
 }
 
 Item.RARITY                             = {
@@ -50,15 +54,15 @@ Item.RARITY                             = {
     LEGENDARY = "Legendary",
 }
 
-Item.EQUIP_MELEE_WEAPON                 = 1; -- 近程武器
-Item.EQUIP_RANGE_WEAPON                 = 2; -- 远程武器
-Item.EQUIP_ARMOR                        = 3; -- 衣服
-Item.EQUIP_RING                         = 4; -- 戒指
-Item.EQUIP_NECKLACE                     = 5; -- 项链
-Item.EQUIP_AMULET                       = 6; -- 护身符
-Item.EQUIP_BOOTS                        = 7; -- 鞋子
-Item.EQUIP_BELT                         = 8; -- 腰带
-Item.EQUIP_HELM                         = 9; -- 头盔
+Item.EQUIP_MELEE_WEAPON                 = 1;  -- 近程武器
+Item.EQUIP_RANGE_WEAPON                 = 2;  -- 远程武器
+Item.EQUIP_ARMOR                        = 3;  -- 衣服
+Item.EQUIP_RING                         = 4;  -- 戒指
+Item.EQUIP_NECKLACE                     = 5;  -- 项链
+Item.EQUIP_AMULET                       = 6;  -- 护身符
+Item.EQUIP_BOOTS                        = 7;  -- 鞋子
+Item.EQUIP_BELT                         = 8;  -- 腰带
+Item.EQUIP_HELM                         = 9;  -- 头盔
 Item.EQUIP_CUFF                         = 10; -- 护腕
 Item.EQUIP_PENDANT                      = 11; -- 腰坠
 Item.EQUIP_HORSE                        = 12; -- 马匹

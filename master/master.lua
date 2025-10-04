@@ -135,12 +135,26 @@ end
 
 function Master:IsRareEquip(pItem)
 	local tbAtt = Master:GetEquipAttribute(pItem)
+	local tbAttrSet = {}
 	for _, info in ipairs(tbAtt) do
-		local key = info and info.szName
-		if key and Item.MAGIC_DESC[key] and Item.MAGIC_DESC[key] == true then
+		if info and info.szName then
+			tbAttrSet[info.szName] = true
+		end
+	end
+
+	for _, combo in ipairs(Item.MAGIC_VALUABLE_COMBO) do
+		local bMatchAll = true
+		for _, attr in ipairs(combo) do
+			if not tbAttrSet[attr] then
+				bMatchAll = false
+				break
+			end
+		end
+		if bMatchAll then
 			return true
 		end
 	end
+
 	return false
 end
 
@@ -240,10 +254,25 @@ function Master:EnhanceAllEquipMaxLevel()
 	end
 end
 
+function Master:IsMatchWeapon(pItem)
+	local isMatchWeapon = true;
+	-- pos = 3 is weapon
+	if pItem.nEquipPos ~= 3 then
+		return isMatchWeapon
+	end
+	local pOldWeapon = me.GetEquip(3)
+	if pOldWeapon then
+		if pOldWeapon.nEquipCategory ~= pItem.nEquipCategory then
+			isMatchWeapon = false;
+		end
+	end
+	return isMatchWeapon
+end
+
 function Master:RecycleItem(pItem)
 	if not pItem then return 0 end
 	local nValue = pItem.nValue or 0
-	if Master:IsMatchSerieEquip(pItem) and Master:IsUncommonEquip(pItem) then
+	if Master:IsMatchSerieEquip(pItem) and Master:IsRareEquip(pItem) and Master:NumberOfMagicDesc(pItem) > 3 and Master:IsMatchWeapon(pItem) then
 		me.Msg("Giữ lại vật phẩm: " .. pItem.szName .. " có dòng thuộc tính hiếm.")
 		return 0
 	else
